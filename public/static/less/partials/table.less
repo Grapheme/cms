@@ -1,0 +1,62 @@
+.table {
+	width: 100%;
+	max-width: 80rem;
+	margin: 0 auto;
+
+	tr {
+		&:nth-child(even) {
+			background: #f8f7f3;
+
+			td {
+				line-height: 38rem / @htmlFontSize;
+			}			
+		}
+
+		&:nth-child(odd) {
+			td {
+				line-height: 80rem / @htmlFontSize;
+			}			
+		}
+	}
+
+	th {
+		padding: 0 34rem / @htmlFontSize;
+
+		font-size: 13em / @htmlFontSize;
+		line-height: 48em / 13;
+		font-weight: normal;
+		text-align: left;
+	}
+
+	td {		
+		padding: 0 0 0 34rem / @htmlFontSize;
+
+		font: 600 1em 'Open Sans', sans-serif;
+
+		&:first-child {
+			font-weight: 400;
+		}
+
+		&:nth-child(1) {
+			width: 65%;
+		}
+
+		&:nth-child(2) {
+			width: 20%;
+		}
+
+		&:nth-child(3) {
+			width: 15%;
+		}
+	}
+
+	.name-td {
+		width: 65%;
+	}
+	.weight-td {
+		width: 20%;
+	}
+	.price-td {
+		width: 15%;
+	}
+}

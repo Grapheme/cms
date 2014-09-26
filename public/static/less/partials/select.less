@@ -1,0 +1,50 @@
+.hasCustomSelect {
+	z-index: 1;
+}
+.customSelect {
+	vertical-align: text-top;
+
+	position: relative;
+	z-index: 0;
+	top: -1px;
+	height: 1.713rem;
+	margin: 0 11rem / @htmlFontSize 0 0;
+	padding: 0.1rem 0 0 0.5rem;
+
+	background: #fff;
+
+	&:after {
+		color: #000;
+	    content: "";
+	    font-family: 'fontello';
+	    height: 100%;
+	    line-height: 1.6rem;
+	    position: absolute;
+	    right: 0.5rem;
+	    top: 0;
+	}
+}
+
+.customSelect.customSelectHover {
+	
+}
+
+.customSelect.customSelectOpen {
+/* Styles for when the select box is open */
+}
+
+.customSelect.customSelectFocus {
+/* Styles for when the select box is in focus */
+}
+
+.customSelect.customSelectDisabledOption {
+/* Styles for when the selected item is a disabled one */
+}
+
+.customSelect.customSelectDisabled {
+/* Styles for when the select box itself is disabled */
+}
+
+.customSelectInner {
+	color: @black;
+}

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/main.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+            <header class="main-header">
+                <div class="logo">
+                    <a href="index.html"></a>
+                </div>
+                <nav>
+                    <ul class="nav-ul">
+                        <li class="nav-li">
+                            <a data-hover="Номера" href="rooms.html">
+                                <span>Номера
+                            </a>
+                        <li class="nav-li">
+                            <a data-hover="SPA" href="spa.html">
+                                <span>SPA
+                            </a>
+                        <li class="nav-li">
+                            <a data-hover="Ресторан" href="rest.html">
+                                <span>Ресторан
+                            </a>
+                        <li class="nav-li">
+                            <a data-hover="Discover Dagestan" href="discover.html">
+                                <span>Discover Dagestan
+                            </a>
+                        <li class="nav-li">
+                            <a data-hover="Услуги" href="services.html">
+                                <span>Услуги</span>
+                            </a>
+                        <li class="nav-li">
+                            <a data-hover="Акции" href="#">
+                                <span>Акции
+                            </a>
+                    </ul>
+                </nav>
+                <div class="booking" id="bookBtn">
+                    Бронировать <span class="icon icon-angle-right"></span>
+                    <div class="booking-form">
+                        <div class="form-success">
+                            Ваша бронь успешно отправлена администратору
+                        </div>
+                        <form>
+                            <fieldset class="date-data">
+                                <section>
+                                    <header>
+                                        Выберите номер и дату
+                                    </header>
+                                    <div class="inline">
+                                        <select>
+                                            <option>Стандартный номер</option>
+                                            <option>Нестандартный номер</option>
+                                        </select>
+                                    </div>
+                                    <section class="datepickerFrom inline">
+                                        с
+                                        <input id="datepickerFrom" class="datepicker" type="text">
+                                    </section>
+                                    <section class="datepickerTo inline">
+                                        по
+                                        <input id="datepickerTo" type="text">
+                                    </section> 
+                                </section>
+                            </fieldset>
+                            <fieldset class="text-data">
+                                <section>
+                                    <header>
+                                        Представьтесь
+                                    </header>
+                                    <div class="inline">
+                                        <input type="text" placeholder="Представьтесь">
+                                    </div>
+                                    <div class="inline">
+                                        <input type="text" placeholder="Телефон или email">
+                                    </div>
+                                </section>
+                            </fieldset>
+                            <fieldset>
+                                <section>
+                                    <div class="price inline">
+                                        Стоимость услуги за сутки: <span>4500 руб.</span>
+                                    </div>                                                                        
+                                    <button type="button" class="btn bordered inline">
+                                        Забронировать
+                                    </button> 
+                                </section>
+                            </fieldset>                                                   
+                        </form>
+                    </div>
+                </div>
+                <div class="phone">
+                    <a href="tel:+34560052222">
+                        <span class="icon icon-phone"></span> +34 56 005 22 22
+                    </a>
+                </div>
+                <div class="lang">
+                    <ul class="lang-ul">
+                        <li class="lang-li">
+                            <a href="#">EN</a>
+                        </li>
+                        <li class="lang-li">
+                            <a href="#">RU</a>
+                        </li>
+                    </ul>
+                </div>                
+            </header>
+
+            <main role="main">
+                <div class="slideshow" id="slideshow">
+                    <div class="slide">
+                        <div class="slide-bg" style="background-image: url(img/slides/01.jpg);"></div>
+                        <section class="slide-cont">
+                            <header>
+                                <div class="slide-logo">
+                                    
+                                </div>
+                                <h2 class="slide-head">
+                                    1000 и 1 ночь
+                                </h2>
+                                <div class="desc">
+                                    Изысканная кухня Кавказа
+                                </div>
+                            </header>
+                            <div class="slide-desc">
+                                Ресторан нашего отеля порадует своих гостей разнообразием блюд традиционной и национальной кухни, экзотическими яствами местной культуры и профессиональным обслуживанием. Насладитеcь теплой атмосферой уюта и гостеприимства со своими партнерами, друзьями и близкими. 
+                            </div>
+                        </section>
+                    </div>
+                    <div class="arrow arrow-left"><span class="icon icon-angle-left"></span></div>
+                    <div class="arrow arrow-right"><span class="icon icon-angle-right"></span></div>
+                </div>
+                <section class="sect-wrap restaurant">
+                    <h1>
+                        Все разнообразие
+                        гастрономической культуры
+                        Дагестана в одном месте
+                    </h1>
+                    <div class="row clearfix">
+                        <div class="column half">
+                            <div class="section-desc">
+                                Мы постарались не только создать атмосферу спокойствия и комфорта, но и удивить вас широким ассортиментом блюд. Трудно представить себе знакомство с культурой любой страны или республики без обращения к кулинарным традициям.
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row clearfix">
+                        <div class="column half">
+                            <div class="row clearfix">
+                                <div class="column half">
+                                    <p>
+                                        Мы постарались не только создать атмосферу спокойствия и комфорта, но и удивить вас широким ассортиментом блюд. Трудно представить себе знакомство с культурой любой страны или республики без обращения к кулинарным традициям. В нашем ресторане вы не почувствуете недостатка в ассортименте блюд и гастрономических изысков.
+                                    </p>
+                                </div>
+                                <div class="column half">
+                                    <p>
+                                        Ресторан нашего отеля порадует своих гостей широким ассортиментом уже знакомых и экзотических национальных блюд.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </section>
+                <section class="sect-wrap tabs-sect">
+                    <ul id="tabs" class="tabs row clearfix">
+                        <li class="column fiveth" data-tab="firm"><span>Фирменные блюда</span></li>
+                        <li class="column fiveth" data-tab="snack"><span>Закуски</span></li>
+                        <li class="column fiveth" data-tab="salad"><span>Салаты</span></li>
+                        <li class="column fiveth" data-tab="bar"><span>Бар</span></li>
+                        <li class="column fiveth" data-tab="desert"><span>Десерты</span></li>
+                    </ul>
+                    <ul id="tabContent" class="tab-content">
+                        <li class="tab-li" data-tab="firm">
+                            <table class="table">
+                                <tr>
+                                    <th class="name-td">Наименование</th>
+                                    <th class="weight-td">Вес</th>
+                                    <th class="price-td">Стоимость</th>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Шашлык из баранины</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">10000 руб</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li class="tab-li" data-tab="snack">
+                            <table class="table">
+                                <tr>
+                                    <th class="name-td">Наименование</th>
+                                    <th class="weight-td">Вес</th>
+                                    <th class="price-td">Стоимость</th>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Люля-кебаб из курицы</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">3000 руб</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li class="tab-li" data-tab="salad">
+                            <table class="table">
+                                <tr>
+                                    <th class="name-td">Наименование</th>
+                                    <th class="weight-td">Вес</th>
+                                    <th class="price-td">Стоимость</th>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Плов Кавказ</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">500 руб</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li class="tab-li" data-tab="bar">
+                            <table class="table">
+                                <tr>
+                                    <th class="name-td">Наименование</th>
+                                    <th class="weight-td">Вес</th>
+                                    <th class="price-td">Стоимость</th>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Ягненок на вертеле</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">2000 руб</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li class="tab-li" data-tab="desert">
+                            <table class="table">
+                                <tr>
+                                    <th class="name-td">Наименование</th>
+                                    <th class="weight-td">Вес</th>
+                                    <th class="price-td">Стоимость</th>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                                <tr>
+                                    <td class="name-td">Овощи на мангале</td>
+                                    <td class="weight-td">300г</td>
+                                    <td class="price-td">250 руб</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </section>
+                <section class="sect-wrap square-list-sect">
+                    <ul class="square-ul clearfix">
+                        <li class="square-li">
+                            <a href="#"></a>
+                            <div class="square-li-img" style="background-image: url(img/lists/01.jpg);"></div>
+                            <span>Свадьбы до 300 мест</span>
+                        </li>
+                        <li class="square-li">
+                            <a href="#"></a>
+                            <div class="square-li-img" style="background-image: url(img/lists/02.jpg);"></div>
+                            <span>Бизнес-ланчи</span>
+                        </li>
+                        <li class="square-li">
+                            <a href="#"></a>
+                            <div class="square-li-img" style="background-image: url(img/lists/03.jpg);"></div>
+                            <span>Банкеты</span>
+                        </li>
+                    </ul>
+                </section>
+                <section class="sect-wrap mini-footer">
+                    <header>
+                        <div class="small-logo">
+                            
+                        </div> 1000 и 1 ночь
+                    </header>
+                    <div class="call">
+                        Вопросы администратору<br>
+                        Вы можете задать по телефону
+                        <a href="tel:+74958944455">+7 495 894 44 55</a>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="main-footer">
+                <div class="copy">
+                    © Sarykum hotel and spa 2014
+                </div>
+                <div class="dev">
+                    Made in <a href="http://grapheme.ru" target="_blank">GRPHM</a>
+                </div>
+            </footer>
+        </div>
+
+        
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="js/index.js"></script>
+    </body>
+</html>

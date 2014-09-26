@@ -1,0 +1,104 @@
+.booking-form {
+	.transition;
+	opacity: 0;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	width: 37rem;
+	line-height: 1.5;
+
+	background: #3368a4;
+	cursor: default;
+
+	&.active {
+		opacity: 1;
+		z-index: 100;
+	}
+
+	.form-success {
+		.transition;
+		display: none;
+		position: absolute;
+		z-index: -1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		line-height: 13rem;
+		background: #3368a4;
+
+		text-align: center;
+
+		&.active {
+			z-index: 1;
+			display: block;
+		}
+	}
+	
+	form {
+		padding: 22rem / @htmlFontSize 0 0 42rem / @htmlFontSize;
+		font-size: 1.2em;
+		text-transform: none;
+		background: #3368a4;
+
+
+		.inline {
+			position: relative;
+			display: inline-block;
+		}
+
+		header {
+			height: 35rem / @htmlFontSize;
+			text-transform: uppercase;
+		}
+
+		.error {
+			input {
+				border-color: lighten(#ff0000, 30%);
+			}
+		}
+
+		.date-data {
+			margin: 0 0 22rem / @htmlFontSize;
+		}
+
+		.text-data {
+			margin: 0 0 22rem / @htmlFontSize;
+
+			input {
+				width: 247rem / @htmlFontSize;
+				margin-left: 0;
+				margin-right: 22rem / @htmlFontSize;
+			}
+		}
+
+		select {
+			width: 195rem / @htmlFontSize;
+			height: 27rem / @htmlFontSize;
+			margin: 0 11rem / @htmlFontSize 0 0;
+		}
+
+		input {
+			.transition;
+			width: 7.5rem;
+			margin: 0 11rem / @htmlFontSize;
+			padding: .25rem;
+			border-style: solid;
+			border-color: transparent;
+		}
+
+		.price {
+			font-size: 1.1em;
+			line-height: 3rem;
+
+			span {
+				font-weight: 600;
+			}
+		}
+
+		.btn {
+			float: right;
+			margin: 10rem / @htmlFontSize 28rem / @htmlFontSize 10rem / @htmlFontSize 10rem / @htmlFontSize;
+		}
+	}
+}

@@ -1,0 +1,41 @@
+/* Small screens (default) */
+html { font-size: 100%; }
+
+*, *:before, *:after {
+  .box-sizing;
+}
+
+.container {
+  margin: 0 auto;
+}
+
+.row {
+    &.no-padding {
+        .column {
+            padding: 0;
+        }
+    }
+}
+
+.column {
+    float: left;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    &:first-child {
+    	padding-left: 0;
+    }
+    &:last-child {
+    	padding-right: 0;
+    }
+
+    &.full { width: 100%; }
+	&.two-thirds { width: 66.7%; }
+	&.half { width: 50%; }
+	&.third { width: 33.3%; }
+	&.fourth { width: 25%; }
+    &.fiveth { width: 20%; }
+
+	//first on mobile but appear on the right on larger screens
+	&.flow-opposite { float: right; } 
+} 

@@ -1,0 +1,40 @@
+.btn {
+	.transition;
+	display: inline-block;
+	padding: 0 20rem / @htmlFontSize 0 14rem / @htmlFontSize;
+	border: none;
+
+	font-size: 13em / @htmlFontSize;
+	font-family: 'Open Sans', sans-serif;
+	line-height: 50em / 18;
+	text-transform: uppercase;
+	border-radius: 2rem / @htmlFontSize;
+
+	&.btn-primary {
+		background: @lightBlue;
+
+		&:hover {
+			background: darken(@lightBlue, 10%);
+		}
+	}
+
+	&.big {
+		font-size: 18em / @htmlFontSize;
+	}
+
+	.icon {
+		margin-right: 4rem / @htmlFontSize;
+	}
+
+	&.bordered {
+		padding: 0 20rem / @htmlFontSize;
+		background: none;
+		border-radius: 0;
+		border: 1px solid @white;
+		color: @white;
+
+		&:hover {
+			background: darken(@midBlue, 10%);
+		}
+	}
+}

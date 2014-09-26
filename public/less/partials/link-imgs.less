@@ -1,0 +1,58 @@
+.link-imgs-ul {
+	.list-unstyled;
+
+	.link-imgs-li {
+		position: relative;
+		height: 360rem / @htmlFontSize;
+		background: no-repeat center center e('/') cover;
+
+		background-color: @lightBlue;
+
+		a,h2 {
+			.reset-typical;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+
+			font-size: 32em / @htmlFontSize;
+			font-weight: 300;
+			line-height: 360rem / @htmlFontSize;
+			text-transform: uppercase;
+			text-align: center;
+
+			color: @white;
+			cursor: pointer;
+		}
+
+		h2 {
+			.transition;
+			background: rgba(0, 0, 0, .63);
+		}
+
+		&:hover {
+			h2 {
+				background: rgba(0, 0, 0, .43);
+			}
+		}
+	}
+	.link-imgs-dd {
+		.transition;
+		height: 0;
+		padding: 0 2rem;
+		overflow: auto;
+
+		h3 {
+			margin: 0;
+			font-size: 2em;
+		}
+
+		&.active {
+			height: 360rem / @htmlFontSize;
+			padding: 2rem;
+		}
+	}
+}

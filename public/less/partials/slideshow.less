@@ -1,0 +1,247 @@
+.slideshow {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: @darkBlue;
+
+	.slide {
+		.transition(all, 2s, ease);
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+
+		.slide-bg {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+
+			background-repeat: no-repeat;
+			background-size: cover;
+		}
+
+		&:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		    box-shadow: inset  0  128px 128px -64px rgba(0, 0, 0, .5), 
+		                inset  0 -128px 128px -64px rgba(0, 0, 0, .5);
+		}
+
+		&:after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+
+			background: rgba(0, 0, 0, .54);			
+		}
+
+		&.active {
+			opacity: 1;
+		}
+
+		&.terms-slide {
+			.slide-cont {
+			    margin-top: 3%;
+			}
+		}
+
+		.slide-terms {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			z-index: 1;
+			width: 100%;
+			height: 261rem / @htmlFontSize;
+
+			.list-unstyled;
+
+			.slide-term {
+				.transition;
+				position: relative;
+				float: left;
+				width: 33.333%;
+				height: 100%;
+				padding: 36rem / @htmlFontSize 66rem / @htmlFontSize 0;
+				
+				text-align: center;
+				font-weight: 300;
+
+				cursor: pointer;
+				color: @white;
+
+				a {
+					.reset-typical;
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+				}
+
+				&:hover {
+					.term-head:after {
+						content: '\e809';
+					}
+				}
+			}
+
+			.term-head {
+				position: relative;
+				padding: 0 0 62rem / @htmlFontSize;
+				font-size: 15em / @htmlFontSize;
+				text-transform: uppercase;
+
+				&:after {
+					content: '\e80a';
+					font-family: 'fontello';
+					position: absolute;
+					top: 2.5rem;
+					left: 0;
+					width: 100%;
+
+					text-align: center;
+				}
+			}
+		}
+
+		.roomslide-data {
+			position: absolute;
+			z-index: 1;
+			bottom: 22rem / @htmlFontSize;
+			left: 0;
+			width: 50%;
+			text-align: center;
+			text-transform: uppercase;
+
+			color: @white;
+
+			&.data-left {
+				left: 0;
+			}
+			&.data-right {
+				left: 50%;
+			}			
+			.name {
+				display: inline-block;
+				font-size: 24em / @htmlFontSize;
+			}
+			.price {
+				display: inline-block;
+				font-size: 24em / @htmlFontSize;
+
+				&:after {
+				    content: "";
+				    font-family: 'fontello';
+				    font-size: 0.5em;
+				    vertical-align: top;
+				}
+			}
+		}
+
+		.roomslide {
+			position: absolute;
+			top: 0;
+			width: 50%;
+			height: 100%;
+			background-size: cover;
+			background-repeat: no-repeat;
+
+			&.roomslide-left {
+				left: 0;
+			}
+			&.roomslide-right {
+				left: 50%;
+			}
+		}
+	}
+	.slide-cont {
+		position: relative;
+		z-index: 1;
+		width: 519rem / @htmlFontSize;		
+		margin: 136rem / @htmlFontSize auto 0;
+
+		color: @white;
+		text-align: center;
+
+		.desc {
+			padding: 0 0 2.1rem;
+			margin: 0 0 30rem / @htmlFontSize;
+			border-bottom: 1px solid @white;
+			font-size: 22em / @htmlFontSize;
+			text-transform: uppercase;
+			line-height: 1.25;
+		}
+
+		header {
+			.transition(all, .75s, ease);
+			.from-bottom;
+		}
+	}
+	.slide-logo {
+		width: 115rem / @htmlFontSize;
+		height: 115rem / @htmlFontSize;
+		margin: 0 auto;
+		background: url(../img/big-logo.png) no-repeat 0 0 e('/') 100% 100%;
+	}
+	.slide-head {
+		margin: 43rem / @htmlFontSize 0 35rem / @htmlFontSize;
+		font-size: 44em / @htmlFontSize;
+		font-weight: 300;
+		line-height: .75;
+		text-transform: uppercase;
+	}
+	.slide-desc {
+		.transition(all, .67s, ease-in-out);
+		.from-bottom;
+		font-size: 15em / @htmlFontSize;
+		line-height: 24em / 15;
+	}
+}
+
+.arrow {
+	.transition;
+	position: absolute;
+	top: 50%;
+	width: 75rem / @htmlFontSize;
+	height: 75rem / @htmlFontSize;
+	margin-top: -75rem / @htmlFontSize / 2;
+
+	background: rgba(0, 0, 0, .3);
+	color: @white;
+	text-align: center;
+	line-height: 75rem / @htmlFontSize;
+	font-size: 2em;
+
+	cursor: pointer;
+
+	&:hover {
+		background: rgba(0, 0, 0, .5);
+	}
+
+	&.arrow-left {
+		left: 0;
+
+		.icon {
+			margin-right: .25rem;
+		}
+	}
+	&.arrow-right {
+		right: 0;
+
+		.icon {
+			margin-left: .25rem;
+		}
+	}
+}

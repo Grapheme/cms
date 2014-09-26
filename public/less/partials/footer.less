@@ -1,0 +1,44 @@
+.main-footer {
+	.parentLineHeight(@footerHeight);
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: @footerHeight / @htmlFontSize * 1rem;
+	padding: 0 25rem / @htmlFontSize;
+
+	background: @black;
+	color: @gray;
+	color: rgba(255, 255, 255, .5);
+	font-size: 12em / @htmlFontSize;
+	text-transform: uppercase;
+
+	.copy {
+		float: left;
+	}
+	.dev {
+		float: right;
+
+		a {
+			.transition;
+			.reset-typical;
+
+			&:hover {
+				color: lighten(@gray, 10%);
+				color: rgba(255, 255, 255, .75);
+			}
+		}
+	}
+	address {
+		float: left;
+		margin-left: 1.5rem;
+
+		font-style: normal;		
+		text-transform: none;
+	}
+	&.static-footer {
+		position: relative;
+		top: 0;
+		bottom: auto;
+	}
+}

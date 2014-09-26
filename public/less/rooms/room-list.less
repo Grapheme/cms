@@ -1,0 +1,82 @@
+.rooms {
+	
+}
+
+.rooms-wrap {
+	padding: 32rem / @htmlFontSize;
+
+	&:after {
+		content: '';
+		position: absolute;
+		top: 13.5rem;
+		right: 5%;
+		width: 570rem / @htmlFontSize;
+		height: 60%;
+
+		background: url(../img/rest.jpg) no-repeat 0 0 e('/') auto 100%;
+	}
+
+	.btn {
+		position: relative;
+		margin: 20rem / @htmlFontSize 0;
+
+		&:active {
+			top: 2px;
+		}
+	}
+}
+
+.room-item {
+	position: relative;
+	height: 560rem / @htmlFontSize;	
+	background: no-repeat center center / cover;
+	color: @white;
+
+	&:hover {
+		color: transparent;
+
+		a {
+			background: none;
+		}
+	}
+
+	a {
+		.transition;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		padding: 0 0 0 10.5%;
+		background: rgba(0, 0, 0, .3);
+	}
+
+	.room-name {
+		.transition;
+		margin: 0 0 32rem / @htmlFontSize;
+		padding: 58rem / @htmlFontSize 0 0;
+
+		font-size: 48em / @htmlFontSize;
+		line-height: .75;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 1);
+		text-shadow: 1px 1px rgba(0, 0, 0, .35);
+	}
+
+	.room-price {
+		.transition;
+		line-height: .75;
+		font-size: 48em / @htmlFontSize;
+		font-family: 'Open Sans', sans-serif;
+		color: rgba(255, 255, 255, 1);
+		text-shadow: 1px 1px rgba(0, 0, 0, .35);
+
+		&:after {
+			content: '\e802';
+			font-family: 'fontello';
+			font-size: 24em / 48;
+			vertical-align: top;
+		}
+	}
+}
