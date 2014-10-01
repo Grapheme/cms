@@ -5,7 +5,7 @@
 
     @include($module['tpl'].'menu')
 
-    <div class="row margin-top-10">
+    <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
 
@@ -14,7 +14,7 @@
             <?
             $i = 0;
             ?>
-            <h2>&laquo;{{ @$modules[$mod_name]['title'] }}&raquo;:</h2>
+            <h2 style="margin:-10px 0 10px 0">&laquo;{{ @$modules[$mod_name]['title'] }}&raquo;:</h2>
             <table class="table table-striped table-bordered min-table">
                 <thead>
                 <tr>
