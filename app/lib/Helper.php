@@ -270,7 +270,12 @@ class Helper {
         $s = preg_replace("/\s+/", ' ', $s); // удаляем повторяющие пробелы
         $s = trim($s); // убираем пробелы в начале и конце строки
         $s = function_exists('mb_strtolower') ? mb_strtolower($s) : strtolower($s); // переводим строку в нижний регистр (иногда надо задать локаль)
-        $s = strtr($s, array('а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'j', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ы' => 'y', 'э' => 'e', 'ю' => 'yu', 'я' => 'ya', 'ъ' => '', 'ь' => ''));
+        $s = strtr($s, array(
+            'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'j', 'з' => 'z',
+            'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r',
+            'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
+            'ы' => 'y', 'э' => 'e', 'ю' => 'yu', 'я' => 'ya', 'ъ' => '', 'ь' => ''
+        ));
         $s = preg_replace("/[^0-9a-z-_ ]/i", "", $s); // очищаем строку от недопустимых символов
         $s = str_replace(" ", "-", $s); // заменяем пробелы знаком минус
         return $s; // возвращаем результат
@@ -333,7 +338,9 @@ HTML;
 
                 #$return .= "\n<!--\n" . $_SERVER['REQUEST_URI'] . "\n" . $menu['link'] . "\n-->\n";
 
-                $return .= '<a class="' . @$menu['class'] . ($child_exists ? '' : ' margin-bottom-5') . '" href="' . $menu['link'] . '">' . ($current ? '<i class="fa fa-check"></i> ' : '') . @$menu['title'] . '</a> ';
+                $return .= '<a class="' . @$menu['class'] . ($child_exists ? '' : ' margin-bottom-5') . '" href="' . $menu['link'] . '">'
+                        . ($current ? '<i class="fa fa-check"></i> ' : '')
+                        . @$menu['title'] . '</a> ';
 
                 if ($child_exists) {
                     $return .= '<a class="btn btn-default dropdown-toggle ' . @$menu['class'] . '" dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);">
@@ -462,7 +469,11 @@ HTML;
             case 'checkbox':
                 #Helper::d($array);
                 #Helper::ta($element);
-                return '<label class="checkbox">' . Form::checkbox($name, 1, @$element->$array['_name'], $others_array) . '<i></i>' . '<span>' . $array['title'] . '</span>' . '</label>';
+                return '<label class="checkbox">'
+                . Form::checkbox($name, 1, @$element->$array['_name'], $others_array)
+                . '<i></i>'
+                . '<span>' . $array['title'] . '</span>'
+                . '</label>';
                 break;
             case 'checkboxes':
                 $return = '';
@@ -475,7 +486,11 @@ HTML;
                 }
                 foreach ($array['values'] as $key => $val) {
                     $checked = is_array($value) && isset($value[$key]);
-                    $el = '<label class="checkbox' . $style . '">' . Form::checkbox($name . '[]', $key, $checked, $others_array) . '<i></i>' . '<span>' . $val . '</span>' . '</label>';
+                    $el = '<label class="checkbox' . $style . '">'
+                        . Form::checkbox($name . '[]', $key, $checked, $others_array)
+                        . '<i></i>'
+                        . '<span>' . $val . '</span>'
+                        . '</label>';
                     $return .= $el;
                 }
                 break;
@@ -525,7 +540,11 @@ HTML;
         $locales = Config::get('app.locales');
         #Helper::d($locales);
 
-        $tpl_default = array('block' => '<ul class="lang-ul">%links%</ul>', 'link' => '<li class="lang-li"><a href="%link%">%locale_sign%</a></li>', 'current' => '<li class="lang-li"><span class="lang-li-current">%locale_sign%</span></li>',);
+        $tpl_default = array(
+            'block' => '<ul class="lang-ul">%links%</ul>',
+            'link' => '<li class="lang-li"><a href="%link%">%locale_sign%</a></li>',
+            'current' => '<li class="lang-li"><span class="lang-li-current">%locale_sign%</span></li>',
+        );
         $tpl = (array)$tpl + $tpl_default;
         if (!@$tpl['current']) {
             $tpl['current'] = $tpl['link'];
@@ -544,7 +563,10 @@ HTML;
 
         $links = array();
 
-        $links[] = strtr($tpl['current'], array('%link%' => URL::to(($url || $locale != $default_locale ? $locale . '/' : '') . $url), '%locale_sign%' => ($view_locale == 'sign' ? $locale : @$locales[$locale]),));
+        $links[] = strtr($tpl['current'], array(
+            '%link%' => URL::to(($url || $locale != $default_locale ? $locale . '/' : '') . $url),
+            '%locale_sign%' => ($view_locale == 'sign' ? $locale : @$locales[$locale]),
+        ));
 
         foreach ($locales as $locale_sign => $locale_name) {
 
@@ -554,7 +576,11 @@ HTML;
 
             $locale_link = URL::to(($url || $locale_sign != $default_locale ? $locale_sign . '/' : '') . $url);
 
-            $links[] = strtr($tpl['link'], array('%link%' => $locale_link, '%locale_sign%' => ($view_locale == 'sign' ? $locale_sign : $locale_name),));
+            $links[] = strtr($tpl['link'], array(
+                    '%link%' => $locale_link,
+                    '%locale_sign%' => ($view_locale == 'sign' ? $locale_sign : $locale_name),
+                )
+            );
         }
 
         $return = strtr($tpl['block'], array('%links%' => implode('', $links)));
@@ -697,7 +723,11 @@ HTML;
             $array["filter[fields][{$filter_name}]"] = @$filter[$filter_name];
             $array = (array)$dic_id + $array;
 
-            $parent = array('link' => URL::route($route, $array), 'title' => $current_dicval, 'class' => 'btn btn-default',);
+            $parent = array(
+                'link' => URL::route($route, $array),
+                'title' => $current_dicval,
+                'class' => 'btn btn-default',
+            );
         } else {
 
             ## Get all current link attributes & modify for next url generation
@@ -705,7 +735,11 @@ HTML;
             unset($array["filter[fields][{$filter_name}]"]);
             $array = (array)$dic_id + $array;
 
-            $parent = array('link' => URL::route($route, $array), 'title' => $filter_default_text, 'class' => 'btn btn-default',);
+            $parent = array(
+                'link' => URL::route($route, $array),
+                'title' => $filter_default_text,
+                'class' => 'btn btn-default',
+            );
         }
         ## Child elements
         $product_types = array();
@@ -716,7 +750,11 @@ HTML;
             unset($array["filter[fields][{$filter_name}]"]);
             $array = (array)$dic_id + $array;
 
-            $product_types[] = array('link' => URL::route($route, $array), 'title' => $filter_default_text, 'class' => '',);
+            $product_types[] = array(
+                'link' => URL::route($route, $array),
+                'title' => $filter_default_text,
+                'class' => '',
+            );
         }
         foreach ($filter_dic_elements as $element_id => $element_name) {
 
@@ -729,7 +767,11 @@ HTML;
             $array["filter[fields][{$filter_name}]"] = $element_id;
             $array = (array)$dic_id + $array;
 
-            $product_types[] = array('link' => URL::route($route, $array), 'title' => $element_name, 'class' => '',);
+            $product_types[] = array(
+                'link' => URL::route($route, $array),
+                'title' => $element_name,
+                'class' => '',
+            );
         }
         ## Assembly
         $parent['child'] = $product_types;
@@ -777,7 +819,22 @@ HTML;
         #Helper::dd($bindings);
         $query = vsprintf($query, $bindings);
 
-        $changes = array('select ' => "SELECT ", ' from' => "\nFROM", ' where' => "\nWHERE", ' inner join' => "\nINNER JOIN", ' left join' => "\nLEFT JOIN", ' right join' => "\nRIGHT JOIN", ' join' => "\nJOIN", ' on' => " ON", ' and' => " AND", ' or' => " OR", ' in' => " IN", ' group by' => "\nGROUP BY", ' order by' => "\nORDER BY", ' limit' => "\nLIMIT",);
+        $changes = array(
+            'select ' => "SELECT ",
+            ' from' => "\nFROM",
+            ' where' => "\nWHERE",
+            ' inner join' => "\nINNER JOIN",
+            ' left join' => "\nLEFT JOIN",
+            ' right join' => "\nRIGHT JOIN",
+            ' join' => "\nJOIN",
+            ' on' => " ON",
+            ' and' => " AND",
+            ' or' => " OR",
+            ' in' => " IN",
+            ' group by' => "\nGROUP BY",
+            ' order by' => "\nORDER BY",
+            ' limit' => "\nLIMIT",
+        );
 
         $query = strtr($query, $changes);
 

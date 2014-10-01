@@ -64,9 +64,10 @@ class ModTemplates {
             array_unique(self::$templates[$mod]);
             return self::$templates[$mod];
         } else {
-            foreach (self::$templates as $module => $files)
-                self::$templates[$module] = array_unique(self::$templates[$module]);
-            return self::$templates;
+            if (isset(self::$templates) && is_array(self::$templates) && count(self::$templates))
+                foreach (self::$templates as $module => $files)
+                    self::$templates[$module] = array_unique(self::$templates[$module]);
+            return (array)self::$templates;
         }
     }
 

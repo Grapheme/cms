@@ -92,9 +92,6 @@ class Helper {
     }
 
     public static function inclayout($file) {
-        if (!$file) {
-            return false;
-        }
 
         $layout = Config::get('app.template');
 
@@ -102,14 +99,14 @@ class Helper {
             $layout = 'default';
         }
 
-        $full = base_path() . "/app/views/templates/" . $layout . '/' . $file;
+        $full = base_path("/app/views/templates/" . $layout . '/' . $file);
 
-        if (!file_exists($full)) {
+        if ($file != '' && !file_exists($full)) {
             $full .= ".blade.php";
         }
 
-        #if (!file_exists($full))
-        #    return false;
+        if (!file_exists($full))
+            return false;
 
         return $full;
     }
@@ -207,7 +204,7 @@ class Helper {
      * @param $key
      * @return mixed
      */
-    public static function withdraw(&$array, $key) {
+    public static function withdraw(&$array, $key = '') {
         $val = @$array[$key];
         unset($array[$key]);
         return $val;
@@ -616,16 +613,28 @@ HTML;
                 $route_params = array();
             }
         }
+
         #Helper::d($route_params);
 
         if (count($route_params)) {
+
+            #Helper::d($route_params);
+            $route_params = URL::get_modified_parameters($route_name, $route_params);
+            #Helper::dd($route_params);
+
             foreach ($route_params as $key => $value) {
+
+                #Helper::d("[" . $key . "] => " . $route->getParameter($key) . " = " . $value);
+
                 if ($route->getParameter($key) != $value) {
                     $match = false;
                     break;
                 }
             }
         }
+
+        #Helper::d((int)$match);
+
         return (Route::currentRouteName() == $route_name && $match) ? $match_text : $mismatch_text;
     }
 
@@ -822,7 +831,9 @@ HTML;
                 if (isset($element['_href'])) {
                     $url = @$element['_href'];
                 } elseif (isset($element['_route'])) {
-                    $url = action($element['_route'], @$element['_params']);
+                    $url = URL::route($element['_route'], @$element['_params']);
+                } elseif (isset($element['_action'])) {
+                    $url = URL::action($element['_action'], @$element['_params']);
                 }
 
                 $attr = $element;
@@ -834,11 +845,15 @@ HTML;
                  */
                 if (@$element['_route']) {
                     $active_value = self::isRoute(@$element['_route'], @$element['_params'], $active_class);
+
                     #Helper::d('CLASS => ' . $active_value);
+
                     if ($active_value) {
                         $attr['class'] = trim(@$attr['class'] . ' ' . trim($active_value));
                     }
                 }
+
+                #Helper::dd($attr);
 
                 /**
                  * Make string line of link attributes, from array
@@ -848,6 +863,7 @@ HTML;
                     $attr_array[] = $attribute_key . '="' . $attribute_value . '"';
                 }
                 $attr_string = implode(' ', $attr_array);
+
                 #Helper::d($attr_string);
 
                 /**

@@ -34,7 +34,7 @@ class AdminNewsController extends BaseController {
         ModTemplates::addDir('news');
         ModTemplates::addDir('pages');
         ModTemplates::addDir('pages', 'tpl_block');
-        ModTemplates::addTplDir(); ## Site layout dir
+        #ModTemplates::addTplDir(); ## Site layout dir
         #ModTemplates::addTplDir('tpl'); ## Site layout nested dir
 
     }

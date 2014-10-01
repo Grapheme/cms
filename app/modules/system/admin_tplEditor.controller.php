@@ -18,6 +18,8 @@ class AdminTplEditorController extends BaseController {
             Route::get($group . '/' . $name . '/save/{mod}', $class . '@postSave');
             Route::controller($group . '/' . $name, $class);
         });
+
+        ModTemplates::addTplDir(); ## Site layout dir
     }
 
     ## Actions of module (for distribution rights of users)
