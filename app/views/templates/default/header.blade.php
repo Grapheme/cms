@@ -6,3 +6,11 @@
     </div>
 
 </header>
+
+
+{{
+    Helper::ta(
+        Dic::valueBySlugs('room_type', 'first')
+        #->extract()
+    )
+}}

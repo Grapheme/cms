@@ -46,13 +46,15 @@ class PublicPagesController extends BaseController {
             #Helper::dd($parameters);
             #return;
             if (
-                is_string($parameters)
-                && Allow::module('seo')
-                && count(Config::get('app.locales')) > 1
+                #is_string($parameters)
+                #&&
+                count(Config::get('app.locales')) > 1
                 && !Config::get('site.disable_url_modification')
+                && Allow::module('seo')
             ) {
                 $pages = new $class;
                 $right_url = $pages->getRightPageUrl($parameters);
+                #Helper::d("Change page URL: " . $parameters . " -> " . $right_url);
                 #Helper::dd("Change page URL: " . $parameters . " -> " . $right_url);
                 if (@$right_url)
                     $parameters = $right_url;
@@ -395,12 +397,33 @@ class PublicPagesController extends BaseController {
 	}
 
     ## Get right page url
-    private function getRightPageUrl($url = false) {
+    private function getRightPageUrl($parameters = array()) {
 
-        if (!$url)
+        if (!$parameters)
             return false;
 
-        $return = $url;
+        $return_mode = 1;
+
+        ## Get page slug...
+        if (is_string($parameters)) {
+            $return_mode = 1;
+            $url = $parameters;
+        } elseif (is_array($parameters)) {
+            if (isset($parameters['url'])) {
+                $return_mode = 2;
+                $url = $parameters['url'];
+            } else {
+                $return_mode = 3;
+                ## First param is slug
+                foreach ($parameters as $p => $param) {
+                    $url = $param;
+                    break;
+                }
+            }
+        }
+        #Helper::dd("Page->getRightPageUrl() -> url = " . $url);
+
+        $return = $parameters;
 
         $locales = Config::get('locales');
         $locale = Config::get('locale');
@@ -450,7 +473,22 @@ class PublicPagesController extends BaseController {
         ## Compare SEO url & gettin' $url
         if (@is_object($page->meta) && @is_object($page->meta->seo) && $page->meta->seo->url != '' && $page->meta->seo->url != $url) {
 
-            $return = $page->meta->seo->url;
+            $return_url = $page->meta->seo->url;
+
+            switch ($return_mode) {
+                case 1:
+                    $return = $return_url;
+                    break;
+                case 2:
+                    $return['url'] = $return_url;
+                    break;
+                case 3:
+                    foreach ($return as $r => $ret) {
+                        $return[$r] = $return_url;
+                        break;
+                    }
+                    break;
+            }
 
             #$redirect = URL::route('page', array('url' => $page->meta->seo->url));
             #Helper::dd($redirect);

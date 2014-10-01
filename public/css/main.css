@@ -586,13 +586,13 @@ html {
   width: 100%;
 }
 .column.two-thirds {
-  width: 66.66666666%;
+  width: 66.7%;
 }
 .column.half {
   width: 50%;
 }
 .column.third {
-  width: 33.33333333%;
+  width: 33.3%;
 }
 .column.fourth {
   width: 25%;
@@ -641,9 +641,6 @@ main.full-screen {
   background: #fff;
   color: #1f1a14;
 }
-.sect-wrap.restaurant {
-  overflow: hidden;
-}
 .sect-wrap.restaurant:after {
   content: '';
   position: absolute;
@@ -674,16 +671,16 @@ main.full-screen {
 }
 .sect-wrap .section-desc {
   margin: 0 0 1.125rem;
-  font: italic 1em / 1.375em 'Open Sans', sans-serif;
+  font: italic 1em / 1.375em Georgia, 'Open Sans', sans-serif;
 }
 .sect-wrap p {
   max-width: 54rem;
-  font: 0.8125em / 1.6923em 'Open Sans', sans-serif;
+  font: 0.8125em / 1.6923em Georgia, 'Open Sans', sans-serif;
 }
 .sect-wrap .txt-tip p {
   margin: 0.2em 0 0;
   font-size: 1.875em;
-  font-family: 'Open Sans', sans-serif;
+  font-family: Georgia, 'Open Sans', sans-serif;
   font-weight: 300;
   text-transform: uppercase;
 }
@@ -693,7 +690,7 @@ main.full-screen {
   margin-right: 1em;
 }
 .tabs-sect {
-  padding: 0 5.625rem;
+  padding: 0 8.125rem;
 }
 .square-list-sect {
   padding-bottom: 1.5rem;
@@ -762,38 +759,10 @@ main.full-screen {
   font-size: 1.21875em;
   line-height: 1.79487179em;
 }
-.slideshow.room-slideshow {
-  max-height: 473px;
-}
-.slideshow.room-slideshow .slide:before {
-  box-shadow: 0 128px 128px -64px rgba(0, 0, 0, 0.05) inset, 0 -128px 128px -64px rgba(0, 0, 0, 0.5) inset;
-}
-.slideshow.room-slideshow .slide:after {
-  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.25);
-}
-.slideshow.room-slideshow .slide-desc {
-  border-bottom: none;
-}
-.slideshow.room-slideshow .room-item {
-  z-index: 1;
-  padding: 0 0 0 5.1%;
-}
-.arrow-bottom {
-  bottom: 1rem;
-  color: #fff;
-  font-size: 4em;
-  left: 0;
-  line-height: 0.5;
-  position: absolute;
-  text-align: center;
-  width: 100%;
-  cursor: pointer;
-}
 .slideshow {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 33.75rem;
   background: #194373;
 }
 .slideshow .slide {
@@ -806,9 +775,6 @@ main.full-screen {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: cover;
 }
 .slideshow .slide .slide-bg {
   position: absolute;
@@ -861,7 +827,7 @@ main.full-screen {
   float: left;
   width: 33.333%;
   height: 100%;
-  padding: 0 4.125rem 0;
+  padding: 2.25rem 4.125rem 0;
   text-align: center;
   font-weight: 300;
   cursor: pointer;
@@ -897,14 +863,10 @@ main.full-screen {
   position: absolute;
   z-index: 1;
   bottom: 1.375rem;
-  top: 0;
   left: 0;
-  bottom: 0;
   width: 50%;
   text-align: center;
   text-transform: uppercase;
-  border: none;
-  outline: none;
   color: #ffffff;
 }
 .slideshow .slide .roomslide-data.data-left {
@@ -912,12 +874,6 @@ main.full-screen {
 }
 .slideshow .slide .roomslide-data.data-right {
   left: 50%;
-}
-.slideshow .slide .roomslide-data > span {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  bottom: 1rem;
 }
 .slideshow .slide .roomslide-data .name {
   display: inline-block;
@@ -977,8 +933,7 @@ main.full-screen {
   background: url(../img/big-logo.png) no-repeat 0 0 / 100% 100%;
 }
 .slideshow .slide-head {
-  width: 52.438rem;
-  margin: 2.6875rem 0 2.1875rem -10rem;
+  margin: 2.6875rem 0 2.1875rem;
   font-size: 2.75em;
   font-weight: 300;
   line-height: .75;
@@ -998,7 +953,6 @@ main.full-screen {
   transition: all 0.5s ease;
   position: absolute;
   top: 50%;
-  z-index: 2;
   width: 4.6875rem;
   height: 4.6875rem;
   margin-top: -2.34375rem;
@@ -1026,7 +980,7 @@ main.full-screen {
 }
 .table {
   width: 100%;
-  max-width: 80rem;
+  max-width: 73.75rem;
   margin: 0 auto;
 }
 .table tr:nth-child(even) {
@@ -1047,7 +1001,7 @@ main.full-screen {
 }
 .table td {
   padding: 0 0 0 2.125rem;
-  font: 600 1em 'Open Sans', sans-serif;
+  font: 600 1em Georgia, 'Open Sans', sans-serif;
 }
 .table td:first-child {
   font-weight: 400;
@@ -1361,10 +1315,6 @@ main.full-screen {
   border-style: solid;
   border-color: transparent;
 }
-.booking-form form input.inp-error {
-  border: 1px solid red;
-  border: 1px solid rgba(255, 0, 0, 0.5);
-}
 .booking-form form .price {
   font-size: 1.1em;
   line-height: 3rem;
@@ -1391,7 +1341,7 @@ main.full-screen {
   padding: 10% 10%;
   color: #194373;
   font-size: 1em;
-  font-family: 'Open Sans', sans-serif;
+  font-family: Georgia, 'Open Sans', sans-serif;
   font-style: italic;
   text-align: center;
 }
@@ -1465,7 +1415,7 @@ main.full-screen {
   transition: all 0.5s ease;
   line-height: .75;
   font-size: 3em;
-  font-family: 'Open Sans', sans-serif;
+  font-family: Georgia, 'Open Sans', sans-serif;
   color: #ffffff;
   text-shadow: 1px 1px rgba(0, 0, 0, 0.35);
 }
@@ -1490,7 +1440,7 @@ main.full-screen {
   padding: 0;
   margin: 0;
   list-style: none;
-  font: 0.8125em/1.6923em 'Open Sans', sans-serif;
+  font: 0.8125em/1.6923em Georgia, 'Open Sans', sans-serif;
   text-transform: uppercase;
 }
 .spa ul li {
@@ -1618,7 +1568,6 @@ nav {
   line-height: 4.125rem;
   float: right;
   display: inline-block;
-  display: none;
   vertical-align: top;
   min-width: 6rem;
   height: 100%;
@@ -2072,7 +2021,7 @@ button.Zebra_DatePicker_Icon_Inside {
 }
 @media screen and (max-width: 1480px) {
   html {
-    font-size: 14.5px;
+    font-size: 12px;
   }
   .datepickerFrom .Zebra_DatePicker_Icon_Inside {
     margin-top: -2.075rem !important;
@@ -2091,19 +2040,6 @@ button.Zebra_DatePicker_Icon_Inside {
   }
   .sect-wrap h2 {
     font-size: 1.35em;
-  }
-}
-@media screen and (max-width: 1324px) {
-  html {
-    font-size: 13.5px;
-  }
-  .nav-ul .nav-li a span {
-    padding: 0 1.213rem;
-  }
-}
-@media screen and (max-width: 1200px) {
-  html {
-    min-width: 1200px;
   }
 }
 /* ==========================================================================

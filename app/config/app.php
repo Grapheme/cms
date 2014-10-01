@@ -9,8 +9,8 @@ return array(
 	'use_css_local' => FALSE,
 	'use_scripts_local' => FALSE,
 	
-	'default_page_title' => 'Sarykum',
-	'template' => 'site',
+	'default_page_title' => 'CMS DEV',
+	'template' => 'default',
     'welcome_page_tpl' => 'templates.site.index', #'guests.welcome',
 
 

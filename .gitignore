@@ -16,3 +16,4 @@ Thumbs.db
 /app/config/database.php
 /!info
 /app/storage
+/app/lang

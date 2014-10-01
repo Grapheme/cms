@@ -34,7 +34,7 @@
         <div>
             {{ Helper::ta_($page->blocks) }}
             @foreach($page->blocks as $block)
-            &laquo;<strong>{{ $block->name }}</strong>&raquo; [ <i>{{ $block->slug }}</i> ]<br/>
+            «<strong>{{ $block->name }}</strong>» [ <i>{{ $block->slug }}</i> ]<br/>
             @if (is_object($block->meta))
             {{ $block->meta->content }}
             @endif

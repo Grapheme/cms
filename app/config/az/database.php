@@ -13,7 +13,7 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'sarykum',
+			'database'  => 'grapheme-cms',
 			'username'  => 'root',
 			'password'  => '',
 			'charset'   => 'utf8',

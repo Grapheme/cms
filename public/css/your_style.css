@@ -540,10 +540,46 @@ nav > ul > li > a > i > em {
     font-family: "Open Sans", sans-serif;
 }
 
-.smart-form fieldset.padding-bottom-15 {
-    padding-bottom: 15px;
+
+.smart-form .input input, .smart-form .select select, .smart-form .textarea textarea {
+    padding: 6px 8px;
 }
 
-nav ul li {
+.smart-form fieldset {
+    padding-top: 20px;
+}
+
+.checkbox.col {
+    padding-left: 25px;
+    padding-right: 5px;
     white-space: nowrap;
+    overflow: hidden;
+}
+
+.checkbox.col span {
+    display: inline-block;
+    width: 100%;
+    margin-right: 0;
+    overflow: hidden;
+    line-height: 20px;
+    text-overflow: ellipsis;
+}
+
+.smart-form .normal_checkbox {
+    padding: 0;
+}
+
+nav ul li a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pos-rel {
+    position: relative !important;
+}
+
+.select2-container .select2-choice {
+    height: 30px;
 }
