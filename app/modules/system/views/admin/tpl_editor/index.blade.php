@@ -15,7 +15,7 @@
             $i = 0;
             ?>
             <h2 style="margin:-10px 0 10px 0">&laquo;{{ @$modules[$mod_name]['title'] }}&raquo;:</h2>
-            <table class="table table-striped table-bordered min-table">
+            <table class="table table-striped table-bordered min-table margin-bottom-25">
                 <thead>
                 <tr>
                     <th class="text-center" style="width:50px">#</th>
@@ -26,8 +26,13 @@
                 <tbody>
                     @foreach($files as $f => $file)
                     <?
-                    $full_file0 = 'modules/'.$mod_name.'/views/'.$file.'.blade.php';
-                    $full_file = app_path($full_file0);
+                    if ($mod_name == 'layout') {
+                        $full_file0 = 'views/templates/'.Config::get('app.template').'/'.$file.'.blade.php';
+                        $full_file = app_path($full_file0);
+                    } else {
+                        $full_file0 = 'modules/'.$mod_name.'/views/'.$file.'.blade.php';
+                        $full_file = app_path($full_file0);
+                    }
                     $file_exists = file_exists($full_file);
                     $file_writable = is_writable($full_file);
                     $full_file0 = '/app/' . $full_file0;

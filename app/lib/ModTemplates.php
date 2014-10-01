@@ -30,6 +30,24 @@ class ModTemplates {
         }
     }
 
+    public static function addTplDir($dir = '') {
+        $mod = 'layout';
+        $full_dir = Helper::inclayout($dir);
+        #Helper::dd($full_dir);
+        if (file_exists($full_dir) && is_dir($full_dir)) {
+            $files = glob($full_dir . '/*.blade.php');
+            if (count($files)) {
+                if (!isset(self::$templates[$mod]))
+                    self::$templates[$mod] = array();
+                foreach ($files as $file) {
+                    $file = basename($file);
+                    $file = str_replace('.blade.php', '', $file);
+                    self::$templates[$mod][] = $dir . ($dir ? '/' : '') . $file;
+                }
+            }
+        }
+    }
+
     public static function addFiles($mod, $file = '') {
         if (!isset(self::$templates[$mod]))
             self::$templates[$mod] = array();
@@ -50,6 +68,10 @@ class ModTemplates {
                 self::$templates[$module] = array_unique(self::$templates[$module]);
             return self::$templates;
         }
+    }
+
+    private static function add_any_dir($full_dir) {
+
     }
 
 }

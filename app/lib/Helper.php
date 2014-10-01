@@ -92,9 +92,6 @@ class Helper {
     }
 
     public static function inclayout($file) {
-        if (!$file) {
-            return false;
-        }
 
         $layout = Config::get('app.template');
 
@@ -102,14 +99,14 @@ class Helper {
             $layout = 'default';
         }
 
-        $full = base_path() . "/app/views/templates/" . $layout . '/' . $file;
+        $full = base_path("/app/views/templates/" . $layout . '/' . $file);
 
-        if (!file_exists($full)) {
+        if ($file != '' && !file_exists($full)) {
             $full .= ".blade.php";
         }
 
-        #if (!file_exists($full))
-        #    return false;
+        if (!file_exists($full))
+            return false;
 
         return $full;
     }

@@ -47,6 +47,7 @@ class AdminTplEditorController extends BaseController {
     public function getIndex() {
 
         $modules = Config::get('mod_info');
+        $modules['layout'] = array('title' => 'Шаблон сайта');
         #Helper::dd($modules);
 
         $templates = ModTemplates::get();
@@ -61,13 +62,24 @@ class AdminTplEditorController extends BaseController {
         #Helper::dd(Input::all());
 
         $file = Input::get('tpl');
-        $mod = Config::get('mod_info.'.$mod_name);
-        $full_file = app_path('modules/'.$mod_name.'/views/'.$file.'.blade.php');
+
+        if ($mod_name == 'layout') {
+            $mod = array('title' => 'Шаблон сайта');
+            $file0 = 'views/templates/'.Config::get('app.template').'/'.$file.'.blade.php';
+        } else {
+            $mod = Config::get('mod_info.'.$mod_name);
+            $file0 = 'modules/'.$mod_name.'/views/'.$file.'.blade.php';
+        }
+        $full_file = app_path($file0);
+        $file0 = 'app/' . $file0;
 
         #Helper::d($module);
         #Helper::dd($full_file);
 
-        return View::make($this->module['tpl'].'edit', compact('mod_name', 'file', 'mod', 'full_file'));
+        #$tpl_exists = file_exists($full_file);
+        #Helper::dd($tpl_exists);
+
+        return View::make($this->module['tpl'].'edit', compact('mod_name', 'file', 'file0', 'mod', 'full_file'));
     }
 
     public function postSave($mod_name) {
@@ -78,7 +90,13 @@ class AdminTplEditorController extends BaseController {
 
         $file = Input::get('file');
         $tpl = Input::get('tpl');
-        $full_file = app_path('modules/'.$mod_name.'/views/'.$file.'.blade.php');
+
+        if ($mod_name == 'layout') {
+            $full_file = app_path('views/templates/'.Config::get('app.template').'/'.$file.'.blade.php');
+        } else {
+            $full_file = app_path('modules/'.$mod_name.'/views/'.$file.'.blade.php');
+        }
+
         $result = @file_put_contents($full_file, $tpl);
 
         $json_request['status'] = true;
