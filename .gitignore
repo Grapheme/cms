@@ -1,19 +1,19 @@
-/psd
+/vendor
+
 /public/static/psd
 /public/static/node_modules
+/public/uploads
 
 /usersfiles
-#/public/uploads
-#public/uploads/*
-/vendor/*
-#composer.phar
-#composer.lock
-#.DS_Store
+/psd
 
-.htaccess
+.idea
 *.clpprj
 Thumbs.db
+
 /app/config/database.php
-/!info
 /app/storage
 /app/lang
+/!files
+/!info
+/bootstrap/compiled.php

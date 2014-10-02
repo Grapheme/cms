@@ -10,6 +10,7 @@ class DicVal extends BaseModel {
 	public static $order_by = "name ASC";
 
     protected $fillable = array(
+        'version_of',
         'dic_id',
         'slug',
         'name',
@@ -25,7 +26,7 @@ class DicVal extends BaseModel {
     #}
 
     public function dic() {
-        return $this->belongsTo('Dictionary', 'dic_id')->orderBy('name');
+        return $this->belongsTo('Dictionary', 'dic_id');
     }
 
     public function metas() {
@@ -48,7 +49,15 @@ class DicVal extends BaseModel {
     public function fields() {
         return $this
             ->hasMany('DicFieldVal', 'dicval_id', 'id')->where('language', Config::get('app.locale'))->orWhere('language', NULL)
-        ;
+            ;
+    }
+
+    public function versions() {
+        return $this->hasMany('DicVal', 'version_of', 'id')->orderBy('updated_at', 'DESC');
+    }
+
+    public function original_version() {
+        return $this->hasOne('DicVal', 'id', 'version_of');
     }
 
     /**
@@ -192,10 +201,24 @@ class DicVal extends BaseModel {
 
         ## Extract SEO
         if (isset($this->seos)) {
-            foreach ($this->seos as $s => $seo) {
-                $this->seos[$seo->language] = $seo;
-                if ($s != $seo->language || $s === 0)
-                    unset($this->seos[$s]);
+            #Helper::tad($this->seos);
+            if (count($this->seos) == 1 && count(Config::get('app.locales')) == 1) {
+                $app_locales = Config::get('app.locales');
+                foreach ($app_locales as $locale_sign => $locale_name)
+                    break;
+                foreach ($this->seos as $s => $seo) {
+                    $this->seos[$locale_sign] = $seo;
+                    break;
+                }
+                unset($this->seos[0]);
+                #Helper::tad($this->seos);
+            } else {
+                foreach ($this->seos as $s => $seo) {
+                    $this->seos[$seo->language] = $seo;
+                    #Helper::d($s . " != " . $seo->language);
+                    if ($s != $seo->language || $s === 0)
+                        unset($this->seos[$s]);
+                }
             }
         }
 
@@ -210,8 +233,14 @@ class DicVal extends BaseModel {
 
         #Helper::ta($this);
 
-        ## Extract meta
-        ## ...
+        ## Extract versions
+        if (isset($this->versions)) {
+            foreach ($this->versions as $v => $version) {
+                $this->versions[$version->id] = $version;
+                if ($v != $version->id || (int)$v === 0)
+                    unset($this->versions[$v]);
+            }
+        }
 
         return $this;
     }

@@ -1,0 +1,18 @@
+AddDefaultCharset utf-8
+Options +FollowSymLinks
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+
+    RewriteEngine on
+
+	# project.dev.grapheme.ru
+    #RewriteCond %{DOCUMENT_ROOT}/public -d
+	RewriteCond %{HTTP_HOST} !^dev.grapheme.ru$
+	RewriteCond %{HTTP_HOST} !^dev.grapheme$
+	RewriteRule (.*) /public/$1 [L]
+
+	# dev.grapheme.ru/project/
+    #RewriteRule (.*) ./public/$1 [L]
+
+</IfModule>

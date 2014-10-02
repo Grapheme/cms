@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+
+	<IfModule mod_negotiation.c>
+    	Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect Trailing Slashes...
+	RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+	# project.dev.grapheme.ru
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{HTTP_HOST} !^dev.grapheme.ru$
+	RewriteCond %{HTTP_HOST} !^dev.grapheme$
+    RewriteRule ^ /index.php [L]
+
+    # dev.grapheme.ru/project/
+    RewriteCond %{REQUEST_URI} ^/[^/]+?/public/ [OR]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/?([^/]+)
+    RewriteRule ^ ./index.php [L,E=SCRIPT_NAME:/%1/index.php]
+
+</IfModule>
