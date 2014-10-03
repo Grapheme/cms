@@ -628,11 +628,11 @@ class AdminDicvalsController extends BaseController {
     /**
      * Функция создания бэкапа из текущей версии записи, с возможностью удаления превысивших лимит резервных копий
      *
-     * @param bool $dicval_id
+     * @param int $dicval_id
      * @param bool $delete_over_backups
      * @return bool
      */
-    private function create_backup($dicval_id = false, $delete_over_backups = true) {
+    private function create_backup($dicval_id = 0, $delete_over_backups = true) {
 
         /**
          * Находим запись словаря для создания ее бэкапа
@@ -728,10 +728,10 @@ class AdminDicvalsController extends BaseController {
     /**
      * Функция восстанавливает состояние записи из резервной копии
      *
-     * @param bool $dicval_id
+     * @param int $dicval_id
      * @return bool
      */
-    private function restore_backup($dicval_id = false) {
+    private function restore_backup($dicval_id = 0) {
 
         /**
          * Находим резервную копию записи словаря для восстановления
@@ -748,7 +748,9 @@ class AdminDicvalsController extends BaseController {
         /**
          * Находим запись оригинала
          */
-        $element = DicVal::where('id', $version->version_of)->with('allfields', 'metas', 'seos')->first();
+        $element = DicVal::where('id', $version->version_of)
+            ->with('allfields', 'metas', 'seos')
+            ->first();
         if (!isset($element) || !is_object($element)) {
             return false;
         }
@@ -826,13 +828,13 @@ class AdminDicvalsController extends BaseController {
     /**
      * Функция удаляет резервные копии, превысившие лимит
      *
-     * @param bool $dicval_id
+     * @param int $dicval_id
      * @return bool
      */
-    private function delete_backups($dicval_id = false) {
+    private function delete_backups($dicval_id = 0) {
 
         /**
-         * Находим запись словаря для создания ее бэкапа
+         * Находим запись словаря для удаления ее бэкапов
          * Запись должна быть оригиналом, т.е. иметь version_of = NULL
          */
         $element = DicVal::where('id', $dicval_id)->with('dic', 'metas', 'allfields', 'seos', 'versions')->first();

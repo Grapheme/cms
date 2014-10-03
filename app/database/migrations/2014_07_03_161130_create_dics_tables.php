@@ -43,6 +43,7 @@ ADD `sort_order` ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC' AFTER `sort_by`
         if (!Schema::hasTable($this->table)) {
             Schema::create($this->table, function(Blueprint $table) {
                 $table->increments('id');
+                $table->integer('version_of')->unsigned()->nullable()->index();
                 $table->integer('dic_id')->unsigned()->nullable()->index();
                 $table->string('slug')->nullable()->index();
                 $table->string('name')->nullable();
