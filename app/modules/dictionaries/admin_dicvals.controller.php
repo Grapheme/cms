@@ -233,7 +233,7 @@ class AdminDicvalsController extends BaseController {
             ->with('allfields')
             ->with('seos');
 
-        if ($dic_settings['versions'] > 0)
+        if (@$dic_settings['versions'] > 0)
             $element = $element->with('versions', 'original_version.versions');
 
         $element = $element->first();
