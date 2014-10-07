@@ -11,7 +11,8 @@ class CreateStoragesTable extends Migration {
         if (!Schema::hasTable($this->table)) {
         	Schema::create($this->table, function(Blueprint $table) {			
     			$table->increments('id');
-    			$table->string('name');
+    			$table->string('module')->index();
+    			$table->string('name')->nullable()->unique();
     			$table->text('value');
     			$table->timestamps();
     		});

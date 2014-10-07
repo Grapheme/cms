@@ -14,7 +14,7 @@
 /*
  * APP DOM REFERENCES
  * Description: Obj DOM reference, please try to avoid changing these
- */	
+ */
 	$.root_ = $('body');
 	$.left_panel = $('#left-panel');
 	$.shortcut_dropdown = $('#shortcut');
@@ -38,8 +38,8 @@
 /*
  * DETECT MOBILE DEVICES
  * Description: Detects mobile device - if any of the listed device is detected
- * a class is inserted to $.root_ and the variable $.device is decleard. 
- */	
+ * a class is inserted to $.root_ and the variable $.device is decleard.
+ */
 
 /* so far this is covering most hand held devices */
 var ismobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
@@ -52,7 +52,7 @@ var ismobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.tes
 		// Mobile
 		$.root_.addClass("mobile-detected");
 		$.device = "mobile";
-		
+
 		// remove 300ms delay from apple touch devices
 		// dependency: plugin/smartclick/smartclick.js
 		if ($.enableFastClick){
@@ -371,19 +371,24 @@ $(document).ready(function() {
 
 // Fix page and nav height
 function nav_page_height() {
-	setHeight = $('#main').height();
-	menuHeight = $.left_panel.height();
-	windowHeight = $(window).height() - $.navbar_height;
-	//set height
 
-	if (setHeight > windowHeight) {// if content height exceedes actual window height and menuHeight
-		$.left_panel.css('min-height', setHeight + 'px');
-		$.root_.css('min-height', setHeight + $.navbar_height + 'px');
+    if ($.left_panel) { // not original
 
-	} else {
-		$.left_panel.css('min-height', windowHeight + 'px');
-		$.root_.css('min-height', windowHeight + 'px');
-	}
+        setHeight = $('#main').height();
+        menuHeight = $.left_panel.height();
+        windowHeight = $(window).height() - $.navbar_height;
+        //set height
+
+        if (setHeight > windowHeight) {// if content height exceedes actual window height and menuHeight
+            $.left_panel.css('min-height', setHeight + 'px');
+            $.root_.css('min-height', setHeight + $.navbar_height + 'px');
+
+        } else {
+            $.left_panel.css('min-height', windowHeight + 'px');
+            $.root_.css('min-height', windowHeight + 'px');
+        }
+
+    } // not original
 }
 
 $('#main').resize(function() {
@@ -1270,54 +1275,54 @@ function pageSetUp() {
 
 	if ($.device === "desktop"){
 		// is desktop
-		
+
 		// activate tooltips
 		$("[rel=tooltip]").tooltip();
-	
+
 		// activate popovers
 		$("[rel=popover]").popover();
-	
+
 		// activate popovers with hover states
 		$("[rel=popover-hover]").popover({
 			trigger : "hover"
 		});
-	
+
 		// activate inline charts
 		runAllCharts();
-	
+
 		// setup widgets
 		setup_widgets_desktop();
-	
+
 		//setup nav height (dynamic)
 		nav_page_height();
-	
+
 		// run form elements
 		runAllForms();
 
 	} else {
-		
+
 		// is mobile
-		
+
 		// activate popovers
 		$("[rel=popover]").popover();
-	
+
 		// activate popovers with hover states
 		$("[rel=popover-hover]").popover({
 			trigger : "hover"
 		});
-	
+
 		// activate inline charts
 		runAllCharts();
-	
+
 		// setup widgets
 		setup_widgets_mobile();
-	
+
 		//setup nav height (dynamic)
 		nav_page_height();
-	
+
 		// run form elements
 		runAllForms();
-		
+
 	}
 
 }

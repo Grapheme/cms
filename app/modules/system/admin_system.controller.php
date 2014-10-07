@@ -28,6 +28,7 @@ class AdminSystemController extends BaseController {
             'users'         => 'Работа с пользователями',
             'locale_editor' => 'Работа с редактором языков',
             'tpl_editor'    => 'Работа с редактором шаблонов',
+            'menu_editor'   => 'Работа с редактором меню',
         );
     }
 
@@ -66,6 +67,13 @@ class AdminSystemController extends BaseController {
                 'title' => 'Пользователи',
                 'link' => 'system/users',
                 'class' => 'fa-user',
+            );
+
+        if (Allow::action('system', 'menu_editor', false, true))
+            $menu_child[] = array(
+                'title' => 'Конструктор меню',
+                'link' => 'system/menu_editor',
+                'class' => 'fa-list',
             );
 
         if (Allow::action('system', 'locale_editor', false, true))
