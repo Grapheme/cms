@@ -124,7 +124,7 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a href="#s3" data-toggle="tab">Роутинг</a>
+                                            <a href="#s3" data-toggle="tab">Маршрут</a>
                                         </li>
                                         <li>
                                             <a href="#s4" data-toggle="tab">Функция</a>
@@ -137,16 +137,23 @@
 
                                 <div class="tab-pane fade active in" id="s1">
 
-                                    <label class="select">
-                                        {{ Form::select('page_id', $pages->lists('name', 'id')) }}
-                                    </label>
+                                    @if (!count($pages))
+                                        <p class="alert alert-warning fade in padding-10">
+                                            <i class="fa-fw fa fa-warning"></i>
+                                            Нет страниц для добавления в меню
+                                        </p>
+                                    @else
+                                        <label class="select">
+                                            {{ Form::select('page_id', $pages->lists('name', 'id')) }}
+                                        </label>
 
-                                    <label class="margin-top-10">
-                                        <a href="#" class="btn btn-default add_to_menu add_to_menu_page">
-                                            <i class="fa fa-angle-left"></i>
-                                            Добавить в меню
-                                        </a>
-                                    </label>
+                                        <label class="margin-top-10">
+                                            <a href="#" class="btn btn-default add_to_menu add_to_menu_page">
+                                                <i class="fa fa-angle-left"></i>
+                                                Добавить в меню
+                                            </a>
+                                        </label>
+                                    @endif
 
                                 </div>
 
@@ -178,26 +185,34 @@
 
 
                                 <div class="tab-pane fade" id="s3">
+
+                                    <p class="alert alert-warning fade in padding-10 margin-bottom-15">
+                                        <i class="fa-fw fa fa-info-circle"></i>
+                                        Маршруты заложены в системе и могут генерировать ссылки на основе переданных параметров, или без них.<br/>
+                                        <i class="fa-fw fa fa-warning"></i>
+                                        Если Вы не знаете, как использовать маршруты - не добавляйте их в меню.
+                                    </p>
+
                                     <label class="label">
-                                        Название роута
+                                        Название маршрута
                                     </label>
                                     <label class="input margin-bottom-10">
                                         {{ Form::text('route_name', '', array('placeholder' => 'Название именованного роута')) }}
                                     </label>
 
                                     <label class="label">
-                                        Параметры роута
+                                        Параметры маршрута
                                     </label>
-                                    <label class="input">
-                                        {{ Form::text('route_params', '', array('placeholder' => 'Параметры именованного роута, через запятую')) }}
+                                    <label class="textarea">
+                                        {{ Form::textarea('route_params', '', array('placeholder' => 'Параметры именованного роута, каждый с новой строки')) }}
                                     </label>
                                     <label class="note">
                                         Для передачи именованных параметров используйте знак "равно", например:<br/>
-                                        newslist, sort_by=title, sort_type=asc
+                                        newslist<br/>sort_by=title<br/>sort_type=asc
                                     </label>
 
                                     <label class="margin-top-10">
-                                        <a href="#" class="btn btn-default">
+                                        <a href="#" class="btn btn-default add_to_menu add_to_menu_route">
                                             <i class="fa fa-angle-left"></i>
                                             Добавить в меню
                                         </a>
@@ -206,23 +221,32 @@
 
 
                                 <div class="tab-pane fade" id="s4">
+
+                                    <p class="alert alert-warning fade in padding-10 margin-bottom-15">
+                                        <i class="fa-fw fa fa-info-circle"></i>
+                                        Функции-обработчики создаются программистом на этапе проектирования системы.<br/>
+                                        <i class="fa-fw fa fa-warning"></i>
+                                        Если Вы не знаете, как использовать функции-обработчики - не добавляйте их в меню.
+                                    </p>
+
                                     @if (count($functions))
                                     <label class="label">
                                         Функция-обработчик
                                     </label>
                                     <label class="select">
-                                        {{ Form::select('closure_name', $functions) }}
+                                        {{ Form::select('function_name', $functions) }}
                                     </label>
                                     @else
                                     Нет объявленных функций-обработчиков.
                                     @endif
+
                                     <label class="note">
-                                        Функции-обработчики определяются в конфигурационном файле меню
+                                        Функции-обработчики определяются в конфигурационном файле меню (menu.functions)
                                     </label>
 
                                     @if (count($functions))
                                     <label class="margin-top-10">
-                                        <a href="#" class="btn btn-default">
+                                        <a href="#" class="btn btn-default add_to_menu add_to_menu_function">
                                             <i class="fa fa-angle-left"></i>
                                             Добавить в меню
                                         </a>
@@ -291,7 +315,7 @@
                             </h4>
                         </div>
                         <div id="menu_item_%N%" class="panel-collapse collapse bg-color-white" style="height: 0px;">
-                            <div class="panel-body padding-10">
+                            <div class="panel-body padding-10 menu_item_type_content">
 
                                 %inner%
 
@@ -342,14 +366,15 @@
                 {{ Form::text('items[%N%][title]', '%attr_title%') }}
             </label>
 
-            {{--
             <label class="label margin-bottom-10">
-                Оригинал страницы: <a href="%original_url%">просмотреть</a>
+                Оригинал страницы:
+                <a href="{{ URL::route('page', '++page_id++') }}" target="_blank">просмотреть</a> или
+                <a href="{{ URL::route('page.edit', '++page_id++') }}" target="_blank">редактировать</a>
             </label>
-            --}}
 
             {{ Form::hidden('items[%N%][type]', 'page') }}
             {{ Form::hidden('items[%N%][page_id]', '%page_id%') }}
+            {{ Form::hidden('null', '<без названия>', array('class' => 'default_text_for_title')) }}
 
         </div>
 
@@ -360,7 +385,7 @@
                 URL
             </label>
             <label class="input margin-bottom-10">
-                {{ Form::text('items[%N%][url]', '%url%') }}
+                {{ Form::text('items[%N%][url]', '%url%', array('class' => 'default_text_for_title')) }}
             </label>
 
             <label class="label">
@@ -378,6 +403,82 @@
             </label>
 
             {{ Form::hidden('items[%N%][type]', 'link') }}
+
+        </div>
+
+
+        <div class="route">
+
+            <label class="label">
+                Название маршрута
+            </label>
+            <label class="input margin-bottom-10">
+                {{ Form::text('items[%N%][route_name]', '%route_name%', array('class' => 'default_text_for_title')) }}
+            </label>
+
+            <label class="label">
+                Параметры маршрута
+            </label>
+            <label class="textarea margin-bottom-10">
+                {{ Form::textarea('items[%N%][route_params]', '%route_params%', array('class' => 'default_text_for_title')) }}
+            </label>
+
+            <label class="label">
+                Текст ссылки
+            </label>
+            <label class="input margin-bottom-10">
+                {{ Form::text('items[%N%][text]', '%text%', array('class' => 'text_for_title')) }}
+            </label>
+
+            <label class="label">
+                Атрибут title
+            </label>
+            <label class="input margin-bottom-10">
+                {{ Form::text('items[%N%][title]', '%attr_title%') }}
+            </label>
+
+            {{ Form::hidden('items[%N%][type]', 'route') }}
+            {{ Form::hidden('null', '<без названия>', array('class' => 'default_text_for_title')) }}
+
+        </div>
+
+
+        <div class="function">
+
+            <div class="menu_item_function_parameters">
+
+                <label class="label">
+                    Текст ссылки
+                </label>
+                <label class="input margin-bottom-10">
+                    {{ Form::text('items[%N%][text]', '%text%', array('class' => 'text_for_title')) }}
+                </label>
+
+                <label class="label">
+                    Атрибут title
+                </label>
+                <label class="input margin-bottom-10">
+                    {{ Form::text('items[%N%][title]', '%attr_title%') }}
+                </label>
+
+                <label class="label margin-bottom-10">
+                    Функция: %function_name%
+                </label>
+
+            </div>
+
+            <label class="checkbox">
+                <input type="checkbox" name="items[%N%][use_function_data]" value="1" class="use_function_data" %use_function_data% />
+                <i></i>
+                Использовать данные из функции
+            </label>
+            <label class="note">
+                Если отмечена данная опция, то текст ссылки, ее url и прочие данные будут браться непосредственно из самой функции, без учета указанных данных.
+            </label>
+
+            {{ Form::hidden('null', '<без названия>', array('class' => 'default_text_for_title')) }}
+            {{ Form::hidden('items[%N%][type]', 'function') }}
+            {{ Form::hidden('items[%N%][function_name]', '%function_name%') }}
 
         </div>
 

@@ -17,8 +17,8 @@ var menu_editor = {
     },
 
     'show_menu': function(order, items) {
-        console.log(order);
-        console.log(items);
+        //console.log(order);
+        //console.log(items);
 
         var $this = this;
         //var menu = '';
@@ -90,13 +90,28 @@ var menu_editor = {
                 var title = params.text;
                 var mark = 'Страница';
                 block = str_replace('%page_id%', params.page_id, block);
+                block = str_replace('++page_id++', params.page_id, block);
                 block = str_replace('%text%', params.text, block);
                 break;
             case 'link':
-                var title = params.text;
+                var title = params.text || params.url;
                 var mark = 'Ссылка';
                 block = str_replace('%url%', params.url, block);
                 block = str_replace('%text%', params.text, block);
+                break;
+            case 'route':
+                var title = params.text || params.route_name;
+                var mark = 'Маршрут';
+                block = str_replace('%route_name%', params.route_name, block);
+                block = str_replace('%route_params%', params.route_params, block);
+                block = str_replace('%text%', params.text || '', block);
+                break;
+            case 'function':
+                var title = params.text || '<без названия>';
+                var mark = 'Функция';
+                block = str_replace('%function_name%', params.function_name, block);
+                block = str_replace('%text%', params.text, block);
+                block = str_replace('%use_function_data%', params.use_function_data ? 'checked' : '', block);
                 break;
             default:
                 break;
@@ -130,6 +145,10 @@ $(document).on("click", ".add_to_menu.add_to_menu_page", function(e) {
     e.preventDefault();
     var page_id = $('[name=page_id]').val();
     var text = $('[name=page_id] :selected').text();
+
+    if (!page_id)
+        return false;
+
     menu_editor.add_menu_item('page', {'page_id': page_id, 'text': text});
     return false;
 });
@@ -142,13 +161,55 @@ $(document).on("click", ".add_to_menu.add_to_menu_link", function(e) {
     e.preventDefault();
     var url = $('[name=link_url]').val();
     var text = $('[name=link_text]').val();
+
+    if (url == 'http://')
+        return false;
+
     menu_editor.add_menu_item('link', {'url': url, 'text': text});
+    return false;
+});
+
+
+/**
+ * ROUTE
+ */
+$(document).on("click", ".add_to_menu.add_to_menu_route", function(e) {
+    e.preventDefault();
+    var route_name = $('[name=route_name]').val();
+    var route_params = $('[name=route_params]').val();
+
+    if (!route_name)
+        return false;
+
+    menu_editor.add_menu_item('route', {'route_name': route_name, 'route_params': route_params});
+    return false;
+});
+
+
+/**
+ * FUNCTION
+ */
+$(document).on("click", ".add_to_menu.add_to_menu_function", function(e) {
+    e.preventDefault();
+    var function_name = $('[name=function_name]').val();
+    var text = $('[name=function_name] :selected').text();
+
+    if (!function_name)
+        return false;
+
+    menu_editor.add_menu_item('function', {'function_name': function_name, 'text': text});
     return false;
 });
 
 
 $(document).on("keyup", ".text_for_title", function(e) {
     var title = $(this).val();
+
+    if (title == '') {
+        //console.log($(this).parents('.menu_item_type_content'));
+        title = $(this).parents('.menu_item_type_content').find('.default_text_for_title').val();
+    }
+
     $(this).parents('.panel').find('.menu_item_title').text(title);
 });
 
@@ -193,7 +254,7 @@ var updateOutput = function(e) {
         return false;
     }
 
-    console.log(list.nestable('serialize'));
+    //console.log(list.nestable('serialize'));
     //console.log(output);
     if (window.JSON) {
         output.val(window.JSON.stringify(list.nestable('serialize')));

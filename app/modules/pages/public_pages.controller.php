@@ -34,7 +34,11 @@ class PublicPagesController extends BaseController {
          * https://github.com/bencorlett/framework/pull/1
          * https://github.com/bencorlett/framework/commit/ac091a25465d070f8925a80b46eb237ef21ea912
          */
-        if (!Allow::module(self::$group) || !Page::count())
+        if (
+            !Allow::module(self::$group)
+            #|| !Page::count()
+            || Config::get('site.pages.disabled')
+        )
             return false;
 
         ##
@@ -193,10 +197,9 @@ class PublicPagesController extends BaseController {
 
             if (@is_object($page)) {
 
-                if (@is_object($page) && @is_object($page->seo)) {
+                $slug = $page->slug;
+                if (@is_object($page->seo) && $page->seo->url != '') {
                     $slug = $page->seo->url;
-                } else {
-                    $slug = $page->slug;
                 }
 
                 #$slug = false;
@@ -204,6 +207,7 @@ class PublicPagesController extends BaseController {
 
                 if ($slug) {
                     $redirect = URL::route('page', array('url' => $slug));
+                    #Helper::dd($slug);
                     #Helper::dd('from is_numeric check' . $redirect);
                     return Redirect::to($redirect, 301);
                 }
@@ -472,7 +476,7 @@ class PublicPagesController extends BaseController {
                 ->where('slug', $url)
                 ->with(array('meta' => function($query) use ($locales, $default_locale) {
                         #if (@is_array($locales) && count($locales) > 1) {
-                            $query->where('language', $default_locale);
+                            #$query->where('language', $default_locale);
                         #}
                         #$query->with('seo');
                     }))

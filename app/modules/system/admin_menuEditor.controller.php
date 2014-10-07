@@ -125,7 +125,8 @@ class AdminMenuEditorController extends BaseController {
 
         if (count($temp)) {
             foreach ($temp as $name => $closure) {
-                $functions[] = $name;
+                $result = $closure();
+                $functions[$name] = @$result['text'] . " (" . $name . ")" ?: $name;
             }
         }
 

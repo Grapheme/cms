@@ -1,7 +1,17 @@
 <?php
 
 return array(
-	
+
+    'functions' => array(
+        'mainpage' => function() {
+            return array(
+                'url' => URL::route('mainpage'),
+                'text' => 'ГЛАВНАЯ СТРАНИЦА',
+                'title' => 'Перейти на главную страницу',
+            );
+        }
+    ),
+
 	'default' => function($params = array()) {
 
         return array(
