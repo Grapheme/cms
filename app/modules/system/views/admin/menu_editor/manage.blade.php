@@ -297,6 +297,8 @@
 
                                 {{ Form::hidden('items[%N%][id]', '%N%') }}
 
+                                <hr class="simple" />
+
                                 <span class="pull-left">
                                     <label class="checkbox">
                                         <input type="checkbox" name="items[%N%][target]" value="_blank" %target_blank% />
@@ -339,6 +341,12 @@
             <label class="input margin-bottom-10">
                 {{ Form::text('items[%N%][title]', '%attr_title%') }}
             </label>
+
+            {{--
+            <label class="label margin-bottom-10">
+                Оригинал страницы: <a href="%original_url%">просмотреть</a>
+            </label>
+            --}}
 
             {{ Form::hidden('items[%N%][type]', 'page') }}
             {{ Form::hidden('items[%N%][page_id]', '%page_id%') }}
