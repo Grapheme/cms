@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ef7bba77564a7b5ae358be3323dc083d",
+    "hash": "96fc9b861342cf6d8d8e51d14c1a6007",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -1188,6 +1188,49 @@
             "time": "2014-06-20 16:35:16"
         },
         {
+            "name": "sngrl/string-blade-compiler",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sngrl/string-blade-compiler.git",
+                "reference": "f8f58293d8857275d3fe19709f646c9dbdc0c3f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sngrl/string-blade-compiler/zipball/f8f58293d8857275d3fe19709f646c9dbdc0c3f9",
+                "reference": "f8f58293d8857275d3fe19709f646c9dbdc0c3f9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "sngrl\\StringBladeCompiler\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "sngrl",
+                    "email": "sangrealrnd@gmail.com"
+                }
+            ],
+            "description": "Render Blade templates from string variable",
+            "keywords": [
+                "blade",
+                "compiler",
+                "laravel",
+                "string",
+                "variable"
+            ],
+            "time": "2014-09-10 08:31:45"
+        },
+        {
             "name": "stack/builder",
             "version": "dev-master",
             "source": {
@@ -2166,7 +2209,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "intervention/image": 20,
-        "barryvdh/laravel-debugbar": 20
+        "barryvdh/laravel-debugbar": 20,
+        "sngrl/string-blade-compiler": 20
     },
     "prefer-stable": false,
     "platform": [],

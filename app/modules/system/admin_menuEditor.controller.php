@@ -117,6 +117,24 @@ class AdminMenuEditorController extends BaseController {
         $element->extract();
 
         #Helper::tad($element);
+        #Helper::dd($element->items->{5}->title);
+
+        /*
+        Helper::dd(
+            StringView::make(
+                array(
+                    'template'  => $element->items->{5}->title,
+                    'cache_key' => sha1($element->items->{5}->title),
+                    'updated_at' => time()
+                ),
+                array('key' => 'val')
+            )->render()
+        );
+        */
+
+        Helper::dd(
+            StringView::force($element->items->{5}->title)
+        );
 
         $pages = Page::where('version_of', NULL)->orderBy('created_at', 'DESC')->get();
 

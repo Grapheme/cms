@@ -3,6 +3,7 @@
 return array(
 
     'functions' => array(
+
         'mainpage' => function() {
             return array(
                 'url' => URL::route('mainpage'),
@@ -10,6 +11,7 @@ return array(
                 'title' => 'Перейти на главную страницу',
             );
         }
+
     ),
 
 	'default' => function($params = array()) {
