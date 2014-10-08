@@ -228,7 +228,7 @@ class Allow {
             }
             $actions[$actio] = $act;
         }
-        #Helper::ta($actions);
+        #Helper::tad($actions);
 
         self::$modules[$module_name]->actions = $actions;
         #Helper::tad(self::$modules[$module_name]->actions);
