@@ -50,13 +50,21 @@ class BaseController extends Controller {
         return static::$group.".views." . ($postfix ? $postfix."." : "");
     }
 
+    public function redirectToLogin() {
+        return Redirect::route('login');
+    }
+
     public function dashboard() {
+
+        if (!Auth::check())
+            return self::redirectToLogin();
 
         $parts = array();
         $parts[] = 'templates';
         $parts[] = AuthAccount::getStartPage();
         $parts[] = 'dashboard';
 
+#Helper::dd($parts);
         return View::make(implode('.', $parts));
     }
 
