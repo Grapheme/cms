@@ -54,4 +54,12 @@ return array(
 
     'versions' => 3,
 
+    'group_actions' => array(
+        'moderator' => function() {
+            return array(
+                'dicval_create' => 0,
+            );
+        },
+
+    ),
 );

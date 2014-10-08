@@ -2,6 +2,8 @@
 
 return array(
 
+    'theme_path' => 'theme',
+
     'paginate_limit' => 30,
 
     ## Disable functionality of changing url "on-the-fly" for generating

@@ -46,7 +46,7 @@ class GithubController extends \BaseController {
         $config['post_data'] = Input::get('payload');
 
         if ($config['active'] === FALSE):
-            return App::abort(403,'Модуль отключен');
+            App::abort(403,'Модуль отключен');
         endif;
         if($config['test_mode_key'] == $extends):
             $config['test_mode'] = TRUE;
