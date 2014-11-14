@@ -1,5 +1,5 @@
 
-var menu_items = $('.dd');
+var menu_items = $('.dd.menu-list');
 
 var menu_editor = {
 
@@ -12,7 +12,7 @@ var menu_editor = {
     },
 
     'update_output': function() {
-        updateOutput($('.dd'));
+        updateOutput($('.dd.menu-list'));
         menu_editor.show_hide_info();
     },
 
@@ -24,7 +24,7 @@ var menu_editor = {
         //var menu = '';
         var menu = $this.get_menu_list(order, items);
 
-        //$('.dd').append(menu);
+        //$('.dd.menu-list').append(menu);
         $(menu_items).find('ol:first').append(menu);
         $this.update_output();
     },
@@ -270,15 +270,16 @@ if ($('.dd').length) {
     loadScript(base_url + '/private/js/plugin/jquery-nestable/jquery.nestable.js', function() {
 
         //alert(nesting_level);
+        var nesting_level = nesting_level || 5;
 
-        $('.dd').nestable({
+        $('.dd.menu-list').nestable({
             //group : 1
-            maxDepth: nesting_level || 5,
+            maxDepth: nesting_level,
             expandBtnHTML: '',
             collapseBtnHTML: ''
         }).on('change', updateOutput);
 
-        updateOutput($('.dd').data('output', $(nestable_output)));
+        updateOutput($('.dd.menu-list').data('output', $(nestable_output)));
     });
 }
 
