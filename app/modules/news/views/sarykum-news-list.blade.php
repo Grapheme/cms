@@ -17,7 +17,6 @@
             $gallery = $new->meta->gallery->photos;
         ?>
         <li class="actions-li row clearfix">
-            <a name="{{ $new->slug }}"></a>
             <div class="column third">
                 <span class="action-img" style="background-image:url({{ $photo }});"></span>
             </div>
@@ -33,7 +32,7 @@
                     @endif
                 </div>
                 <p>
-                    {{ $new->meta->content }}
+                    {{ $new->meta->preview }}
                 </p>
             </div>
         </li>

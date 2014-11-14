@@ -126,7 +126,7 @@ margin-left: 0;
 
 
 .margin-left-0 {
-    margin-bottom:0px !important;
+    margin-left:0px !important;
 }
 .margin-left-5 {
     margin-left: 5px !important;
@@ -226,7 +226,7 @@ margin-left: 0;
 
 
 .padding-left-0 {
-    padding-bottom:0px !important;
+    padding-left:0px !important;
 }
 .padding-left-5 {
     padding-left: 5px !important;
@@ -301,7 +301,7 @@ margin-left: 0;
 }
 .redactor_box {
 	max-width: 790px;
-    z-index: 1000;
+    /*z-index: 1000;*/
     position: relative;
 }
 .redactor_box.redactor_box_fullscreen {
@@ -343,6 +343,11 @@ margin-left: 0;
     width: 100px;
 }
 
+.photo-previews:nth-child(0) {
+    width: 200%;
+    height: 200%;
+}
+
 .photo-preview {
     display:inline-block;
     width:100px;
@@ -352,6 +357,7 @@ margin-left: 0;
     position:relative;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    margin: 0 5px !important;
 }
 
 .photo-preview a.photo-delete, .photo-preview a.photo-delete-single {
@@ -407,6 +413,19 @@ margin-left: 0;
 .dropzone > .state-error {
     background-color: #FFF0F0;
     border: 1px solid #A90329;
+}
+
+.redactor_box.state-error {
+    border: 1px solid #A90329;
+}
+.redactor_box.state-error .redactor_redactor {
+    background-color: #FFF0F0 !important;
+}
+.redactor_box.state-success {
+    /*border: 1px solid #7DC27D;*/
+}
+.redactor_box.state-success .redactor_redactor {
+    background-color: #F0FFF0 !important;
 }
 
 .uploaded_image_false {
@@ -685,7 +704,7 @@ margin-left: 0;
     top: 20px;
 }
 .smart-form div { 
-    background: transparent;
+    background-color: transparent;
 }
 
 .smart-form fieldset.padding-top-0 {
@@ -759,4 +778,107 @@ nav ul li a {
 
 .select2-container .select2-choice {
     height: 30px;
+}
+
+div.input.textarea_redactor {
+    /*z-index: 1000;*/
+}
+div.redactor_dropdown {
+    background-color: #fff;
+    z-index: 10000;
+}
+
+.display-block {
+    display: block !important;
+}
+
+.display-inline-block {
+    display: inline-block !important;
+}
+
+.smart-form .label {
+    white-space: normal;
+    word-wrap: normal;
+}
+
+.note.first_note {
+    margin: 0 0 6px 0;
+}
+
+.note.second_note {
+    margin: 6px 0 0 0;
+}
+
+
+.dd.dicval-list {
+    display: block;
+    width: auto;
+    min-width: 800px;
+    max-width: 1200px;
+}
+
+
+
+
+div > .dd-list > .dd-item:first-child > button::before {
+    padding-top: 4px
+}
+
+
+.dd-item-fixed-height .dd-handle {
+    height: 56px;
+}
+.dd-item-fixed-height .dd-handle:before {
+    line-height: 48px;
+}
+.dd-item-fixed-height > button[type=button] {
+    margin-top: 17px;
+    margin-right: 5px;
+}
+.dd-list .dd-list {
+    padding-left: 32px;
+}
+.dicval-actions {
+    display: block;
+    min-width: 80px;
+    text-align: left;
+    position: relative;
+    top: 3px;
+    right: 1px;
+}
+.dicval-actions-margin-left {
+    margin-left: 4px;
+}
+.dicval-actions-edit, .dicval-actions-delete button {
+    width: 38px;
+    content: '';
+}
+.dicval-actions-edit:before, .dicval-actions-delete button:before {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+}
+.dicval-actions-edit:before {
+    content: '\f040';
+}
+.dicval-actions-delete button:before {
+    content: '\f014';
+}
+
+
+nav ul li a {
+    position: relative;
+}
+
+nav > ul > li > a b {
+    margin: 2px 0px 0px;
+}
+
+.dd-item > button[data-action="collapse"]::before {
+    color: #3276B1;
+    content: "\f146";
+}
+.dd-item > button[data-action="expand"]::before {
+    color: #3276B1;
+    content: "\f0fe";
 }

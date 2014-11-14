@@ -15,7 +15,7 @@ class AdminCollectorsController extends BaseController {
         $group = self::$group;
 
         Route::group(array('before' => 'auth', 'prefix' => 'admin'), function() use ($class, $name, $group) {
-            Route::get('scripts.js', array('as' => 'collectors.js', 'uses' => $class.'@getCollectorScripts'));
+            Route::get('collector-js', array('as' => 'collector-js', 'uses' => $class.'@getCollectorScripts'));
         });
     }
 

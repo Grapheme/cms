@@ -11,7 +11,8 @@ App::after(function($request, $response){
 App::error(function(Exception $exception, $code){
 
 	switch($code):
-		case 403: return 'Access denied!';
+		case 403:
+            return 'Access denied!';
         /*
 		case 404:
 			#if(Page::where('seo_url','404')->exists()):
@@ -21,13 +22,19 @@ App::error(function(Exception $exception, $code){
 			#endif;
         */
 	endswitch;
+
+    if (View::exists(Helper::layout($code)))
+        return Response::view(Helper::layout($code), array('message' => $exception->getMessage()), $code);
+
 });
 
 App::missing(function ($exception) {
 
     #Helper::classInfo('Route');
     #Helper::dd(get_declared_classes());
-    return Response::view('error404', array('message'=>$exception->getMessage()), 404);
+
+    $tpl = View::exists(Helper::layout('404')) ? Helper::layout('404') : 'error404';
+    return Response::view($tpl, array('message' => $exception->getMessage()), 404);
 });
 
 Route::filter('auth', function(){

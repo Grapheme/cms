@@ -16,10 +16,15 @@
                     #Helper::d(SystemModules::getModules());
                     $modules_info = Config::get('mod_info');
                     $modules = Allow::modules();
-                    #Helper::dd($modules);
+                    #Helper::tad($modules);
+                    #Helper::tad($modules_info);
                     ?>
                     <tbody class="sortable">
                         @foreach($modules as $name => $module)
+                        <?
+                        if (!isset($modules_info[$module->name]) || !@$modules_info[$module->name]['visible'])
+                            continue;
+                        ?>
                         <tr data-id="{{ @$module->id }}">
                             <td>{{ @$modules_info[$module->name]['title'] }}</td>
                             <td style="width: 50px;">

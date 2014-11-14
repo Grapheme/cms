@@ -3,6 +3,11 @@
 
 @section('style')
     {{ HTML::style('css/redactor.css') }}
+    @if (@trim($dic_settings['style']))
+    <style>
+        {{ $dic_settings['style'] }}
+    </style>
+    @endif
 @stop
 
 
@@ -64,9 +69,16 @@
 
                     @if (!$dic->hide_slug)
                     <section>
-                        <label class="label">Системное имя (необязательно)</label>
+                        <label class="label">{{ isset($dic_settings['slug_label']) ? $dic_settings['slug_label'] : 'Системное имя (необязательно)' }}</label>
                         <label class="input">
                             {{ Form::text('slug', null, array()) }}
+                        </label>
+                        <label class="note second_note">
+                            @if (isset($dic_settings['slug_note']))
+                                {{ $dic_settings['slug_note'] }}
+                            @else
+                                Только символы англ. алфавита, знаки _ и -, цифры
+                            @endif
                         </label>
                     </section>
                     @endif
@@ -74,7 +86,10 @@
                     <section>
                         <label class="label">{{ $dic->name_title ?: 'Название' }}</label>
                         <label class="input">
-                            {{ Form::text('name', null, array()) }}
+                            {{ Form::text('name', null, array('required' => 'required')) }}
+                            @if (isset($dic_settings['name_note']))
+                                {{ $dic_settings['name_note'] }}
+                            @endif
                         </label>
                     </section>
 
@@ -82,19 +97,30 @@
 
                 {{ Helper::dd_($dic_settings) }}
 
-                @if (@is_callable($dic_settings['fields']) && NULL !== ($fields_general = $dic_settings['fields']()))
+                @if (@is_callable($dic_settings['fields']) && NULL !== ($fields_general = $dic_settings['fields']()) && count($fields_general))
                 <?
                 #Helper::ta($element);
                 $onsuccess_js = array();
+
+                /*
                 if (isset($element->fields) && is_object($element->fields) && count($element->fields)) {
                     $element_fields = $element->fields->lists('value', 'key');
                 } elseif (isset($element->allfields) && is_object($element->allfields) && count($element->allfields)) {
                     $element_fields = $element->allfields->lists('value', 'key');
                 } else {
-                    $element_fields = array();
+                    #$element_fields = array();
+                    $element_fields = $element->toArray();
                 }
+                if (isset($element->textfields) && is_object($element->textfields) && count($element->textfields)) {
+                    $element_textfields = $element->textfields->lists('value', 'key');
+                } elseif (isset($element->alltextfields) && is_object($element->alltextfields) && count($element->alltextfields)) {
+                    $element_textfields = $element->alltextfields->lists('value', 'key');
+                } else {
+                    $element_textfields = $element->toArray();
+                }
+                $element_fields = @(array)$element_fields + @(array)$element_textfields;
                 #Helper::d($element_fields);
-                #$fields_general = $dic_settings['fields'];
+                */
                 ?>
                     <fieldset class="padding-top-10 clearfix">
                         @foreach ($fields_general as $field_name => $field)
@@ -105,54 +131,70 @@
                         ?>
                         <section>
                             @if (!@$field['no_label'])
-                            <label class="label">{{ @$field['title'] }}</label>
+                            <label class="label">{{ @$field['title'] }}&nbsp;</label>
+                            @endif
+                            @if (@$field['first_note'])
+                            <label class="note first_note">{{ @$field['first_note'] }}</label>
                             @endif
                             <div class="input {{ @$field['type'] }} {{ @$field['label_class'] }}">
-                                {{ Helper::formField('fields[' . @$field_name . ']', @$field, @$element_fields[$field_name], $element) }}
+                                {{ Helper::formField('fields[' . @$field_name . ']', @$field, @$element->$field_name, $element) }}
                             </div>
+                            @if (@$field['second_note'])
+                            <label class="note second_note">{{ @$field['second_note'] }}</label>
+                            @endif
                         </section>
                         @endforeach
                     </fieldset>
                 @endif
 
+                {{-- @if (count($locales) > 1) --}}
+                <?
+                $fields_i18n = array();
+                if (@is_callable($dic_settings['fields_i18n']))
+                    $fields_i18n = $dic_settings['fields_i18n']();
+                ?>
+                @if (count($fields_i18n))
+                    <?
+                    #Helper::ta($fields_i18n);
+                    ?>
+                    <fieldset class="clearfix">
+                        <section>
+                            {{--
+                            <label class="label">Индивидуальные настройки для разных языков (необязательно)</label>
+                            --}}
 
-                @if (count($locales) > 1)
-                <fieldset class="clearfix">
-                    <section>
-                        {{--
-                        <label class="label">Индивидуальные настройки для разных языков (необязательно)</label>
-                        --}}
+                            <div class="widget-body">
+                                @if (count($locales) > 1)
+                                <ul id="myTab1" class="nav nav-tabs bordered">
+                                    <? $i = 0; ?>
+                                    @foreach ($locales as $locale_sign => $locale_name)
+                                    <li class="{{ !$i++ ? 'active' : '' }}">
+                                        <a href="#locale_{{ $locale_sign }}" data-toggle="tab">
+                                            {{ $locale_name }}
+                                        </a>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                                @endif
+                                <div id="myTabContent1" class="tab-content{{ count($locales) > 1 ? ' padding-10' : '' }}">
+                                    <? $i = 0; ?>
+                                    @foreach ($locales as $locale_sign => $locale_name)
+                                    <div class="tab-pane fade {{ !$i++ ? 'active in' : '' }}" id="locale_{{ $locale_sign }}">
 
-                        <div class="widget-body">
-                            <ul id="myTab1" class="nav nav-tabs bordered">
-                                <? $i = 0; ?>
-                                @foreach ($locales as $locale_sign => $locale_name)
-                                <li class="{{ !$i++ ? 'active' : '' }}">
-                                    <a href="#locale_{{ $locale_sign }}" data-toggle="tab">
-                                        {{ $locale_name }}
-                                    </a>
-                                </li>
-                                @endforeach
-                            </ul>
-                            <div id="myTabContent1" class="tab-content padding-10">
-                                <? $i = 0; ?>
-                                @foreach ($locales as $locale_sign => $locale_name)
-                                <div class="tab-pane fade {{ !$i++ ? 'active in' : '' }}" id="locale_{{ $locale_sign }}">
+                                        @include($module['tpl'].'_dicval_meta', compact('locale_sign', 'locale_name', 'element', 'fields_i18n'))
 
-                                    @include($module['tpl'].'_dicval_meta', compact('locale_sign', 'locale_name', 'element'))
-
+                                    </div>
+                                    @endforeach
                                 </div>
-                                @endforeach
                             </div>
-                        </div>
-                    </section>
-                </fieldset>
+                        </section>
+                    </fieldset>
 
                 @else
 
-                @foreach ($locales as $locale_sign => $locale_name)
-                @include($module['tpl'].'_dicval_meta', compact('locale_sign', 'locale_name', 'element'))
-                @endforeach
+                    @foreach ($locales as $locale_sign => $locale_name)
+                    @include($module['tpl'].'_dicval_meta', compact('locale_sign', 'locale_name', 'element'))
+                    @endforeach
 
                 @endif
 
@@ -305,15 +347,25 @@
     <script>
     var essence = '{{ $module['entity'] }}';
     var essence_name = '{{ $module['entity_name'] }}';
-	var validation_rules = {
-		name:              { required: true },
-	};
-	var validation_messages = {
-		name:              { required: "Укажите название" },
-	};
+    @if (isset($dic_settings['custom_validation']) && trim($dic_settings['custom_validation']) != '')
+        {{ $dic_settings['custom_validation'] }}
+    @else
+        var validation_rules = {
+            'name': { required: true }
+        };
+        var validation_messages = {
+            'name': { required: "Укажите название" }
+        };
+	@endif
     </script>
 
     <script>
+        @if (@$dic_settings['unique_slug'])
+        var CheckDicvalSlugUnique = true;
+        @else
+        var CheckDicvalSlugUnique = false;
+        @endif
+
         var onsuccess_function = function() {
 
             // UPLOAD
@@ -338,12 +390,10 @@
         }
     </script>
 
-	{{ HTML::script('js/modules/standard.js') }}
-
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
-		if(typeof runFormValidation === 'function') {
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}", runFormValidation);
+		if(typeof runDicValFormValidation === 'function') {
+			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
 		} else {
 			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}");
 		}        
@@ -352,7 +402,13 @@
     {{ HTML::script('js/vendor/redactor.min.js') }}
     {{ HTML::script('js/system/redactor-config.js') }}
 
-    {{ HTML::script('js/modules/gallery.js') }}
+    {{-- HTML::script('js/modules/gallery.js') --}}
     {{ HTML::script('js/plugin/select2/select2.min.js') }}
+
+    @if (@trim($dic_settings['javascript']))
+    <script>
+        {{ $dic_settings['javascript'] }}
+    </script>
+    @endif
 
 @stop

@@ -2,12 +2,11 @@
 
 $prefix = Auth::check() ? AuthAccount::getStartPage() : 'guest';
 
-/*
-| Общие роуты, независящие от условий
-*/
-//Route::get('image/{image_group}/{id}', 'ImageController@showImage')->where('id','\d+');
-Route::get('redactor/get-uploaded-images', 'DownloadsController@redactorUploadedImages');
-Route::post('redactor/upload', 'DownloadsController@redactorUploadImage');
+/**
+ * Роуты для загрузки изображений в визуальном редакторе
+ */
+Route::get('redactor/get-uploaded-images', 'RedactorUploadsController@redactorUploadedImages');
+Route::post('redactor/upload', 'RedactorUploadsController@redactorUploadImage');
 
 #################################################################
 ## Все, что ниже - можно вынести в модуль system - Пользователи.

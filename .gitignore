@@ -1,8 +1,8 @@
 /vendor
 
 /public/static/psd
-/public/static/node_modules
 /public/uploads
+node_modules
 
 /usersfiles
 /psd

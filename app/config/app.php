@@ -74,8 +74,8 @@ return array(
 		'Controller'      => 'Illuminate\Routing\Controller',
 		'Cookie'          => 'Illuminate\Support\Facades\Cookie',
 		'Crypt'           => 'Illuminate\Support\Facades\Crypt',
-        'DbView'          => 'Flynsarmy\DbBladeCompiler\Facades\DbView',
 		'DB'              => 'Illuminate\Support\Facades\DB',
+        'DbView'          => 'Flynsarmy\DbBladeCompiler\Facades\DbView',
 		'Eloquent'        => 'Illuminate\Database\Eloquent\Model',
 		'Event'           => 'Illuminate\Support\Facades\Event',
 		'File'            => 'Illuminate\Support\Facades\File',
@@ -105,6 +105,11 @@ return array(
         'URL'             => 'Illuminate\Support\Facades\CustomURL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-		'ImageManipulation' => 'Intervention\Image\Facades\Image'
+
+		'ImageManipulation' => 'Intervention\Image\Facades\Image',
+        'SphinxSearch'    => 'Scalia\SphinxSearch\SphinxSearchFacade',
+        'Bugsnag'         => 'Bugsnag\BugsnagLaravel\BugsnagFacade',
+
+        'Collection'      => 'Illuminate\Database\Eloquent\Collection',
 	),
 );

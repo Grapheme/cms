@@ -273,6 +273,7 @@
                     --}}
                 </footer>
             </div>
+
         </section>
 
         <!-- /Form -->
@@ -284,6 +285,10 @@
     @endif
 
     {{ Form::close() }}
+
+
+    {{-- Helper::dd(Helper::getLayoutProperties()); --}}
+
 
     <div id="templates" class="hidden">
 
@@ -328,6 +333,11 @@
                                         <input type="checkbox" name="items[%N%][target]" value="_blank" %target_blank% />
                                         <i></i>
                                         Открывать в новом окне
+                                    </label>
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="items[%N%][hidden]" value="1" %is_hidden% />
+                                        <i></i>
+                                        Скрыть
                                     </label>
                                 </span>
 

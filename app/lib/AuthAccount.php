@@ -29,6 +29,15 @@ class AuthAccount {
 		endif;
 	}
 
+    public static function getGroupName(){
+
+        if(Auth::check()):
+            return Auth::user()->group->name;
+        else:
+            return '';
+        endif;
+    }
+
 	public static function getGroupStartUrl(){
 
 		$StartUrl = '';

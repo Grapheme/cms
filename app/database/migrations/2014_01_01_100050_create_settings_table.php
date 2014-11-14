@@ -12,9 +12,11 @@ class CreateSettingsTable extends Migration {
         	Schema::create($this->table, function(Blueprint $table) {			
     			$table->increments('id');
     			$table->string('module')->index();
-    			$table->string('name')->nullable()->unique();
+    			$table->string('name')->nullable()->index();
     			$table->string('value');
     			$table->timestamps();
+
+           		$table->index('module', 'name');
     		});
             echo(' + ' . $this->table . PHP_EOL);
         } else {

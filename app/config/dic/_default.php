@@ -94,6 +94,23 @@ return array(
             'description' => array(
                 'title' => 'Поле textarea',
                 'type' => 'textarea',
+                'others' => array(
+                    'onkeyup' => trim(str_replace("\n", ' ', "
+var c = 1;
+var len = 0;
+for (i=0; i<this.value.length; i++) {
+    if ( this.value[i] == '\\n' ) {
+        ++c;
+        if ( c == 4 ) {
+            len = i;
+            break;
+        }
+    }
+}
+if (len > 0) {
+    this.value = this.value.slice(0, len + 1);
+}
+")), ## ONLY 3 LINES AT TEXTAREA
             ),
 
             'content' => array(
@@ -113,18 +130,27 @@ return array(
                     return $value ? @date('Y-m-d', strtotime($value)) : $value;
                 },
                 'value_modifier' => function($value) {
-                    return $value ? @date('d.m.Y', strtotime($value)) : $value;
+                    return $value ? date('d.m.Y', strtotime($value)) : date('d.m.Y');
                 },
             ),
 
             'photo' => array(
                 'title' => 'Поле для загрузки изображения',
                 'type' => 'image',
+                'params' => array(
+                    'maxFilesize' => 1, // MB
+                    #'acceptedFiles' => 'image/*',
+                    #'maxFiles' => 2,
+                ),
             ),
 
             'gallery' => array(
                 'title' => 'Галерея изображений',
                 'type' => 'gallery',
+                'params' => array(
+                    'maxfilesize' => 1, // MB
+                    #'acceptedfiles' => 'image/*',
+                ),
                 'handler' => function($array, $element) {
                     return ExtForm::process('gallery', array(
                         'module'  => 'dicval_meta',
@@ -176,12 +202,12 @@ return array(
                     $value = array_flip($value);
                     foreach ($value as $v => $null)
                         $value[$v] = array('dicval_child_dic' => 'scope');
-                    $element->relations()->sync($value);
+                    $element->related_dicvals()->sync($value);
                     return @count($value);
                 },
                 'value_modifier' => function($value, $element) {
                     $return = (is_object($element) && $element->id)
-                        ? $element->relations()->get()->lists('id')
+                        ? $element->related_dicvals()->get()->lists('id')
                         : $return = array()
                     ;
                     return $return;
@@ -202,12 +228,12 @@ return array(
                 'values' => $lists['scope'],
                 'handler' => function ($value, $element) {
                     $value = (array)$value;
-                    $element->relations()->sync($value);
+                    $element->related_dicvals()->sync($value);
                     return @count($value);
                 },
                 'value_modifier' => function ($value, $element) {
                     $return = (is_object($element) && $element->id)
-                        ? $element->relations()->get()->lists('name', 'id')
+                        ? $element->related_dicvals()->get()->lists('name', 'id')
                         : $return = array();
                     return $return;
                 },
@@ -416,4 +442,68 @@ return array(
         },
 
     ),
+
+    /**
+     * Максимальное количество элементов в списке.
+     * Если достигнуто - кнопка "Добавить" будет скрыта.
+     */
+    'max_elements' => 1,
+
+    /**
+     * Минимально допустимое количество элементов в списке.
+     * Если кол-во элементов в списке <= этого количества - все кнопки "Удалить" для всех элементов будут скрыты.
+     */
+    'min_elements' => 1,
+
+    /**
+     * JavaScript код, который будет внедрен на все страницы DicVal
+     */
+    'javascript' => <<<JS
+        /* some JS code */
+JS
+,
+
+    /**
+     * Собственные правила валидации данной формы.
+     * Не забыть про поле name, которое по умолчанию должно быть обязательным!
+     */
+    'custom_validation' => <<<JS
+    var validation_rules = {
+		'name': { required: true },
+		'fields[pdf_document][file]': { accept: "pdf", filesize: 10485760 },
+	};
+	var validation_messages = {
+		'name': { required: "Укажите название" },
+		'fields[pdf_document][file]': { accept: "Только файлы PDF", filesize: "Максимальный размер файла - 10 Mb" },
+	};
+JS
+,
+
+    /**
+     * Название поля Системное имя
+     * По умолчанию: Системное имя (необязательно)
+     */
+    'slug_label' => 'Системное имя (необязательно)',
+
+    /**
+     * Подсказка для поля Системное имя
+     * По умолчанию: Только символы англ. алфавита, знаки _ и -, цифры
+     */
+    'slug_note' => <<<HTML
+        Только символы англ. алфавита, знаки _ и -, цифры
+HTML
+,
+
+    /**
+     * Подсказка для поля Название
+     * По умолчанию пусто
+     */
+    'name_note' => '',
+
+    /**
+     * Если установлено в TRUE - перед добавлением/сохранением записи поле "Системное имя"
+     * будет проверяться на уникальность в пределах своего словаря.
+     */
+    'unique_slug' => 1,
+
 );

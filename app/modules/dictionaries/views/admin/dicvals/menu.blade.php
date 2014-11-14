@@ -6,14 +6,35 @@
         'title' => $dic->name,
         'class' => 'btn btn-default'
     );
-    if (isset($element) && is_object($element) && $element->name) {
+    if (isset($element) && is_object($element) && $element->name && 0) {
         $menus[] = array(
             'link' => action(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, $element->id)),
             'title' => "&laquo;" . $element->name . "&raquo;",
             'class' => 'btn btn-default'
         );
     }
-    if  (Allow::action($module['group'], 'dicval_create')) {
+    if (
+        Allow::action($module['group'], 'dicval_delete') && isset($element) && is_object($element) && $element->id
+        && (
+            !isset($dic_settings['min_elements'])
+            || ($dic_settings['min_elements'] > 0 && $total_elements > $dic_settings['min_elements'])
+        )
+    ) {
+        $menus[] = array(
+            'link' => action(is_numeric($dic_id) ? 'dicval.destroy' : 'entity.destroy', array('dic_id' => $dic_id, $element->id)),
+            'title' => '<i class="fa fa-trash-o"></i>',
+            'class' => 'btn btn-danger remove-dicval-record',
+            'others' => [
+                #'data-dicval_id' => $element->id,
+                'data-goto' => action(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)),
+                'title' => 'Удалить запись'
+            ]
+        );
+    }
+    if  (
+        Allow::action($module['group'], 'dicval_create')
+        && (!isset($dic_settings['max_elements']) || !$dic_settings['max_elements'] || $dic_settings['max_elements'] > @$total_elements_current_selection)
+    ) {
         $current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
         $menus[] = array(
             'link' => action(is_numeric($dic_id) ? 'dicval.create' : 'entity.create', array('dic_id' => $dic_id) + $current_link_attributes),
@@ -47,6 +68,12 @@
     #Helper::d($menus);
 ?>
     
-    <h1>{{ $dic->name }}{{ $dic->entity && is_numeric($dic_id) ? ' <i class="fa fa-angle-double-right"></i> <a href="' . URL::route('entity.index', $dic->slug) . '" title="Вынесено в отдельную сущность">' . $dic->slug . '</a>' : '' }}</h1>
+    <h1>
+        {{ $dic->name }}
+        {{ $dic->entity && is_numeric($dic_id) ? ' <i class="fa fa-angle-double-right"></i> <a href="' . URL::route('entity.index', $dic->slug) . '" title="Вынесено в отдельную сущность">' . $dic->slug . '</a>' : '' }}
+        @if (isset($element) && is_object($element) && $element->name)
+            &nbsp;&mdash;&nbsp; {{ $element->name }}
+        @endif
+    </h1>
 
     {{ Helper::drawmenu($menus) }}

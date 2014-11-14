@@ -32,6 +32,10 @@ ADD `draggable` INT( 1 ) NOT NULL DEFAULT '1' AFTER `sort_by`
 ADD `sort_order` ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC' AFTER `sort_by`
 */
                 $table->integer('order')->unsigned()->nullable()->index();
+                $table->text('settings')->nullable();
+/*
+ALTER TABLE `dictionary` ADD `settings` TEXT NULL AFTER `order`
+*/
     			$table->timestamps();
             });
             echo(' + ' . $this->table . PHP_EOL);
@@ -48,6 +52,10 @@ ADD `sort_order` ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC' AFTER `sort_by`
                 $table->string('slug')->nullable()->index();
                 $table->string('name')->nullable();
                 $table->integer('order')->unsigned()->nullable()->index();
+
+                $table->integer('lft')->unsigned()->nullable()->index();
+                $table->integer('rgt')->unsigned()->nullable()->index();
+
     			$table->timestamps();
             });
             echo(' + ' . $this->table . PHP_EOL);

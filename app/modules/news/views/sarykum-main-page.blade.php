@@ -1,5 +1,4 @@
 
-{{ Helper::tad_($news) }}
 @if(isset($news) && is_object($news) && $news->count())
 
     <ul class="slide-terms clearfix">
@@ -16,9 +15,13 @@
             $gallery = $new->meta->gallery->photos;
         ?>
 
-        <li class="slide-term"><a href="{{ URL::route('page', 'actions') }}"></a>
-            <div class="term-head">{{ $new->meta->title }}</div>
-            <div class="term-body">{{ $new->meta->preview }}</div>
+        <li class="slide-term"><a href="#"></a>
+            <div class="term-head">
+                {{ $new->meta->title }}
+            </div>
+            <div class="term-body">
+                {{ $new->meta->preview }}
+            </div>
         </li>
 
         @endforeach

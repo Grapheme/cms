@@ -23,4 +23,4 @@
 	{{HTML::script('js/vendor/dropzone.min.js');}}
 	{{--{{HTML::script('js/system/dropzone-functions.js');}}--}}
 
-    {{ HTML::script(URL::route('collectors.js')) }}
+    {{ HTML::script(URL::route('collector-js')) }}

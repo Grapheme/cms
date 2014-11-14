@@ -16,7 +16,7 @@ class SystemModules {
 
         $dic_entities = array();
         if (class_exists('AdminDicvalsController')) {
-            $entity_dics = Dic::where('entity', '1')->orderBy('order', 'ASC')->get();
+            $entity_dics = Dic::where('entity', '1')->orderBy(DB::raw('-`order`'), 'DESC')->get();
             #Helper::tad($entity_dics);
             if (count($entity_dics)) {
                 $controller = new AdminDicvalsController;
