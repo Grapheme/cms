@@ -10,6 +10,9 @@ class AdminGalleriesController extends BaseController {
     ## Routing rules of module
     public static function returnRoutes($prefix = null) {
         $class = __CLASS__;
+
+        Route::post('admin/gallery/ajax-order-save', array('as' => 'gallery.order', 'uses' => $class."@postAjaxOrderSave"));
+
         Route::group(array('before' => 'auth', 'prefix' => $prefix), function() use ($class) {
         	Route::get($class::$group.'/manage', array('uses' => $class.'@getIndex'));
         	Route::controller($class::$group, $class);
@@ -59,16 +62,17 @@ class AdminGalleriesController extends BaseController {
                 #Helper::dd($params);
 
                 if (is_numeric($value)) {
-                    $value = Gallery::where('id', $value)->with('photos')->first();
+                    $value = Gallery::find($value);
                 }
 
-                #if (isset($params['maxFiles']) && isset($value->photos) && count($value->photos)) {
-                #    $params['maxFiles'] = $params['maxFiles'] - count($value->photos);
-                #}
+                #Helper::tad($value);
 
                 $gallery = $value;
+
+                #Helper::tad($gallery);
+
                 ## return view with form element
-                return View::make($mod_tpl.$tpl, compact('name', 'gallery', 'params'));                
+                return View::make($mod_tpl.$tpl, compact('name', 'gallery', 'params'))->render();
     	    },
             ## Processing results closure
             function($params) use ($mod_tpl, $class) {
@@ -144,6 +148,8 @@ class AdminGalleriesController extends BaseController {
                 } elseif (is_numeric($value)) {
                     $value = Photo::find($value);
                 }
+
+                #Helper::tad($value);
 
                 $photo = $value;
                 ## return view with form element
@@ -240,7 +246,7 @@ class AdminGalleriesController extends BaseController {
 	public function postCreate(){
 		
 		$input = Input::all();
-		$validation = Validator::make($input, gallery::getRules());
+		$validation = Validator::make($input, Gallery::getRules());
 		if($validation->fails()) {
 			return Response::json($validation->messages()->toJson(), 400);
 		} else {
@@ -254,7 +260,10 @@ class AdminGalleriesController extends BaseController {
     
 	public function getEdit($id){
 		
-        $gallery = Rel_mod_gallery::where('gallery_id', $id)->first();
+        $gallery = Gallery::where('id', $id)->first();
+
+
+
 		return View::make($this->tpl.'edit', compact('gallery', 'bread'));
 	}
 
@@ -411,9 +420,6 @@ class AdminGalleriesController extends BaseController {
             $thumb_resize_w = ($w > $h) ? null : $thumb_size;
             $thumb_resize_h = ($w > $h) ? $thumb_size : null;
         }
-
-        #Helper::dd($thumb_resize_w . ' / ' . $thumb_resize_h);
-
         ## Resize thumb image
         $thumb_upload_success = ImageManipulation::make($file->getRealPath())
                                                 ->resize($thumb_resize_w, $thumb_resize_h, function($constraint){
@@ -458,7 +464,7 @@ class AdminGalleriesController extends BaseController {
 		$id = (int)Input::get('id');
         if ($id)
             $model = Photo::find($id);
-        if (isset($model) && !is_null($model))
+        if (!is_null($model))
 		    $db_delete = $model->delete();
 
 		if(@$db_delete) {
@@ -561,6 +567,20 @@ class AdminGalleriesController extends BaseController {
 
 		return $gallery_id;
 	}
+
+
+    public function postAjaxOrderSave() {
+
+        $poss = Input::get('poss');
+        $pls = Photo::whereIn('id', $poss)->get();
+        if ( $pls ) {
+            foreach ( $pls as $pl ) {
+                $pl->order = array_search($pl->id, $poss);
+                $pl->save();
+            }
+        }
+        return Response::make('1');
+    }
 
 }
 

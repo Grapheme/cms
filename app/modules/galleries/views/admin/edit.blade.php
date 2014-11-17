@@ -2,9 +2,9 @@
 
 
 @section('content')
-    <h1>Галерея #{{ $gallery->gallery_id }}: &laquo;{{ $gallery->info()->name }}&raquo;</h1>
+    <h1>Галерея #{{ $gallery->id }}: &laquo;{{ $gallery->name }}&raquo;</h1>
 
-   {{ ExtForm::gallery('gallery', @$gallery) }}
+   {{ ExtForm::gallery('gallery', $gallery) }}
 @stop
 
 

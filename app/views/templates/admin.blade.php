@@ -12,7 +12,9 @@
 		<div id="content">
 			@yield('content')
 		</div>
-		<!--@include('templates.admin.footer')-->
+		{{--
+		@include('templates.admin.footer')
+		--}}
 	</div>
 	@include('templates.admin.scripts')
 	@yield('scripts')

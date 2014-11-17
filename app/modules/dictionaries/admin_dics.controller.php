@@ -215,7 +215,7 @@ class AdminDicsController extends BaseController {
             $input['make_slug_from_name'] = Input::get('make_slug_from_name') > 0 ? (int)Input::get('make_slug_from_name') : NULL;
             $input['name_title'] = Input::get('name_title') ?: NULL;
             $input['view_access'] = Input::get('view_access') ?: NULL;
-            $input['sortable'] = Input::get('sortable') ? 1 : 0;
+            $input['sortable'] = Input::get('sortable') ? (int)Input::get('sortable') : 0;
             $input['sort_by'] = Input::get('sort_by') != 'order' ? Input::get('sort_by') : NULL;
         }
 

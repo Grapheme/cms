@@ -12,7 +12,7 @@ class Gallery extends Eloquent {
 	}
 
 	public function photos() {
-		return $this->hasMany('Photo');
+		return $this->hasMany('Photo')->orderBy(DB::raw('-`order`'), 'DESC');
 	}
 
 }

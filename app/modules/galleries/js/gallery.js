@@ -60,8 +60,6 @@ var dropzone_translate = {
             var max_files = $(el).data("maxfiles");
             var acceptedFiles = $(el).data("acceptedfiles");
 
-            //alert(max_files);
-
             var dropzone_settings = {
                 url: base_url + "/admin/galleries/abstractupload",
                 addRemoveLinks : true,
@@ -258,3 +256,5 @@ var dropzone_translate = {
     	//$('.superbox').SuperBox();
 
 	});
+
+init_sortable(base_url + '/admin/gallery/ajax-order-save', '.photo-previews');
