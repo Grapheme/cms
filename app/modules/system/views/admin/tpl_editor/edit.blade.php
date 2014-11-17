@@ -7,13 +7,13 @@ $tpl_content = @file_get_contents($full_file);
 
 
 @section('style')
-<style>
-#tpl_content {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-</style>
+    <style>
+        #tpl_content {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
 @stop
 
 
@@ -81,8 +81,8 @@ $tpl_content = @file_get_contents($full_file);
 @section('scripts')
 
     @if (0)
-    <!-- Create a simple CodeMirror instance -->
     {{ HTML::style('private/js/codemirror/lib/codemirror.css') }}
+    <!-- Create a simple CodeMirror instance -->
     {{ HTML::script('private/js/codemirror/lib/codemirror.js') }}
     {{ HTML::script('private/js/codemirror/addon/edit/matchbrackets.js') }}
     {{ HTML::script('private/js/codemirror/mode/htmlmixed/htmlmixed.js') }}
@@ -136,7 +136,7 @@ $tpl_content = @file_get_contents($full_file);
     @endif
 
 
-    {{ HTML::script("js/vendor/jquery-form.min.js") }}
+    {{ HTML::script("private/js/vendor/jquery-form.min.js") }}
     <script>
         $(document).on('submit', '#tpl-form', function(e, selector, data) {
 

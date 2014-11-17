@@ -10,9 +10,10 @@
 @else
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
 @endif
-	{{ HTML::style('private/css/font-awesome.min.css') }}
 	{{ HTML::style('private/css/production_unminified.css') }}
 	{{ HTML::style('private/css/smartadmin-skins.min.css') }}
+	{{ HTML::style('private/css/font-awesome.min.css') }}
+    {{ HTML::style('private/css/redactor.css') }}
 	{{ HTML::style('private/css/your_style.css') }}
 
 	<link rel="shortcut icon" href="{{ asset('private/img/favicon/favicon.png') }}" type="image/x-icon">

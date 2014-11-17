@@ -2,7 +2,6 @@
 
 
 @section('style')
-    {{ HTML::style('css/redactor.css') }}
     @if (@trim($dic_settings['style']))
     <style>
         {{ $dic_settings['style'] }}
@@ -393,17 +392,15 @@
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runDicValFormValidation === 'function') {
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
 		} else {
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}");
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}");
 		}        
 	</script>
 
-    {{ HTML::script('js/vendor/redactor.min.js') }}
-    {{ HTML::script('js/system/redactor-config.js') }}
-
-    {{-- HTML::script('js/modules/gallery.js') --}}
-    {{ HTML::script('js/plugin/select2/select2.min.js') }}
+    {{ HTML::script('private/js/vendor/redactor.min.js') }}
+    {{ HTML::script('private/js/system/redactor-config.js') }}
+    {{ HTML::script('private/js/plugin/select2/select2.min.js') }}
 
     @if (@trim($dic_settings['javascript']))
     <script>

@@ -3,6 +3,7 @@
 /public/static/psd
 /public/uploads
 node_modules
+less
 
 /usersfiles
 /psd

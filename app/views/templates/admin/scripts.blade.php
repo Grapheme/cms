@@ -15,10 +15,10 @@
 	{{ HTML::script('private/js/vendor/smartclick.js') }}
 	{{ HTML::script('private/js/vendor/dropzone.min.js') }}
 
+    {{ HTML::script('private/js/plugin/pace/pace.min.js', array('data-pace-options' => '{ "restartOnRequestAfter": true }')) }}
+
 	{{ HTML::script('private/js/system/messages.js') }}
 	{{ HTML::script('private/js/system/main.js') }}
 	{{ HTML::script('private/js/system/app.js') }}
-
-    {{ HTML::script('private/js/plugin/pace/pace.min.js', array('data-pace-options' => '{ "restartOnRequestAfter": true }')) }}
 
     {{ HTML::script(URL::route('collector-js')) }}
