@@ -378,6 +378,11 @@ HTML;
 
                 #$return .= "\n<!--\n" . $_SERVER['REQUEST_URI'] . "\n" . $menu['link'] . "\n-->\n";
 
+                #if (isset($menu['others'])) {
+                #    Helper::d(@$menu['others']);
+                #    Helper::dd(self::arrayToAttributes($menu['others']));
+                #}
+
                 $additional = isset($menu['others']) ? self::arrayToAttributes($menu['others']) : '';
 
                 $return .= '<a class="' . @$menu['class'] . ($child_exists ? '' : ' margin-bottom-5') . '" href="' . $menu['link'] . '" ' . $additional . '>'
@@ -608,8 +613,13 @@ HTML;
 
         $line = '';
         foreach ($array as $key => $value) {
-            if (is_string($key) && (is_string($value) || is_int($value))) {
-                $line = $key . '="' . $value . '" ';
+            if (
+                is_string($key)
+                && (
+                    is_string($value) || is_int($value)
+                )
+            ) {
+                $line .= $key . '="' . $value . '" ';
             }
         }
         $line = trim($line);

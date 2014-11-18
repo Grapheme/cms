@@ -45,6 +45,7 @@ $(function(){
                             //showMessage.smallSuccess();
                             //$($this).parents('tr').fadeOut(500,function(){$(this).remove();});
                             location.href = $($this).attr('data-goto');
+                            return false;
                         } else {
                             $($this).elementDisabled(false);
                             showMessage.constructor('Удаление', 'Возникла ошибка. Обновите страницу и повторите снова.');

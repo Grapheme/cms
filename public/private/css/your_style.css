@@ -812,8 +812,8 @@ div.redactor_dropdown {
 
 .dd.dicval-list {
     display: block;
-    width: auto;
-    min-width: 800px;
+    width: 100%;
+    min-width: 600px;
     max-width: 1200px;
 }
 
@@ -881,4 +881,16 @@ nav > ul > li > a b {
 .dd-item > button[data-action="expand"]::before {
     color: #3276B1;
     content: "\f0fe";
+}
+
+
+
+
+
+.dicval-lines {
+    white-space: nowrap;
+    //max-width: 800px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px;
 }

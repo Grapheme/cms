@@ -11,7 +11,7 @@
 		<form action="{{ URL::route('modules.change') }}" class="smart-form">
                 {{--<label class="label">Список доступных модулей:</label>--}}
 
-                <table class="table table-bordered table-striped white-bg">
+                <table class="table table-bordered table-striped white-bg modules-list">
                     <?
                     #Helper::d(SystemModules::getModules());
                     $modules_info = Config::get('mod_info');
@@ -51,10 +51,8 @@
 
 @section('scripts')
 
-	{{ HTML::script('js/modules/settings.js') }}
-
     <script>
-        $(document).on("mouseover", ".sortable", function(e){
+        $(document).on("mouseover", ".modules-list .sortable", function(e){
             // Check flag of sortable activated
             if ( !$(this).data('sortable') ) {
                 // Activate sortable, if flag is not initialized

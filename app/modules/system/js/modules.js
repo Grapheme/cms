@@ -20,6 +20,7 @@ $(function(){
 			showMessage.smallInfo();
 		});
 	});
+    /*
 	$('.lang-change').on('change', function(){
 			var $_form = $(this).parent();
 			var $id = $(this).val();
@@ -37,4 +38,5 @@ $(function(){
 				});
 			});
 		});
+    */
 });

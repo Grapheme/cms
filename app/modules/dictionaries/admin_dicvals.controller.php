@@ -698,24 +698,24 @@ class AdminDicvalsController extends BaseController {
             if (@count($element->allfields)) {
                 #foreach ($element->allfields as $el)
                 #    $el->delete();
-                $temp_ids = Dic::makeLists($element->allfields, 'id');
+                $temp_ids = Dic::makeLists($element->allfields, false, 'id');
                 DicFieldVal::whereIn('id', $temp_ids)->delete();
             }
 
             if (@count($element->alltextfields)) {
-                $temp_ids = Dic::makeLists($element->alltextfields, 'id');
+                $temp_ids = Dic::makeLists($element->alltextfields, false, 'id');
                 DicTextFieldVal::whereIn('id', $temp_ids)->delete();
             }
 
             if (@count($element->metas)) {
                 #foreach ($element->metas as $el)
                 #    $el->delete();
-                $temp_ids = Dic::makeLists($element->metas, 'id');
+                $temp_ids = Dic::makeLists($element->metas, false, 'id');
                 DicValMeta::whereIn('id', $temp_ids)->delete();
             }
 
             if (@count($element->seos)) {
-                $temp_ids = Dic::makeLists($element->seos, 'id');
+                $temp_ids = Dic::makeLists($element->seos, false, 'id');
                 Seo::whereIn('id', $temp_ids)->delete();
             }
 

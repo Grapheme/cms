@@ -48,6 +48,9 @@ class NestedSetModel {
 
     public function get_hierarchy_from_id_left_right($id_left_right) {
 
+        if (!isset($id_left_right) || !$id_left_right || !is_array($id_left_right) || !count($id_left_right))
+            return false;
+
         $this->id_left_right = $id_left_right;
 
         $this->parent_id = 0;
