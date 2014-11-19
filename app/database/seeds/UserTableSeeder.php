@@ -8,9 +8,9 @@ class UserTableSeeder extends Seeder{
 
 		User::create(array(
             'group_id'=>1,
-			'name'=>'Администратор',
+			'name'=>'Разработчик',
 			'surname'=>'',
-			'email'=>'admin@test.ru',
+			'email'=>'developer@test.ru',
 			'active'=>1,
 			'password'=>Hash::make('grapheme1234'),
 			'photo'=>'',
@@ -21,9 +21,9 @@ class UserTableSeeder extends Seeder{
 
 		User::create(array(
             'group_id'=>2,
-			'name'=>'Пользователь',
+			'name'=>'Администратор',
 			'surname'=>'',
-			'email'=>'user@test.ru',
+			'email'=>'admin@test.ru',
 			'active'=>1,
 			'password'=>Hash::make('000000'),
 			'photo'=>'',

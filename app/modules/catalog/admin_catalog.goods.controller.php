@@ -1,11 +1,11 @@
 <?php
 
-class AdminCatalogCategoriesController extends BaseController {
+class AdminCatalogGoodsController extends BaseController {
 
-    public static $name = 'category';
+    public static $name = 'good';
     public static $group = 'catalog';
-    public static $entity = 'category';
-    public static $entity_name = 'категория';
+    public static $entity = 'good';
+    public static $entity_name = 'товар';
 
     /****************************************************************************/
 
@@ -51,7 +51,7 @@ class AdminCatalogCategoriesController extends BaseController {
         
     /****************************************************************************/
     
-	public function __construct() {
+	public function __construct(){
 
         $this->module = array(
             'name' => self::$name,
@@ -69,7 +69,9 @@ class AdminCatalogCategoriesController extends BaseController {
         View::share('module', $this->module);
 	}
 
-	public function index() {
+
+
+	public function index(){
 
         Allow::permission($this->module['group'], 'categories_view');
 
@@ -82,30 +84,13 @@ class AdminCatalogCategoriesController extends BaseController {
         $elements = $elements
             ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
             ->orderBy($tbl_cat_category . '.created_at', 'ASC')
-            ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta')
+            ->orderBy('name', 'ASC')
         ;
-
-        /**
-         * Если задана корневая категория - выбираем только ее содержимое
-         */
-        $root_category = null;
-        if (NULL !== ($root_id = Input::get('root'))) {
-            $root_category = CatalogCategory::find($root_id);
-            #Helper::tad($root_category);
-            if (is_object($root_category)) {
-                $elements = $elements
-                    ->where('lft', '>', $root_category->lft)
-                    ->where('rgt', '<', $root_category->rgt)
-                    ;
-            }
-        }
 
         /**
          * Получаем все категории из БД
          */
         $elements = $elements->get();
-        $elements = DicVal::extracts($elements, 1);
         $elements = Dic::modifyKeys($elements, 'id');
 
         /**
@@ -127,37 +112,62 @@ class AdminCatalogCategoriesController extends BaseController {
 
         $sortable = 9;
 
-        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category'));
+        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable'));
 	}
 
     /************************************************************************************/
 
-	public function create() {
+	#public function getCreate($entity){
+	public function create(){
 
-        Allow::permission($this->module['group'], 'categories_create');
+        Allow::permission($this->module['group'], 'create');
 
-        $element = new CatalogCategory();
-
-        $locales = Config::get('app.locales');
-
-		return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+        $element = new Dictionary;
+		return View::make($this->module['tpl'].'edit', compact('element'));
 	}
     
 
-	public function edit($id) {
+	#public function getEdit($entity, $id){
+	public function edit($id){
 
-        Allow::permission($this->module['group'], 'categories_edit');
+        Allow::permission($this->module['group'], 'edit');
 
-		$element = CatalogCategory::where('id', $id)
-            ->with('seos')
-            ->first()
-            ->extract();
+		$element = Dictionary::find($id);
 
-        $locales = Config::get('app.locales');
+        $dic_fields_array = array();
+        if (NULL !== ($dic_fields = Config::get('dic/' . $element->slug . '.fields'))) {
+            if (is_callable($dic_fields)) {
+                $dic_fields = $dic_fields();
+                $temp = array();
+                foreach ($dic_fields as $field_name => $field_array) {
+                    if (!isset($field_array['title']) || !$field_array['title'])
+                        continue;
+                    $temp[$field_name] = $field_array['title'];
+                }
+                if (count($temp))
+                    $dic_fields_array['Обычные поля'] = $temp;
 
-        #Helper::tad($element);
+            }
+        }
+        if (NULL !== ($dic_fields = Config::get('dic/' . $element->slug . '.fields_i18n'))) {
+            if (is_callable($dic_fields)) {
+                $dic_fields = $dic_fields();
+                $temp = array();
+                foreach ($dic_fields as $field_name => $field_array) {
+                    if (!isset($field_array['title']) || !$field_array['title']) {
+                        continue;
+                    }
+                    $temp[$field_name] = $field_array['title'];
+                }
+                if (count($temp)) {
+                    $dic_fields_array['Мультиязычные поля'] = $temp;
+                }
+            }
+        }
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+        #Helper::dd($dic_fields_array);
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'dic_fields_array'));
 	}
 
 
@@ -166,133 +176,75 @@ class AdminCatalogCategoriesController extends BaseController {
 
 	public function store() {
 
-        Allow::permission($this->module['group'], 'categories_create');
+        Allow::permission($this->module['group'], 'create');
 		return $this->postSave();
 	}
 
 
 	public function update($id) {
 
-        Allow::permission($this->module['group'], 'categories_edit');
+        Allow::permission($this->module['group'], 'edit');
 		return $this->postSave($id);
 	}
 
 
 	public function postSave($id = false){
 
+        #Helper::dd($entity);
+
         if (@$id)
-            Allow::permission($this->module['group'], 'categories_edit');
+            Allow::permission($this->module['group'], 'edit');
         else
-            Allow::permission($this->module['group'], 'categories_create');
+            Allow::permission($this->module['group'], 'create');
 
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogCategory::find($id)))
-            $element = new CatalogCategory();
-
+        #$id = Input::get('id');
+                
         $input = Input::all();
 
-        /**
-         * Проверяем системное имя
-         */
-        if (!trim($input['slug'])) {
-            $input['slug'] = $input['name'];
+        if (Allow::action($this->module['group'], 'settings')) {
+            $input['entity'] = Input::get('entity') ? 1 : NULL;
+            $input['hide_slug'] = Input::get('hide_slug') ? 1 : NULL;
+            $input['make_slug_from_name'] = Input::get('make_slug_from_name') > 0 ? (int)Input::get('make_slug_from_name') : NULL;
+            $input['name_title'] = Input::get('name_title') ?: NULL;
+            $input['view_access'] = Input::get('view_access') ?: NULL;
+            $input['sortable'] = Input::get('sortable') ? (int)Input::get('sortable') : 0;
+            $input['sort_by'] = Input::get('sort_by') != 'order' ? Input::get('sort_by') : NULL;
         }
-        $input['slug'] = Helper::translit($input['slug']);
-
-        $slug = $input['slug'];
-        $exit = false;
-        $i = 1;
-        do {
-            $test = CatalogCategory::where('slug', $slug)->first();
-            #Helper::dd($count);
-
-            if (!is_object($test) || $test->id == $element->id) {
-                $input['slug'] = $slug;
-                $exit = true;
-            } else
-                $slug = $input['slug'] . (++$i);
-
-            if ($i >= 10 && !$exit) {
-                $input['slug'] = $input['slug'] . md5(rand(999999, 9999999) . '-' . time());
-                $exit = true;
-            }
-
-        } while (!$exit);
-
-        #Helper::dd($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
 
-        $json_request = array('status' => FALSE, 'responseText' => '', 'responseErrorText' => '', 'redirect' => FALSE);
+        $json_request = array('status'=>FALSE, 'responseText'=>'', 'responseErrorText'=>'', 'redirect'=>FALSE);
 		$validator = Validator::make($input, array('name' => 'required'));
 		if($validator->passes()) {
 
-            #$redirect = false;
+            $redirect = false;
 
-            if ($element->id > 0) {
+            if ($id > 0 && NULL !== ($element = Dictionary::find($id))) {
+
+                #$json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
+                #return Response::json($json_request,200);
 
                 $element->update($input);
                 $redirect = false;
 
-                /**
-                 * Обновим slug на форме
-                 */
-                if (Input::get('slug') != $input['slug']) {
-                    $json_request['form_values'] = array('input[name=slug]' => $input['slug']);
-                }
-
             } else {
 
-                /**
-                 * Ставим элемент в конец списка
-                 */
-                $temp = CatalogCategory::selectRaw('max(rgt) AS max_rgt')->first();
-                $input['lft'] = $temp->max_rgt+1;
-                $input['rgt'] = $temp->max_rgt+2;
-
+                $element = new Dictionary;
                 $element->save();
                 $element->update($input);
-                $insert_id = $element->id;
-                #$redirect = action('dicval.index', array('dic_id' => $dic_id));
-                $redirect = Input::get('redirect');
+                $dic_id = $element->id;
+                $redirect = action('dicval.index', array('dic_id' => $dic_id));
             }
 
-            /**
-             * Сохраняем SEO-данные
-             */
-            if (
-                Allow::module('seo')
-                && Allow::action('seo', 'edit')
-                && Allow::action($this->module['group'], 'categories_seo')
-                && isset($input['seo']) && is_array($input['seo']) && count($input['seo'])
-            ) {
-                foreach ($input['seo'] as $locale_sign => $seo_array) {
-                    ## SEO
-                    if (is_array($seo_array) && count($seo_array)) {
-                        ###############################
-                        ## Process SEO
-                        ###############################
-                        ExtForm::process('seo', array(
-                            'module'  => 'CatalogCategory',
-                            'unit_id' => $element->id,
-                            'data'    => $seo_array,
-                            'locale'  => $locale_sign,
-                        ));
-                        ###############################
-                    }
-                }
-            }
-
-            $json_request['responseText'] = 'Сохранено';
+			$json_request['responseText'] = 'Сохранено';
             if ($redirect)
 			    $json_request['redirect'] = $redirect;
 			$json_request['status'] = TRUE;
-
 		} else {
-
 			$json_request['responseText'] = 'Неверно заполнены поля';
 			$json_request['responseErrorText'] = $validator->messages()->all();
 		}
@@ -301,47 +253,21 @@ class AdminCatalogCategoriesController extends BaseController {
 
     /************************************************************************************/
 
+	#public function deleteDestroy($entity, $id){
 	public function destroy($id){
 
-        Allow::permission($this->module['group'], 'categories_delete');
+        Allow::permission($this->module['group'], 'delete');
 
 		if(!Request::ajax())
             App::abort(404);
 
-		$json_request = array('status' => FALSE, 'responseText' => '');
+		$json_request = array('status'=>FALSE, 'responseText'=>'');
 
-        $element = CatalogCategory::find($id);
+        if (NULL !== Dictionary::find($id))
+            Dictionary::find($id)->delete();
 
-        if (is_object($element)) {
-
-            /**
-             * Удаление:
-             * - товаров категории,
-             * + SEO-данных,
-             * - связок с атрибутами,
-             * - мета-данных
-             * + и самой категории
-             */
-
-            if (Allow::module('seo')) {
-                Seo::where('module', 'CatalogCategory')
-                    ->where('unit_id', $element->id)
-                    ->delete()
-                ;
-            }
-
-            $element->delete();
-
-            /**
-             * Сдвигаем категории в общем дереве
-             */
-            if ($element->rgt)
-                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
-
-            $json_request['responseText'] = 'Удалено';
-            $json_request['status'] = TRUE;
-        }
-
+		$json_request['responseText'] = 'Удалено';
+		$json_request['status'] = TRUE;
 		return Response::json($json_request,200);
 	}
 
@@ -353,15 +279,6 @@ class AdminCatalogCategoriesController extends BaseController {
         $data = json_decode($data, 1);
         #Helper::dd($data);
 
-        $offset = 0;
-        $root_id = (int)Input::get('root');
-        if ($root_id > 0) {
-            $root_category = CatalogCategory::find($root_id);
-            if (is_object($root_category)) {
-                $offset = $root_category->lft;
-            }
-        }
-
         if (count($data)) {
 
             $id_left_right = (new NestedSetModel())->get_id_left_right($data);
@@ -372,8 +289,8 @@ class AdminCatalogCategoriesController extends BaseController {
 
                 if (count($cats)) {
                     foreach ($cats as $cat) {
-                        $cat->lft = $id_left_right[$cat->id]['left'] + $offset;
-                        $cat->rgt = $id_left_right[$cat->id]['right'] + $offset;
+                        $cat->lft = $id_left_right[$cat->id]['left'];
+                        $cat->rgt = $id_left_right[$cat->id]['right'];
                         $cat->save();
                     }
                 }

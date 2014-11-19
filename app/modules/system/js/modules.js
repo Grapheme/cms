@@ -4,7 +4,7 @@
  
 $(function(){
 	
-	$('.module-checkbox').on('change', function(){
+	$('.modules-list  .module-checkbox').on('change', function(){
 		
 		var $this = $(this);
 		var $value = 0;

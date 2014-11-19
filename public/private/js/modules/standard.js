@@ -86,7 +86,10 @@ function runFormValidation() {
 					showMessage.smallError();
 				}
 
-                if(typeof response.form_values != 'undefined' && response.form_values.length) {
+                //alert(typeof response.form_values);
+                //alert(response.form_values.length);
+
+                if(typeof response.form_values == 'object') {
                     $(response.form_values).each(function(i) {
                         //alert(i + ' > ' + data[i] + " | ");
                         $.each(response.form_values, function(i, val) {

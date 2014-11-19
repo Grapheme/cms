@@ -44,7 +44,7 @@
                                         <label for="act_{{ $module_name }}_{{ $a }}">{{ @$action }}</label>
                                     </div>
                                     <div class="col col-4">
-            							<input type="checkbox"{{ $checked }} value="{{ $a }}" name="actions[{{ $module_name }}][]" class="module-checkbox" id="act_{{ $module_name }}_{{ $a }}">
+            							<input type="checkbox"{{ $checked }} value="{{ $a }}" name="actions[{{ $module_name }}][]" class="group-checkbox" id="act_{{ $module_name }}_{{ $a }}">
         								<i data-swchon-text="вкл" data-swchoff-text="выкл"></i> 
                                     </div>
             					@endforeach
@@ -125,13 +125,12 @@
 
 
 @section('scripts')
-	<script src="{{ link::to('js/modules/groups.js') }}"></script>
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
-		if(typeof runFormValidation === 'function'){
-			loadScript("{{ asset('js/vendor/jquery-form.min.js') }}", runFormValidation);
-		}else{
-			loadScript("{{ asset('js/vendor/jquery-form.min.js') }}");
+		if(typeof runFormValidation === 'function') {
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js') }}", runFormValidation);
+		} else {
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js') }}");
 		}
 	</script>
 @stop

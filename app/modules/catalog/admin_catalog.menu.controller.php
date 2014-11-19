@@ -26,6 +26,7 @@ class AdminCatalogMenuController extends BaseController {
             'categories_create'  => 'Создание категорий',
             'categories_edit'    => 'Редактирование категорий',
             'categories_delete'  => 'Удаление категорий',
+            'categories_seo'     => 'SEO-оптимизация категорий',
         );
     }
 
@@ -61,7 +62,7 @@ class AdminCatalogMenuController extends BaseController {
 
         if (Allow::action(self::$group, 'attributes_view', false, true))
             $menu_child[] = array(
-                'title' => 'Аттрибуты',
+                'title' => 'Атрибуты',
                 'link' => self::$group . '/attribute',
                 'class' => 'fa-puzzle-piece',
             );
@@ -72,6 +73,7 @@ class AdminCatalogMenuController extends BaseController {
                 'link' => '#',
                 'class' => 'fa-folder-open-o',
                 'system' => 1,
+                'permit' => 'catalog_allow',
                 'menu_child' => $menu_child,
             );
 

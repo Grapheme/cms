@@ -50,6 +50,8 @@ class Allow {
             #Helper::dd(@self::$modules);
             #Helper::d(@self::$modules[$module_name]);
 
+            #echo ' [ ' . @self::$modules[$module_name]['system'] . ' ] ';
+
             if (
                 !$check_module_enabled
                 || (
@@ -64,12 +66,16 @@ class Allow {
                 /**
                  * @todo Полные права на действия админа, т.к. новые имена модулей не совпадают со старыми ролями ( news != admin_news ). Нужно во всех модулях поменять valid_action_permission на Action
                  */
+                #Helper::d($user_group->id);
+
                 ## Grants all to ADMIN
                 if ($user_group->id == '1' && $admin_grants_all) {
 
                     $access = true;
 
                 } else {
+
+                    #Helper::d("?");
 
                     $module = isset(self::$modules[$module_name]) ? self::$modules[$module_name] : null;
 
@@ -90,7 +96,7 @@ class Allow {
                 }
             }
 		}
-        #Helper::d($module_name . " @ " . $action . " = " . $access);
+        #Helper::d($module_name . " @ " . $action . " = " . $access . "\n");
 		return $access;
 	}
 

@@ -62,7 +62,7 @@ class SystemModules {
                         ## If permit to view menu element
                         $rules = @$menu_element['permit'];
                         $module = @$menu_element['module'] ?: $mod_name;
-                        $permit = $rules ? Allow::action($module, $rules, true, true) : true;
+                        $permit = $rules ? Allow::action($module, $rules, true, false) : true;
 
                         #Helper::d($module . " :: " . $permit . " :: " . $rules);
                         #Helper::d( $menu_element['title'] . " - " . (int)$permit );

@@ -75,5 +75,4 @@
 
 
 @section('scripts')
-	<script src="{{ link::to('js/modules/groups.js') }}"></script>
 @stop

@@ -29,7 +29,7 @@ class ModulesTableSeeder extends Seeder{
 		));
 
 		Module::create(array(
-			'name' => 'news',
+			'name' => 'catalog',
 			'on' => 1,
 			'order'=> 4
 		));

@@ -1,30 +1,363 @@
-/*
- * It is advised not to edit the smartadmin_production.css
- * as this will override any changes you make in the 
- * later versions of this theme. 
- * 
- * We advise that you use use this CSS to override 
- * SmartAdmin styles. 
- * 
- * Rename the stylesheet to whatever your liking so it will stay
- * unique to you with each update of SmartAdmin.
- */
-
-/*
- * INDEX
- * 
- * - HTML
- * - BODY
- * - CUSTOM STYLES
- */
-
-.smart-style-0 #header{
-    background-image:none;background-color:#1E1E1E
+.smart-style-2 #shortcut {
+	background-color: rgba(44, 55, 66, .9);
 }
 
-.smart-style-2 #left-panel { 
-    padding-top: 15px;
+body.smart-style-2 {
+	background:#fff;
 }
+
+.smart-style-2 #header, .smart-style-2 .inbox-footer, .smart-style-2 .superbox-show {
+	background-image:none;
+	background-color: #2C3742;
+}
+.smart-style-2 .superbox-list.active:before {
+	color: #2C3742;
+}
+
+.smart-style-2 .superbox-img-description  {
+	color:#9EA8B1 !important;
+}
+
+.smart-style-2 #project-context>:first-child {
+	text-shadow:none;
+}
+.smart-style-2 #project-selector {
+	color: #B2C1D5;
+}
+.smart-style-2 #project-selector:hover {
+	color: #fff;
+}
+
+.smart-style-2 #logo-group span#activity {
+	background:none !important;
+	border:none !important;
+	color:#C5C6CA;
+}
+.smart-style-2 #logo-group span#activity:hover {
+	color:#fff;
+}
+
+.smart-style-2 .header-search>input[type="text"] {
+	background: #161B22;
+	border: 1px solid #0F1217;
+	color:#fff;
+	border-radius:4px;
+}
+
+.smart-style-2 .btn-header>:first-child>a {
+	background:none;
+	border:none !important;
+	color: #C5C6CA;
+	box-shadow:none !important;
+}
+.smart-style-2 .btn-header>:first-child>a:hover {
+	color:#fff;
+	cursor:pointer !important;
+}
+
+.smart-style-2 .header-search>button, 
+.smart-style-2 .header-dropdown-list a.dropdown-toggle {
+	color: #C5C6CA;
+}
+
+.smart-style-2 #ribbon {
+	background:#fff;
+}
+
+.smart-style-2 .btn.btn-ribbon {
+	background: #9498A0;
+}
+
+.smart-style-2 #ribbon .breadcrumb li:last-child, 
+.smart-style-2 #ribbon .breadcrumb>.active, 
+.smart-style-2 #ribbon .breadcrumb, 
+.smart-style-2 #ribbon .breadcrumb a {
+	color: #7C7C7C !important;
+}
+
+.smart-style-2 aside {
+	background: #F7F7F7;
+	background: -webkit-gradient(linear,left top,right top,color-stop(99%,#F7F7F7),color-stop(100%,#CACACA));
+	background: -webkit-linear-gradient(left,#F7F7F7 99%,#CACACA 100%);
+	background: -webkit-gradient(linear,top left,top right,from(#F7F7F7),to(#CACACA));
+	background: linear-gradient(to right,#F7F7F7 99%,#CACACA 100%);
+	min-height: 100%;
+}
+
+.smart-style-2 #left-panel {
+	padding:15px;
+}
+
+.smart-style-2 #logo-group>span .badge {
+	background: #008DC4;
+}
+
+.smart-style-2 .login-info span, 
+.smart-style-2 .login-info {
+	border: 0 !important; 
+	box-shadow:none !important;
+}
+
+.smart-style-2 .login-info span {
+	padding: 5px 10px 7px;
+	background: #FFF;
+	border-radius: 4px;
+}
+
+.smart-style-2 .login-info { 
+	margin-bottom:18px !important;	
+}
+
+.smart-style-2 .login-info a, 
+.smart-style-2 .login-info strong {
+	font-size: 16px;
+	color: #33455A;
+}
+
+.smart-style-2 .login-info img {
+	width:35px;
+}
+
+.smart-style-2 nav ul li a {
+	color: #69737A !important;
+	font-size:12px !important;
+}
+
+.smart-style-2 nav > ul > li > a {
+	padding-top:16px;
+	padding-bottom:16px;
+}
+
+.smart-style-2 nav ul ul>li:hover b {
+	color: #69737A !important;
+}
+
+.smart-style-2 nav>ul>li>a>i {
+	font-size:25px !important;
+}
+
+.smart-style-2 nav ul ul {
+	background: none;
+}
+
+.smart-style-2 nav ul li.open>a, 
+.smart-style-2 nav ul li.open>a b, 
+.smart-style-2 nav ul .active>a {
+	color: #202427 !important;
+	font-weight: bold;
+}
+
+.smart-style-2 nav ul ul li>a:hover, 
+.smart-style-2 nav ul li a:hover {
+	color: #202427 !important;
+	background:none !important;
+}
+
+.smart-style-2 nav ul ul li>a {
+	padding-left:23px;
+}
+
+.smart-style-2 nav > ul > li > ul::before, 
+.smart-style-2 nav > ul ul li::before {
+	border: none !important;
+}
+
+.smart-style-2 nav ul ul ul li a {
+	padding-left:30px;
+}
+
+.smart-style-2 nav ul ul ul ul li a {
+	padding-left:40px;
+}
+
+.smart-style-2 nav ul ul ul ul ul li a {
+	padding-left:50px;
+}
+
+.smart-style-2 nav ul ul ul ul ul ul li a {
+	padding-left:60px;
+}
+
+.smart-style-2 .jarviswidget-color-blueDark>header {
+	
+	background: #2C3742 !important;
+	border-color: #2C3742!important;
+}
+
+.smart-style-2 .btn-primary, .smart-style-2 .smart-form .button{
+	background-color: #3b9ff3;
+	border-color: #3292E2;
+}
+
+.smart-style-2 .btn-primary:hover, 
+.smart-style-2 .btn-primary:focus, 
+.smart-style-2 .btn-primary:active, 
+.smart-style-2 .btn-primary.active, 
+.smart-style-2 .open .dropdown-toggle.btn-primary {
+	background-color: #3E90D4;
+	border-color: #2F7DBE;
+}
+
+.smart-style-2 .dropdown-menu>li>a:hover, 
+.smart-style-2 .dropdown-menu>li>a:focus {
+	background-color: #3E90D4;
+}
+
+
+
+.smart-style-2 .btn-success {
+	background-color: #96bf48;
+	border-color: #84A83E;
+}
+
+.smart-style-2 .btn-success:hover, 
+.smart-style-2 .btn-success:focus, 
+.smart-style-2 .btn-success:active, 
+.smart-style-2 .btn-success.active, 
+.smart-style-2 .open .dropdown-toggle.btn-success {
+	background-color: #89AD45;
+	border-color: #78973B;
+}
+
+.smart-style-2 .btn-danger {
+	background-color: #DB4A67;
+	border-color: #CA4862;
+}
+
+.smart-style-2 .btn-danger:hover, 
+.smart-style-2 .btn-danger:focus, 
+.smart-style-2 .btn-danger:active, 
+.smart-style-2 .btn-danger.active, 
+.smart-style-2 .open .dropdown-toggle.btn-danger {
+	background-color: #CF4762;
+	border-color: #C0455E;
+}
+
+
+.smart-style-2 .btn-warning {
+	background-color: #E2B14A;
+	border-color: #C99D42;
+}
+
+.smart-style-2 .btn-warning:hover, 
+.smart-style-2 .btn-warning:focus, 
+.smart-style-2 .btn-warning:active, 
+.smart-style-2 .btn-warning.active, 
+.smart-style-2 .open .dropdown-toggle.btn-warning {
+	background-color: #D6A848;
+	border-color: #C09844;
+}
+
+.smart-style-2 .pagination>.active>a, 
+.smart-style-2 .pagination>.active>span, 
+.smart-style-2 .pagination>.active>a:hover, 
+.smart-style-2 .pagination>.active>span:hover, 
+.smart-style-2 .pagination>.active>a:focus, 
+.smart-style-2 .pagination>.active>span:focus {
+	background-color: #3b9ff3;
+}
+
+/*
+ * MINIFIED
+ */
+.smart-style-2.minified #left-panel {
+	padding:0 !important;
+}
+
+.smart-style-2.minified nav ul>li>a {
+padding: 12px 11px;
+}
+
+.smart-style-2.minified nav>ul>li>ul, .smart-style-2.minified nav>ul>li>ul>li, .smart-style-2.minified nav>ul>li>ul>li>ul>li {
+	background:#fff !important;
+}
+
+.smart-style-2.minified nav>ul>li {
+	border-bottom: 1px solid #E6E6E6;
+	border-top: 1px solid #FFFFFF;
+}
+
+
+.smart-style-2.minified nav>ul>li>a>i {
+	font-size:18px !important;
+}
+
+.smart-style-2.minified .login-info span {
+	padding:0;
+}
+
+.smart-style-2.minified .login-info {
+	margin:0 !important;
+}
+
+
+.smart-style-2.minified nav ul li.active>a:before {
+	height: 23px;
+	right: -19px;
+	top: 7px;
+	font-size: 20px;
+	color: #FFFFFF;
+}
+
+/*
+ * COLOR PALLET
+ */
+.smart-style-2 .bg-color-red {
+	background: #DB4A67 !important;
+}
+
+.smart-style-2 .bg-color-blue {
+	background: #4387bf !important;
+}
+
+.smart-style-2 .smart-form .checkbox input:checked+i, 
+.smart-style-2 .smart-form .radio input:checked+i, 
+.smart-style-2 .smart-form .toggle input:checked+i {
+	border-color: #3b9ff3;
+}
+
+.smart-style-2 .smart-form .toggle i:before {
+background-color: #3b9ff3;
+}
+
+.smart-form .rating input+label:hover, 
+.smart-form .rating input+label:hover~label {
+	color: #3b9ff3;
+}
+
+.smart-style-2 .bg-color-greenLight {
+	background-color: #89AD45 !important;
+}
+
+.smart-style-2 .bg-color-orange {
+	background-color: #D6A848 !important;
+}
+
+.smart-style-2 .bg-color-teal {
+	background-color: #5ba0a3 !important;
+}
+
+.smart-style-2 .minifyme {
+	background: #D7DAE2;
+	border-bottom: 1px solid #818181;
+	color: #7E7E7E;
+}
+
+.smart-style-2  .minifyme:hover {
+	color: #4E4E4E;
+}
+
+.smart-style-2 .onoffswitch-inner:before {
+	background: #3b9ff3;
+	border-color: #3b9ff3 #257DC7 #2A7DC4;
+}
+
+.smart-style-2 .onoffswitch-checkbox:checked+.onoffswitch-label .onoffswitch-switch:before {
+	color: #84A83E;
+}
+
+/********************************************************************* STYLE 3 *************************************************************/
+
 
 #sign-in-form .clickedit {
 	border: 1px dashed #E4E4E4;
@@ -59,213 +392,36 @@ margin-left: 0;
 	text-transform: uppercase;
 }
 
-
-.margin-top-7 {
-    margin-top: 7px !important;
-}
-
-
-.margin-0 {
-    margin: 0px !important;
-}
-.margin-5 {
-    margin: 5px !important;
-}
-.margin-10 {
-    margin: 10px !important;
-}
-.margin-15 {
-    margin: 15px !important;
-}
-.margin-20 {
-    margin: 20px !important;
-}
-.margin-25 {
-    margin: 25px !important;
-}
-
-
-.margin-top-0 {
-    margin-top: 0px !important;
-}
 .margin-top-5 {
-    margin-top: 5px !important;
+	margin-top: 5px !important;
+}
+.margin-top-7 {
+	margin-top: 7px !important;
 }
 .margin-top-10 {
-    margin-top: 10px !important;
-}
-.margin-top-15 {
-    margin-top: 15px !important;
-}
-.margin-top-20 {
-    margin-top: 20px !important;
-}
-.margin-top-25 {
-    margin-top: 25px !important;
-}
-
-
-.margin-bottom-0 {
-    margin-bottom:0px !important;
+	margin-top: 10px !important;
 }
 .margin-bottom-5 {
-    margin-bottom: 5px !important;
+	margin-bottom: 5px !important;
 }
 .margin-bottom-10 {
-    margin-bottom: 10px !important;
-}
-.margin-bottom-15 {
-    margin-bottom: 15px !important;
-}
-.margin-bottom-20 {
-    margin-bottom: 20px !important;
-}
-.margin-bottom-25 {
-    margin-bottom: 25px !important;
-}
-
-
-.margin-left-0 {
-    margin-left:0px !important;
-}
-.margin-left-5 {
-    margin-left: 5px !important;
-}
-.margin-left-10 {
-    margin-left: 10px !important;
-}
-.margin-left-15 {
-    margin-left: 15px !important;
-}
-.margin-left-20 {
-    margin-left: 20px !important;
-}
-.margin-left-25 {
-    margin-left: 25px !important;
-}
-
-
-.margin-right-0 {
-    margin-right:0px !important;
+	margin-bottom: 10px !important;
 }
 .margin-right-5 {
-    margin-right: 5px !important;
+	margin-right: 5px !important;
+}
+.margin-left-5 {
+	margin-left: 5px !important;
+}
+.margin-left-15 {
+	margin-left: 15px !important;
 }
 .margin-right-10 {
-    margin-right: 10px !important;
+	margin-right: 10px !important;
 }
-.margin-right-15 {
-    margin-right: 15px !important;
+.margin-bottom-25 {
+	margin-bottom: 25px !important;
 }
-.margin-right-20 {
-    margin-right: 20px !important;
-}
-.margin-right-25 {
-    margin-right: 25px !important;
-}
-
-
-.padding-0 {
-    padding: 0px !important;
-}
-.padding-5 {
-    padding: 5px !important;
-}
-.padding-10 {
-    padding: 10px !important;
-}
-.padding-15 {
-    padding: 15px !important;
-}
-.padding-20 {
-    padding: 20px !important;
-}
-.padding-25 {
-    padding: 25px !important;
-}
-
-
-.padding-top-0 {
-    padding-top: 0px !important;
-}
-.padding-top-5 {
-    padding-top: 5px !important;
-}
-.padding-top-10 {
-    padding-top: 10px !important;
-}
-.padding-top-15 {
-    padding-top: 15px !important;
-}
-.padding-top-20 {
-    padding-top: 20px !important;
-}
-.padding-top-25 {
-    padding-top: 25px !important;
-}
-
-
-.padding-bottom-0 {
-    padding-bottom:0px !important;
-}
-.padding-bottom-5 {
-    padding-bottom: 5px !important;
-}
-.padding-bottom-10 {
-    padding-bottom: 10px !important;
-}
-.padding-bottom-15 {
-    padding-bottom: 15px !important;
-}
-.padding-bottom-20 {
-    padding-bottom: 20px !important;
-}
-.padding-bottom-25 {
-    padding-bottom: 25px !important;
-}
-
-
-.padding-left-0 {
-    padding-left:0px !important;
-}
-.padding-left-5 {
-    padding-left: 5px !important;
-}
-.padding-left-10 {
-    padding-left: 10px !important;
-}
-.padding-left-15 {
-    padding-left: 15px !important;
-}
-.padding-left-20 {
-    padding-left: 20px !important;
-}
-.padding-left-25 {
-    padding-left: 25px !important;
-}
-
-
-.padding-right-0 {
-    padding-right:0px !important;
-}
-.padding-right-5 {
-    padding-right: 5px !important;
-}
-.padding-right-10 {
-    padding-right: 10px !important;
-}
-.padding-right-15 {
-    padding-right: 15px !important;
-}
-.padding-right-20 {
-    padding-right: 20px !important;
-}
-.padding-right-25 {
-    padding-right: 25px !important;
-}
-
-
-
 .inline{
 	display: inline;
 }
@@ -295,14 +451,11 @@ margin-left: 0;
 	
 	background: none repeat;
 }
-
 .btn-spinner {
 	min-width: 115px !important;
 }
 .redactor_box {
 	max-width: 790px;
-    /*z-index: 1000;*/
-    position: relative;
 }
 .redactor_box.redactor_box_fullscreen {
 	max-width: none;
@@ -343,11 +496,6 @@ margin-left: 0;
     width: 100px;
 }
 
-.photo-previews:nth-child(0) {
-    width: 200%;
-    height: 200%;
-}
-
 .photo-preview {
     display:inline-block;
     width:100px;
@@ -357,7 +505,6 @@ margin-left: 0;
     position:relative;
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    margin: 0 5px !important;
 }
 
 .photo-preview a.photo-delete, .photo-preview a.photo-delete-single {
@@ -413,19 +560,6 @@ margin-left: 0;
 .dropzone > .state-error {
     background-color: #FFF0F0;
     border: 1px solid #A90329;
-}
-
-.redactor_box.state-error {
-    border: 1px solid #A90329;
-}
-.redactor_box.state-error .redactor_redactor {
-    background-color: #FFF0F0 !important;
-}
-.redactor_box.state-success {
-    /*border: 1px solid #7DC27D;*/
-}
-.redactor_box.state-success .redactor_redactor {
-    background-color: #F0FFF0 !important;
 }
 
 .uploaded_image_false {
@@ -704,195 +838,9 @@ margin-left: 0;
     top: 20px;
 }
 .smart-form div { 
-    background-color: transparent;
+    background: rgba(255, 255, 255, 0.898);
 }
 
 .smart-form fieldset.padding-top-0 {
     padding-top: 0;
-}
-
-.smart-form .well {	
-	background-color: #fff;
-
-}
-
-.smart-form footer {
-    padding: 14px 14px;
-}
-
-.white-bg {
-    background-color: #fff;
-}
-
-.logo {
-    padding-left: 14px;
-}
-
-#header {
-    color: #fff;
-}
-
-nav > ul > li > a > i > em {
-    font-family: "Open Sans", sans-serif;
-}
-
-
-.smart-form .input input, .smart-form .select select, .smart-form .textarea textarea {
-    padding: 6px 8px;
-}
-
-.smart-form fieldset {
-    padding-top: 20px;
-}
-
-.checkbox.col {
-    padding-left: 25px;
-    padding-right: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.checkbox.col span {
-    display: inline-block;
-    width: 100%;
-    margin-right: 0;
-    overflow: hidden;
-    line-height: 20px;
-    text-overflow: ellipsis;
-}
-
-.smart-form .normal_checkbox {
-    padding: 0;
-}
-
-nav ul li a {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.pos-rel {
-    position: relative !important;
-}
-
-.select2-container .select2-choice {
-    height: 30px;
-}
-
-div.input.textarea_redactor {
-    /*z-index: 1000;*/
-}
-div.redactor_dropdown {
-    background-color: #fff;
-    z-index: 10000;
-}
-
-.display-block {
-    display: block !important;
-}
-
-.display-inline-block {
-    display: inline-block !important;
-}
-
-.smart-form .label {
-    white-space: normal;
-    word-wrap: normal;
-}
-
-.note.first_note {
-    margin: 0 0 6px 0;
-}
-
-.note.second_note {
-    margin: 6px 0 0 0;
-}
-
-
-.dd.dicval-list {
-    display: block;
-    width: 100%;
-    min-width: 600px;
-    max-width: 1200px;
-}
-
-
-
-
-div > .dd-list > .dd-item:first-child > button::before {
-    padding-top: 4px
-}
-
-
-.dd-item-fixed-height .dd-handle {
-    height: 56px;
-}
-.dd-item-fixed-height .dd-handle:before {
-    line-height: 48px;
-}
-.dd-item-fixed-height > button[type=button] {
-    margin-top: 17px;
-    margin-right: 5px;
-}
-.dd-list .dd-list {
-    padding-left: 32px;
-}
-.dicval-actions {
-    display: block;
-    text-align: left;
-    position: relative;
-    top: 3px;
-    right: 1px;
-}
-.dicval-main-actions {
-    min-width: 80px;
-}
-.dicval-actions-margin-left {
-    margin-left: 4px;
-}
-.dicval-actions-edit, .dicval-actions-delete button {
-    width: 38px;
-    content: '';
-}
-.dicval-actions-edit:before, .dicval-actions-delete button:before {
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-}
-.dicval-actions-edit:before {
-    content: '\f040';
-}
-.dicval-actions-delete button:before {
-    content: '\f014';
-}
-
-
-nav ul li a {
-    position: relative;
-}
-
-nav > ul > li > a b {
-    margin: 2px 0px 0px;
-}
-
-.dd-item > button[data-action="collapse"]::before {
-    color: #3276B1;
-    content: "\f146";
-}
-.dd-item > button[data-action="expand"]::before {
-    color: #3276B1;
-    content: "\f0fe";
-}
-
-
-
-
-
-.dicval-lines {
-    white-space: nowrap;
-    //max-width: 800px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 10px;
 }
