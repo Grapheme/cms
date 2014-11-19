@@ -110,8 +110,9 @@ for (i=0; i<this.value.length; i++) {
 if (len > 0) {
     this.value = this.value.slice(0, len + 1);
 }
-")), ## ONLY 3 LINES AT TEXTAREA
-            ),
+")
+                    ), ## ONLY 3 LINES AT TEXTAREA
+            )),
 
             'content' => array(
                 'title' => 'Визуальный текстовый редактор',

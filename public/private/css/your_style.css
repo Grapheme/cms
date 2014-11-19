@@ -743,6 +743,15 @@ nav > ul > li > a > i > em {
 
 .smart-form fieldset {
     padding-top: 20px;
+    padding-bottom: 14px;
+}
+
+.tab-pane section {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+.tab-pane section:first-child {
+    margin-top: 0;
 }
 
 .checkbox.col {

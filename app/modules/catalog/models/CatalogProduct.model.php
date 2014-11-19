@@ -1,10 +1,10 @@
 <?php
 
-class CatalogCategory extends BaseModel {
+class CatalogProduct extends BaseModel {
 
 	protected $guarded = array();
 
-	public $table = 'catalog_categories';
+	public $table = 'catalog_products';
 
     protected $fillable = array(
         'active',
@@ -24,7 +24,7 @@ class CatalogCategory extends BaseModel {
     * @return \Illuminate\Database\Eloquent\Relations\HasMany
     */
     public function metas() {
-        return $this->hasMany('CatalogCategoryMeta', 'category_id', 'id');
+        return $this->hasMany('CatalogProductMeta', 'product_id', 'id');
     }
 
     /**
@@ -33,7 +33,7 @@ class CatalogCategory extends BaseModel {
      * @return mixed
      */
     public function meta() {
-        return $this->hasOne('CatalogCategoryMeta', 'category_id', 'id')
+        return $this->hasOne('CatalogProductMeta', 'product_id', 'id')
             ->where('language', Config::get('app.locale'))
             ;
     }
@@ -45,7 +45,7 @@ class CatalogCategory extends BaseModel {
      */
     public function seo() {
         return $this->hasOne('Seo', 'unit_id', 'id')
-            ->where('module', 'CatalogCategory')
+            ->where('module', 'CatalogProductMeta')
             ->where('language', Config::get('app.locale'))
             ;
     }
@@ -57,12 +57,12 @@ class CatalogCategory extends BaseModel {
      */
     public function seos() {
         return $this->hasMany('Seo', 'unit_id', 'id')
-            ->where('module', 'CatalogCategory')
+            ->where('module', 'CatalogProductMeta')
             ;
     }
 
     /**
-     * Экстрактит категорию
+     * Экстрактит запись
      *
      * $value->extract();
      *

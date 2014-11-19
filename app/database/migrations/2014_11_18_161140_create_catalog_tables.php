@@ -31,6 +31,7 @@ class CreateCatalogTables extends Migration {
         if (!Schema::hasTable($this->table)) {
             Schema::create($this->table, function(Blueprint $table) {
 
+                $table->increments('id');
                 $table->integer('category_id')->unsigned()->index();
                 $table->string('language')->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(1)->index();
@@ -47,14 +48,14 @@ class CreateCatalogTables extends Migration {
         }
 
 
-        $this->table = $this->prefix . "goods";
+
+        $this->table = $this->prefix . "products";
         if (!Schema::hasTable($this->table)) {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
-                $table->string('name')->nullable()->index();
                 $table->integer('category_id')->unsigned()->nullable()->index();
 
                 $table->text('settings')->nullable();
@@ -66,6 +67,25 @@ class CreateCatalogTables extends Migration {
         } else {
             echo('...' . $this->table . PHP_EOL);
         }
+
+        $this->table = $this->prefix . "products_meta";
+        if (!Schema::hasTable($this->table)) {
+            Schema::create($this->table, function(Blueprint $table) {
+
+                $table->increments('id');
+                $table->integer('product_id')->unsigned()->nullable()->index();
+                $table->string('language')->nullable()->index();
+                $table->smallInteger('active')->unsigned()->default(0)->index();
+                $table->string('name')->nullable()->index();
+
+                $table->text('settings')->nullable();
+                $table->timestamps();
+            });
+            echo(' + ' . $this->table . PHP_EOL);
+        } else {
+            echo('...' . $this->table . PHP_EOL);
+        }
+
 
 
         $this->table = $this->prefix . "attributes";
@@ -99,8 +119,13 @@ class CreateCatalogTables extends Migration {
         Schema::dropIfExists($this->prefix . "categories_meta");
         echo(' - ' . $this->prefix . "categories_meta" . PHP_EOL);
 
-        Schema::dropIfExists($this->prefix . "goods");
-        echo(' - ' . $this->prefix . "goods" . PHP_EOL);
+        Schema::dropIfExists($this->prefix . "products");
+        echo(' - ' . $this->prefix . "products" . PHP_EOL);
+
+        Schema::dropIfExists($this->prefix . "products_meta");
+        echo(' - ' . $this->prefix . "products_meta" . PHP_EOL);
+
+
 
         Schema::dropIfExists($this->prefix . "attributes");
         echo(' - ' . $this->prefix . "attributes" . PHP_EOL);

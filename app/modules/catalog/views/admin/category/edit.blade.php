@@ -46,11 +46,58 @@
                     </section>
 
                     <section>
+                        <label class="checkbox">
+                            {{ Form::checkbox('active', 1, ($element->active || !$element->id)) }}
+                            <i></i>
+                            Активно
+                        </label>
+                    </section>
+
+                    @if (count($locales) > 1)
+                    <ul id="myTab2" class="nav nav-tabs bordered">
+                        <? $i = 0; ?>
+                        @foreach ($locales as $locale_sign => $locale_name)
+                        <li class="{{ !$i++ ? 'active' : '' }}">
+                            <a href="#category_locale_{{ $locale_sign }}" data-toggle="tab">
+                                {{ $locale_name }}
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
+                    @endif
+
+                    <div id="myTabContent1" class="tab-content @if(count($locales) > 1) padding-10 @endif">
+                        <? $i = 0; ?>
+                        @foreach ($locales as $locale_sign => $locale_name)
+                        <div class="tab-pane fade {{ !$i++ ? 'active in' : '' }} clearfix" id="category_locale_{{ $locale_sign }}">
+
+                            <section>
+                                <label class="label">Название</label>
+                                <label class="input">
+                                    {{ Form::text('meta[' . $locale_sign . '][name]', @$element->metas[$locale_sign]['name']) }}
+                                </label>
+                            </section>
+
+                            <section>
+                                <label class="checkbox">
+                                    {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || !$element->id)) }}
+                                    <i></i>
+                                    Активно
+                                </label>
+                            </section>
+
+                        </div>
+                        @endforeach
+                    </div>
+
+                    @if (0)
+                    <section>
                         <label class="label">Название</label>
                         <label class="input">
                             {{ Form::text('name', null, array('required' => 'required')) }}
                         </label>
                     </section>
+                    @endif
 
                 </fieldset>
 
@@ -130,10 +177,10 @@
     var essence = '{{ $module['entity'] }}';
     var essence_name = '{{ $module['entity_name'] }}';
     var validation_rules = {
-        'name': { required: true }
+        'meta[ru][name]': { required: true }
     };
     var validation_messages = {
-        'name': { required: "Укажите название" }
+        'meta[ru][name]': { required: "Укажите название" }
     };
     </script>
 

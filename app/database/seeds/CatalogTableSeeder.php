@@ -74,6 +74,25 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'name' => 'Компьютеры',
         ));
+
+
+
+        CatalogProduct::create(array(
+            'id' => 1,
+            'category_id' => 1,
+            'slug' => 'normal_bike',
+            'lft' => 1,
+            'rgt' => 2,
+        ));
+        CatalogProductMeta::create(array(
+            'id' => 1,
+            'product_id' => 1,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Обычный велосипед',
+        ));
+
+
     }
 
 }

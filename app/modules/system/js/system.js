@@ -140,3 +140,28 @@ $.extend($.validator.messages, {
         }
         return retObj;
     }
+
+
+    $("input[type=checkbox].system_checkbox.mark_all_checkbox").click(function(){
+        var checked = $(this).is(':checked');
+
+        $('input[type=checkbox]').each(function(i){
+            if (!$(this).hasClass('system_checkbox')) {
+                if (checked)
+                    $('input[type=checkbox]').prop('checked', true);
+                else
+                    $('input[type=checkbox]').prop("checked", false);
+            }
+        });
+    });
+
+    //*
+    $(".system_checkbox.toggle_all_checkbox").click(function(){
+        $('input[type=checkbox]').each(function(i){
+            if (!$(this).hasClass('system_checkbox')) {
+                var checked = $(this).prop("checked");
+                $(this).prop("checked", !checked)
+            }
+        });
+    });
+    //*/

@@ -1,10 +1,10 @@
 <?php
 
-class AdminCatalogGoodsController extends BaseController {
+class AdminCatalogProductsController extends BaseController {
 
-    public static $name = 'good';
+    public static $name = 'products';
     public static $group = 'catalog';
-    public static $entity = 'good';
+    public static $entity = 'product';
     public static $entity_name = 'товар';
 
     /****************************************************************************/

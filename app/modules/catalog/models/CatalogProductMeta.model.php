@@ -1,13 +1,13 @@
 <?php
 
-class CatalogCategoryMeta extends BaseModel {
+class CatalogProductMeta extends BaseModel {
 
 	protected $guarded = array();
 
-	public $table = 'catalog_categories_meta';
+	public $table = 'catalog_products_meta';
 
     protected $fillable = array(
-        'category_id',
+        'product_id',
         'language',
         'active',
         'name',
@@ -15,7 +15,7 @@ class CatalogCategoryMeta extends BaseModel {
     );
 
 	public static $rules = array(
-        'category_id' => 'required',
+        'product_id' => 'required',
         'language' => 'required',
 	);
 

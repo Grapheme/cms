@@ -92,6 +92,7 @@ class AdminCatalogCategoriesController extends BaseController {
         $root_category = null;
         if (NULL !== ($root_id = Input::get('root'))) {
             $root_category = CatalogCategory::find($root_id);
+            $root_category->load('meta')->extract(1);
             #Helper::tad($root_category);
             if (is_object($root_category)) {
                 $elements = $elements
@@ -149,7 +150,7 @@ class AdminCatalogCategoriesController extends BaseController {
         Allow::permission($this->module['group'], 'categories_edit');
 
 		$element = CatalogCategory::where('id', $id)
-            ->with('seos')
+            ->with('seos', 'metas')
             ->first()
             ->extract();
 
@@ -197,7 +198,7 @@ class AdminCatalogCategoriesController extends BaseController {
          * Проверяем системное имя
          */
         if (!trim($input['slug'])) {
-            $input['slug'] = $input['name'];
+            $input['slug'] = $input['meta'][Config::get('app.locale')]['name'];
         }
         $input['slug'] = Helper::translit($input['slug']);
 
@@ -221,13 +222,18 @@ class AdminCatalogCategoriesController extends BaseController {
 
         } while (!$exit);
 
+        /**
+         * Проверяем флаг активности
+         */
+        $input['active'] = @$input['active'] ? 1 : NULL;
+
         #Helper::dd($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
 
         $json_request = array('status' => FALSE, 'responseText' => '', 'responseErrorText' => '', 'redirect' => FALSE);
-		$validator = Validator::make($input, array('name' => 'required'));
+		$validator = Validator::make($input, array('slug' => 'required'));
 		if($validator->passes()) {
 
             #$redirect = false;
@@ -236,6 +242,7 @@ class AdminCatalogCategoriesController extends BaseController {
 
                 $element->update($input);
                 $redirect = false;
+                $category_id = $element->id;
 
                 /**
                  * Обновим slug на форме
@@ -255,9 +262,30 @@ class AdminCatalogCategoriesController extends BaseController {
 
                 $element->save();
                 $element->update($input);
-                $insert_id = $element->id;
+                $category_id = $element->id;
                 #$redirect = action('dicval.index', array('dic_id' => $dic_id));
                 $redirect = Input::get('redirect');
+            }
+
+            /**
+             * Сохраняем META-данные
+             */
+            if (
+                isset($input['meta']) && is_array($input['meta']) && count($input['meta'])
+            ) {
+                foreach ($input['meta'] as $locale_sign => $meta_array) {
+                    $meta_seatch_array = array(
+                        'category_id' => $category_id,
+                        'language' => $locale_sign
+                    );
+                    $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
+                    #$meta_array['language'] = $locale_sign;
+                    $category_meta = CatalogCategoryMeta::firstOrNew($meta_seatch_array);
+                    if (!$category_meta->id)
+                        $category_meta->save();
+                    $category_meta->update($meta_array);
+                    unset($category_meta);
+                }
             }
 
             /**

@@ -15,6 +15,21 @@
 				@if(@count($mod_actions))
 					<section>
 						<div class="">
+
+						    <div class="row">
+                                <div class="col col-8">
+
+                                </div>
+                                <div class="col col-4">
+
+                                    <input type="checkbox" class="system_checkbox mark_all_checkbox" />
+
+                                    <i class="btn btn-default btn-sm fa fa-refresh system_checkbox toggle_all_checkbox"></i>
+
+
+                                </div>
+                            </div>
+
     					@foreach($mod_actions as $module_name => $actions)
                         <? #Helper::d($module_name); ?>
                         <? if (!Allow::module($module_name)) { continue; } ?>
@@ -45,7 +60,7 @@
                                     </div>
                                     <div class="col col-4">
             							<input type="checkbox"{{ $checked }} value="{{ $a }}" name="actions[{{ $module_name }}][]" class="group-checkbox" id="act_{{ $module_name }}_{{ $a }}">
-        								<i data-swchon-text="вкл" data-swchoff-text="выкл"></i> 
+        								<i data-swchon-text="вкл" data-swchoff-text="выкл"></i>
                                     </div>
             					@endforeach
 
