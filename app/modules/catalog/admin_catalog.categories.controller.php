@@ -83,7 +83,7 @@ class AdminCatalogCategoriesController extends BaseController {
             ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
             ->orderBy($tbl_cat_category . '.created_at', 'ASC')
             ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta')
+            ->with('meta', 'products')
         ;
 
         /**
@@ -121,7 +121,7 @@ class AdminCatalogCategoriesController extends BaseController {
         $hierarchy = (new NestedSetModel())->get_hierarchy_from_id_left_right($id_left_right);
 
 
-        if (0) {
+        if ( 0 ) {
             Helper::ta($elements);
             Helper::tad($hierarchy);
         }
@@ -219,7 +219,7 @@ class AdminCatalogCategoriesController extends BaseController {
                 $slug = $input['slug'] . (++$i);
 
             if ($i >= 10 && !$exit) {
-                $input['slug'] = $input['slug'] . md5(rand(999999, 9999999) . '-' . time());
+                $input['slug'] = $input['slug'] . '_' . md5(rand(999999, 9999999) . '-' . time());
                 $exit = true;
             }
 
@@ -266,7 +266,6 @@ class AdminCatalogCategoriesController extends BaseController {
                 $element->save();
                 $element->update($input);
                 $category_id = $element->id;
-                #$redirect = action('dicval.index', array('dic_id' => $dic_id));
                 $redirect = Input::get('redirect');
             }
 
@@ -277,13 +276,12 @@ class AdminCatalogCategoriesController extends BaseController {
                 isset($input['meta']) && is_array($input['meta']) && count($input['meta'])
             ) {
                 foreach ($input['meta'] as $locale_sign => $meta_array) {
-                    $meta_seatch_array = array(
+                    $meta_search_array = array(
                         'category_id' => $category_id,
                         'language' => $locale_sign
                     );
                     $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
-                    #$meta_array['language'] = $locale_sign;
-                    $category_meta = CatalogCategoryMeta::firstOrNew($meta_seatch_array);
+                    $category_meta = CatalogCategoryMeta::firstOrNew($meta_search_array);
                     if (!$category_meta->id)
                         $category_meta->save();
                     $category_meta->update($meta_array);

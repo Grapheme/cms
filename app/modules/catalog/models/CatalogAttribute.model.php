@@ -1,15 +1,14 @@
 <?php
 
-class CatalogProduct extends BaseModel {
+class CatalogAttribute extends BaseModel {
 
 	protected $guarded = array();
 
-	public $table = 'catalog_products';
+	public $table = 'catalog_attributes';
 
     protected $fillable = array(
         'active',
         'slug',
-        'category_id',
         'settings',
         'lft',
         'rgt',
@@ -20,12 +19,8 @@ class CatalogProduct extends BaseModel {
 	);
 
 
-
-
-    public function category() {
-        return $this->belongsTo('CatalogCategory', 'category_id', 'id')
-            ->with('meta')
-            ;
+    public function products() {
+        return $this->hasMany('CatalogProduct', 'category_id', 'id');
     }
 
 
@@ -35,7 +30,7 @@ class CatalogProduct extends BaseModel {
     * @return \Illuminate\Database\Eloquent\Relations\HasMany
     */
     public function metas() {
-        return $this->hasMany('CatalogProductMeta', 'product_id', 'id');
+        return $this->hasMany('CatalogCategoryMeta', 'category_id', 'id');
     }
 
     /**
@@ -44,7 +39,7 @@ class CatalogProduct extends BaseModel {
      * @return mixed
      */
     public function meta() {
-        return $this->hasOne('CatalogProductMeta', 'product_id', 'id')
+        return $this->hasOne('CatalogCategoryMeta', 'category_id', 'id')
             ->where('language', Config::get('app.locale'))
             ;
     }
@@ -56,7 +51,7 @@ class CatalogProduct extends BaseModel {
      */
     public function seo() {
         return $this->hasOne('Seo', 'unit_id', 'id')
-            ->where('module', 'CatalogProductMeta')
+            ->where('module', 'CatalogCategory')
             ->where('language', Config::get('app.locale'))
             ;
     }
@@ -68,12 +63,12 @@ class CatalogProduct extends BaseModel {
      */
     public function seos() {
         return $this->hasMany('Seo', 'unit_id', 'id')
-            ->where('module', 'CatalogProduct')
+            ->where('module', 'CatalogCategory')
             ;
     }
 
     /**
-     * Экстрактит запись
+     * Экстрактит категорию
      *
      * $value->extract();
      *
@@ -83,11 +78,6 @@ class CatalogProduct extends BaseModel {
     public function extract($unset = false) {
 
         #Helper::ta($this);
-
-        ## Extract category
-        if (isset($this->category) && is_object($this->category)) {
-            $this->category = $this->category->extract($unset);
-        }
 
         ## Extract metas
         if (isset($this->metas)) {

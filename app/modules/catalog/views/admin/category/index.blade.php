@@ -30,14 +30,14 @@ function write_level($hierarchy, $elements, $module, $sortable) {
                     <div class="pull-right dicval-actions dicval-main-actions dicval-actions-margin-left">
 
                         @if(Allow::action($module['group'], 'categories_edit'))
-                        <a href="{{ action('catalog.category.edit', $element->id) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Изменить">
+                        <a href="{{ action('catalog.category.edit', $element->id) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Редактировать категорию">
                             <!--Изменить-->
                         </a>
                         @endif
 
                         @if(Allow::action($module['group'], 'categories_delete'))
-                        <form method="POST" action="{{ action('catalog.category.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete">
-                            <button type="button" class="btn btn-danger remove-category-list" title="Удалить">
+                        <form method="POST" action="{{ action('catalog.category.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete" data-products-count="{{ @(int)count($element->products) }}">
+                            <button type="button" class="btn btn-danger remove-category-list" title="Удалить категорию">
                                 <!--Удалить-->
                             </button>
                         </form>
@@ -47,12 +47,21 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 
                     <div class="pull-right dicval-actions">
 
-                        @if(Allow::action($module['group'], 'goods_view'))
-                        <a href="{{ action('catalog.category.index', array('root' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-warning dicval-action catalog-category-root" title="Структура категории">
+                        <a href="{{ action('catalog.category.index', array('root' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-warning dicval-action catalog-category-root" title="Вложенная структура категорий">
                             <i class="fa fa-sitemap"></i>
-                            <!--Изменить-->
+                        </a>
+
+                        @if(Allow::action($module['group'], 'products_view'))
+                        <a href="{{ action('catalog.products.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-products-list" title="Товары в категории">
+                            <i class="fa fa-cube"></i>
+                            {{ @(int)count($element->products) }}
                         </a>
                         @endif
+
+                        <a href="{{ action('catalog.attributes.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-attributes-list" title="Доп. атрибуты товаров в категории">
+                            <i class="fa fa-tasks"></i>
+                        </a>
+
                     </div>
 
                     <div class="dicval-lines">
@@ -188,11 +197,17 @@ function write_level($hierarchy, $elements, $module, $sortable) {
         }).on('change', updateOutput);
 
         function show_hide_delete_buttons() {
+            /*
             $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
             $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
+            */
+
+            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '0');
+            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '1');
 
             $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').show();
             $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').hide();
+            //*/
         }
 
         show_hide_delete_buttons();

@@ -56,9 +56,18 @@ $(function(){
 
 		var $this = this;
 
+        if ($(this).parents('form').attr('data-can-delete') != 1 || $(this).parents('form').attr('data-products-count') != 0) {
+            $.SmartMessageBox({
+                title : "Невозможно удалить непустую категорию",
+                content : "Перенесите или удалите все вложенные категории и товары - после этого данную категорию можно будет удалить",
+                buttons : '[Хорошо]'
+            });
+            return false;
+        }
+
         $.SmartMessageBox({
-			title : "Удалить запись?",
-			content : "",
+			title : "Удалить категорию?",
+			content : "Восстановить ее будет невозможно",
 			buttons : '[Нет][Да]'
 		}, function(ButtonPressed) {
 

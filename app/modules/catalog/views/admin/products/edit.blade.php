@@ -56,12 +56,11 @@
                     </section>
 
                     <section>
+                        <label class="label" data-helpmessage="Основная категория, к которой относится данный товар">
+                            Категория товара
+                        </label>
                         <label class="select">
-                            <select name="category_id">
-                                @foreach ($categories_for_select as $cat_id => $cat_title)
-                                    <option value="{{ $cat_id }}">{{ $cat_title }}</option>
-                                @endforeach
-                            </select>
+                            {{ Form::select('category_id', $categories_for_select) }}
                         </label>
                     </section>
 

@@ -18,6 +18,12 @@ class CatalogCategory extends BaseModel {
         #'slug' => 'required',
 	);
 
+
+    public function products() {
+        return $this->hasMany('CatalogProduct', 'category_id', 'id');
+    }
+
+
     /**
     * Связь возвращает все META-данные записи (для всех языков)
     *

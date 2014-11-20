@@ -3,9 +3,10 @@
     $menus = array();
     $menus[] = array(
         'link' => URL::route('catalog.category.index'),
-        'title' => 'Категории',
+        'title' => 'Все категории',
         'class' => 'btn btn-default'
     );
+    /*
     if (
         Allow::action($module['group'], 'categories_delete')
         && isset($element) && is_object($element) && $element->id
@@ -21,7 +22,7 @@
             ]
         );
     }
-
+    */
     if  (
         Allow::action($module['group'], 'categories_edit')
         && isset($root_category) && is_object($root_category) && $root_category->id
@@ -47,7 +48,7 @@
 ?>
     
     <h1>
-        Все категории
+        Категории
         @if (isset($element) && is_object($element) && $element->name)
             &nbsp;&mdash;&nbsp;
             {{ $element->name }}

@@ -1,11 +1,11 @@
 <?php
 
-class AdminCatalogProductsController extends BaseController {
+class AdminCatalogAttributesController extends BaseController {
 
-    public static $name = 'products';
+    public static $name = 'attributes';
     public static $group = 'catalog';
-    public static $entity = 'product';
-    public static $entity_name = 'товар';
+    public static $entity = 'attribute';
+    public static $entity_name = 'атрибут';
 
     /****************************************************************************/
 
@@ -51,7 +51,7 @@ class AdminCatalogProductsController extends BaseController {
         
     /****************************************************************************/
     
-	public function __construct(){
+	public function __construct() {
 
         $this->module = array(
             'name' => self::$name,
@@ -69,46 +69,45 @@ class AdminCatalogProductsController extends BaseController {
         View::share('module', $this->module);
 	}
 
+	public function index() {
 
+        Allow::permission($this->module['group'], 'categories_view');
 
-	public function index(){
-
-        Allow::permission($this->module['group'], 'products_view');
-
-        $elements = new CatalogProduct();
-        $tbl_cat_product = $elements->getTable();
+        $elements = new CatalogCategory();
+        $tbl_cat_category = $elements->getTable();
 
         /**
          * Подготавливаем запрос для выборки
          */
         $elements = $elements
-            ->orderBy(DB::raw('-' . $tbl_cat_product . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
-            ->orderBy($tbl_cat_product . '.created_at', 'ASC')
-            ->orderBy($tbl_cat_product . '.id', 'DESC')
-            ->with('meta')
+            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_category . '.id', 'DESC')
+            ->with('meta', 'products')
         ;
 
-        $root_category = NULL;
-        if (NULL !== ($cat_id = Input::get('category'))) {
-            $root_category = CatalogCategory::where('id', $cat_id)
-                ->with('meta')
-                ->first()
-            ;
-            if (is_object($root_category))
-                $root_category = $root_category->extract();
-            $elements = $elements->where('category_id', $cat_id);
+        /**
+         * Если задана корневая категория - выбираем только ее содержимое
+         */
+        $root_category = null;
+        if (NULL !== ($root_id = Input::get('root'))) {
+            $root_category = CatalogCategory::find($root_id);
+            $root_category->load('meta')->extract(1);
+            #Helper::tad($root_category);
+            if (is_object($root_category)) {
+                $elements = $elements
+                    ->where('lft', '>', $root_category->lft)
+                    ->where('rgt', '<', $root_category->rgt)
+                    ;
+            }
         }
 
-        #Helper::tad($root_category);
-
         /**
-         * Получаем все записи из БД
+         * Получаем все категории из БД
          */
         $elements = $elements->get();
         $elements = DicVal::extracts($elements, 1);
         $elements = Dic::modifyKeys($elements, 'id');
-
-        #Helper::tad($elements);
 
         /**
          * Строим иерархию
@@ -127,129 +126,43 @@ class AdminCatalogProductsController extends BaseController {
             Helper::tad($hierarchy);
         }
 
-        $sortable = 1;
+        $sortable = 9;
 
         return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category'));
 	}
 
     /************************************************************************************/
 
-    public function create() {
+	public function create() {
 
         Allow::permission($this->module['group'], 'categories_create');
 
-        $element = new CatalogProduct();
+        $element = new CatalogCategory();
 
         $locales = Config::get('app.locales');
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
-    }
+		return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+	}
+    
 
-
-    public function edit($id) {
+	public function edit($id) {
 
         Allow::permission($this->module['group'], 'categories_edit');
 
-        $element = CatalogProduct::where('id', $id)
-            ->with('category', 'seos', 'metas', 'meta')
-            ->first();
-
-        if (!is_object($element))
-            return App::abort(404);
-
-        $element->extract();
+		$element = CatalogCategory::where('id', $id)
+            ->with('seos', 'metas', 'meta')
+            ->first()
+            ->extract();
 
         if (is_object($element) && is_object($element->meta))
             $element->name = $element->meta->name;
 
-        #Helper::tad($element);
-
-        /**
-         * Получаем все категории
-         */
-        $categories = new CatalogCategory();
-        $tbl_cat_category = $categories->getTable();
-        $categories = $categories
-            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
-            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
-            ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta')
-        ;
-        $categories = $categories->get();
-        if (count($categories))
-            $categories = DicVal::extracts($categories, 1);
-        $categories = Dic::modifyKeys($categories, 'id');
-
-        /**
-         * Подсчитаем отступ для каждой категории
-         */
-        $indent_debug = 0;
-        $indent = 0;
-        $last_indent_increate_rgt = array();
-        foreach ($categories as $category) {
-
-            if ($indent_debug)
-                Helper::ta($category);
-
-            $category->indent = $indent;
-
-            if ($indent_debug)
-                Helper::d("Устанавливаем текущий отступ категории: " . $indent);
-
-            if ($category->lft+1 < $category->rgt) {
-
-                ++$indent;
-                $last_indent_increate_rgt[] = $category->rgt;
-
-                if ($indent_debug) {
-                    Helper::d("Увеличиваем текущий уровень отступа: " . $indent . " (" . $category->lft . "+1 < " . $category->rgt . ")");
-                    Helper::d("Добавляем RGT в массив 'RGT родительских категории': " . $category->rgt . " => " . implode(', ', $last_indent_increate_rgt));
-                }
-            }
-
-            #/*
-
-            $plus = 1;
-            $exit = false;
-            do {
-                if (in_array(($category->lft+(++$plus)), $last_indent_increate_rgt)) {
-
-                    --$indent;
-
-                    /*
-                    Helper::d("LFT категории + " . $plus . " (" . ($category->lft+$plus) . ") найдено в массиве 'RGT родительских категорий' => " . implode(', ', $last_indent_increate_rgt));
-                    Helper::d("Уменьшаем текущий уровень отступа: " . $indent);
-                    #*/
-
-                } else {
-                    $exit = true;
-                }
-
-            } while(!$exit);
-
-            #Helper::d("<hr/>");
-        }
-
-        #Helper::tad($categories);
-
-        /**
-         * Соберем все категории в массив с отступами для select
-         */
-        $categories_for_select = array();
-        foreach ($categories as $category) {
-            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
-        }
-        if ($indent_debug)
-            Helper::dd($categories_for_select);
-
-
-
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select'));
-    }
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+	}
 
 
     /************************************************************************************/
@@ -257,14 +170,14 @@ class AdminCatalogProductsController extends BaseController {
 
 	public function store() {
 
-        Allow::permission($this->module['group'], 'create');
+        Allow::permission($this->module['group'], 'categories_create');
 		return $this->postSave();
 	}
 
 
 	public function update($id) {
 
-        Allow::permission($this->module['group'], 'edit');
+        Allow::permission($this->module['group'], 'categories_edit');
 		return $this->postSave($id);
 	}
 
@@ -279,8 +192,8 @@ class AdminCatalogProductsController extends BaseController {
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogProduct::find($id)))
-            $element = new CatalogProduct();
+        if (!$id || NULL === ($element = CatalogCategory::find($id)))
+            $element = new CatalogCategory();
 
         $input = Input::all();
 
@@ -296,7 +209,7 @@ class AdminCatalogProductsController extends BaseController {
         $exit = false;
         $i = 1;
         do {
-            $test = CatalogProduct::where('slug', $slug)->first();
+            $test = CatalogCategory::where('slug', $slug)->first();
             #Helper::dd($count);
 
             if (!is_object($test) || $test->id == $element->id) {
@@ -332,7 +245,7 @@ class AdminCatalogProductsController extends BaseController {
 
                 $element->update($input);
                 $redirect = false;
-                $product_id = $element->id;
+                $category_id = $element->id;
 
                 /**
                  * Обновим slug на форме
@@ -346,13 +259,13 @@ class AdminCatalogProductsController extends BaseController {
                 /**
                  * Ставим элемент в конец списка
                  */
-                $temp = CatalogProduct::selectRaw('max(rgt) AS max_rgt')->first();
+                $temp = CatalogCategory::selectRaw('max(rgt) AS max_rgt')->first();
                 $input['lft'] = $temp->max_rgt+1;
                 $input['rgt'] = $temp->max_rgt+2;
 
                 $element->save();
                 $element->update($input);
-                $product_id = $element->id;
+                $category_id = $element->id;
                 $redirect = Input::get('redirect');
             }
 
@@ -364,15 +277,15 @@ class AdminCatalogProductsController extends BaseController {
             ) {
                 foreach ($input['meta'] as $locale_sign => $meta_array) {
                     $meta_search_array = array(
-                        'product_id' => $product_id,
+                        'category_id' => $category_id,
                         'language' => $locale_sign
                     );
                     $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
-                    $product_meta = CatalogProductMeta::firstOrNew($meta_search_array);
-                    if (!$product_meta->id)
-                        $product_meta->save();
-                    $product_meta->update($meta_array);
-                    unset($product_meta);
+                    $category_meta = CatalogCategoryMeta::firstOrNew($meta_search_array);
+                    if (!$category_meta->id)
+                        $category_meta->save();
+                    $category_meta->update($meta_array);
+                    unset($category_meta);
                 }
             }
 
@@ -382,7 +295,7 @@ class AdminCatalogProductsController extends BaseController {
             if (
                 Allow::module('seo')
                 && Allow::action('seo', 'edit')
-                && Allow::action($this->module['group'], 'products_seo')
+                && Allow::action($this->module['group'], 'categories_seo')
                 && isset($input['seo']) && is_array($input['seo']) && count($input['seo'])
             ) {
                 foreach ($input['seo'] as $locale_sign => $seo_array) {
@@ -392,7 +305,7 @@ class AdminCatalogProductsController extends BaseController {
                         ## Process SEO
                         ###############################
                         ExtForm::process('seo', array(
-                            'module'  => 'CatalogProduct',
+                            'module'  => 'CatalogCategory',
                             'unit_id' => $element->id,
                             'data'    => $seo_array,
                             'locale'  => $locale_sign,
@@ -404,9 +317,11 @@ class AdminCatalogProductsController extends BaseController {
 
             $json_request['responseText'] = 'Сохранено';
             if ($redirect)
-                $json_request['redirect'] = $redirect;
+			    $json_request['redirect'] = $redirect;
 			$json_request['status'] = TRUE;
+
 		} else {
+
 			$json_request['responseText'] = 'Неверно заполнены поля';
 			$json_request['responseErrorText'] = $validator->messages()->all();
 		}
@@ -415,32 +330,30 @@ class AdminCatalogProductsController extends BaseController {
 
     /************************************************************************************/
 
-	#public function deleteDestroy($entity, $id){
 	public function destroy($id){
 
-        Allow::permission($this->module['group'], 'products_delete');
+        Allow::permission($this->module['group'], 'categories_delete');
 
-        if(!Request::ajax())
+		if(!Request::ajax())
             App::abort(404);
 
-        $json_request = array('status' => FALSE, 'responseText' => '');
+		$json_request = array('status' => FALSE, 'responseText' => '');
 
-        $element = CatalogProduct::where('id', $id)
-            #->with('metas')
-            ->first()
-        ;
+        $element = CatalogCategory::find($id);
 
         if (is_object($element)) {
 
             /**
              * Удаление:
+             * - товаров категории,
              * + SEO-данных,
+             * - связок с атрибутами,
              * + мета-данных
-             * + самого товара
+             * + и самой категории
              */
 
             if (Allow::module('seo')) {
-                Seo::where('module', 'CatalogProduct')
+                Seo::where('module', 'CatalogCategory')
                     ->where('unit_id', $element->id)
                     ->delete()
                 ;
@@ -451,7 +364,7 @@ class AdminCatalogProductsController extends BaseController {
             $element->delete();
 
             /**
-             * Делаем сдвиг в общем дереве
+             * Сдвигаем категории в общем дереве
              */
             if ($element->rgt)
                 DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
@@ -460,8 +373,8 @@ class AdminCatalogProductsController extends BaseController {
             $json_request['status'] = TRUE;
         }
 
-        return Response::json($json_request,200);
-    }
+		return Response::json($json_request,200);
+	}
 
     public function postAjaxNestedSetModel() {
 
@@ -471,18 +384,27 @@ class AdminCatalogProductsController extends BaseController {
         $data = json_decode($data, 1);
         #Helper::dd($data);
 
+        $offset = 0;
+        $root_id = (int)Input::get('root');
+        if ($root_id > 0) {
+            $root_category = CatalogCategory::find($root_id);
+            if (is_object($root_category)) {
+                $offset = $root_category->lft;
+            }
+        }
+
         if (count($data)) {
 
             $id_left_right = (new NestedSetModel())->get_id_left_right($data);
 
             if (count($id_left_right)) {
 
-                $cats = CatalogProduct::whereIn('id', array_keys($id_left_right))->get();
+                $cats = CatalogCategory::whereIn('id', array_keys($id_left_right))->get();
 
                 if (count($cats)) {
                     foreach ($cats as $cat) {
-                        $cat->lft = $id_left_right[$cat->id]['left'];
-                        $cat->rgt = $id_left_right[$cat->id]['right'];
+                        $cat->lft = $id_left_right[$cat->id]['left'] + $offset;
+                        $cat->rgt = $id_left_right[$cat->id]['right'] + $offset;
                         $cat->save();
                     }
                 }
