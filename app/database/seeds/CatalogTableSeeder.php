@@ -6,6 +6,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogCategory::create(array(
             'id' => 1,
+            'active' => 1,
             'slug' => 'bicycles',
             'lft' => 1,
             'rgt' => 8,
@@ -25,6 +26,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogCategory::create(array(
             'id' => 2,
+            'active' => 1,
             'slug' => 'mountain',
             'lft' => 2,
             'rgt' => 3,
@@ -38,6 +40,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogCategory::create(array(
             'id' => 3,
+            'active' => 1,
             'slug' => 'road',
             'lft' => 4,
             'rgt' => 5,
@@ -51,6 +54,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogCategory::create(array(
             'id' => 4,
+            'active' => 1,
             'slug' => 'city',
             'lft' => 6,
             'rgt' => 7,
@@ -64,6 +68,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogCategory::create(array(
             'id' => 5,
+            'active' => 1,
             'slug' => 'pc',
             'lft' => 9,
             'rgt' => 10,
@@ -79,6 +84,7 @@ class CatalogTableSeeder extends Seeder{
 
         CatalogProduct::create(array(
             'id' => 1,
+            'active' => 1,
             'category_id' => 1,
             'slug' => 'normal_bike',
             'lft' => 1,

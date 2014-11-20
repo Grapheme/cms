@@ -165,3 +165,12 @@ $.extend($.validator.messages, {
         });
     });
     //*/
+
+
+    $('label[data-helpmessage]').each(function(){
+        //alert($(this).data('helpmessage'));
+        var content = $(this).html();
+        var helpmessage = $(this).data('helpmessage');
+        $(this).html(content + "\n" + '<i class="fa fa-question-circle cursor-help" data-toggle="tooltip" data-placement="bottom" title="' + helpmessage + '"></i>');
+    });
+

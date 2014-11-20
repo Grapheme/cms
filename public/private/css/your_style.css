@@ -905,3 +905,7 @@ nav > ul > li > a b {
     text-overflow: ellipsis;
     padding-right: 10px;
 }
+
+.cursor-help {
+    cursor: help;
+}

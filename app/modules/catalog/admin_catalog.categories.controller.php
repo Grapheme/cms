@@ -150,9 +150,12 @@ class AdminCatalogCategoriesController extends BaseController {
         Allow::permission($this->module['group'], 'categories_edit');
 
 		$element = CatalogCategory::where('id', $id)
-            ->with('seos', 'metas')
+            ->with('seos', 'metas', 'meta')
             ->first()
             ->extract();
+
+        if (is_object($element) && is_object($element->meta))
+            $element->name = $element->meta->name;
 
         $locales = Config::get('app.locales');
 
@@ -347,7 +350,7 @@ class AdminCatalogCategoriesController extends BaseController {
              * - товаров категории,
              * + SEO-данных,
              * - связок с атрибутами,
-             * - мета-данных
+             * + мета-данных
              * + и самой категории
              */
 
@@ -357,6 +360,8 @@ class AdminCatalogCategoriesController extends BaseController {
                     ->delete()
                 ;
             }
+
+            $element->metas()->delete();
 
             $element->delete();
 

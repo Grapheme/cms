@@ -73,6 +73,7 @@ class CatalogCategory extends BaseModel {
 
         #Helper::ta($this);
 
+        ## Extract metas
         if (isset($this->metas)) {
             foreach ($this->metas as $m => $meta) {
                 $this->metas[$meta->language] = $meta;

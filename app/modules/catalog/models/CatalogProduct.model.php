@@ -18,6 +18,16 @@ class CatalogProduct extends BaseModel {
         #'slug' => 'required',
 	);
 
+
+
+
+    public function category() {
+        return $this->belongsTo('CatalogCategory', 'category_id', 'id')
+            ->with('meta')
+            ;
+    }
+
+
     /**
     * Связь возвращает все META-данные записи (для всех языков)
     *
@@ -73,6 +83,12 @@ class CatalogProduct extends BaseModel {
 
         #Helper::ta($this);
 
+        ## Extract category
+        if (isset($this->category) && is_object($this->category)) {
+            $this->category = $this->category->extract($unset);
+        }
+
+        ## Extract metas
         if (isset($this->metas)) {
             foreach ($this->metas as $m => $meta) {
                 $this->metas[$meta->language] = $meta;

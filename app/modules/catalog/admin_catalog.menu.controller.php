@@ -59,10 +59,10 @@ class AdminCatalogMenuController extends BaseController {
                 'class' => 'fa-cubes',
             );
 
-        if (Allow::action(self::$group, 'goods_view', false, true))
+        if (Allow::action(self::$group, 'products_view', false, true))
             $menu_child[] = array(
                 'title' => 'Товары',
-                'link' => self::$group . '/good',
+                'link' => self::$group . '/products',
                 'class' => 'fa-cube',
             );
 

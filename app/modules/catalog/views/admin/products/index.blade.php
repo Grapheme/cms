@@ -29,15 +29,15 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 
                     <div class="pull-right dicval-actions dicval-main-actions dicval-actions-margin-left">
 
-                        @if(Allow::action($module['group'], 'categories_edit'))
-                        <a href="{{ action('catalog.category.edit', $element->id) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Изменить">
+                        @if(Allow::action($module['group'], 'products_edit'))
+                        <a href="{{ action('catalog.products.edit', $element->id) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Изменить">
                             <!--Изменить-->
                         </a>
                         @endif
 
-                        @if(Allow::action($module['group'], 'categories_delete'))
-                        <form method="POST" action="{{ action('catalog.category.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete">
-                            <button type="button" class="btn btn-danger remove-category-list" title="Удалить">
+                        @if(Allow::action($module['group'], 'products_delete'))
+                        <form method="POST" action="{{ action('catalog.products.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete">
+                            <button type="button" class="btn btn-danger remove-product-list" title="Удалить">
                                 <!--Удалить-->
                             </button>
                         </form>
@@ -46,13 +46,6 @@ function write_level($hierarchy, $elements, $module, $sortable) {
                     </div>
 
                     <div class="pull-right dicval-actions">
-
-                        @if(Allow::action($module['group'], 'goods_view'))
-                        <a href="{{ action('catalog.category.index', array('root' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-warning dicval-action catalog-category-root" title="Структура категории">
-                            <i class="fa fa-sitemap"></i>
-                            <!--Изменить-->
-                        </a>
-                        @endif
                     </div>
 
                     <div class="dicval-lines">
@@ -65,14 +58,16 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 
 
                 </div>
-                @if (isset($h['children']) && is_array($h['children']) && count($h['children']))
-                    <?
-                    /**
-                     * Вывод дочерних элементов
-                     */
-                    write_level($h['children'], $elements, $module, $sortable);
-                    #Helper::dd($h['children']);
-                    ?>
+                @if ( FALSE )
+                    @if (isset($h['children']) && is_array($h['children']) && count($h['children']))
+                        <?
+                        /**
+                         * Вывод дочерних элементов
+                         */
+                        write_level($h['children'], $elements, $module, $sortable);
+                        #Helper::dd($h['children']);
+                        ?>
+                    @endif
                 @endif
             </li>
         @endforeach
@@ -145,19 +140,13 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 		}
 	</script>
 
-    @if (@trim($dic_settings['javascript']))
-    <script>
-        {{ @$dic_settings['javascript'] }}
-    </script>
-    @endif
-
     @if ($sortable)
     <script>
     $(document).ready(function() {
 
         var updateOutput = function(e) {
 
-            show_hide_delete_buttons();
+            //show_hide_delete_buttons();
 
             var list = e.length ? e : $(e.target), output = $(list.data('output'));
             if (window.JSON) {
@@ -166,7 +155,7 @@ function write_level($hierarchy, $elements, $module, $sortable) {
                 //console.log(root);
                 //return;
                 $.ajax({
-                    url: "{{ URL::route('catalog.category.nestedsetmodel') }}",
+                    url: "{{ URL::route('catalog.products.nestedsetmodel') }}",
                     type: "post",
                     data: { data: data, root: root },
                     success: function(jhr) {
@@ -186,16 +175,6 @@ function write_level($hierarchy, $elements, $module, $sortable) {
             maxDepth: {{ (int)$sortable }},
             group: 1
         }).on('change', updateOutput);
-
-        function show_hide_delete_buttons() {
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
-
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').show();
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').hide();
-        }
-
-        show_hide_delete_buttons();
 
     });
     </script>

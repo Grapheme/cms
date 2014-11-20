@@ -14,15 +14,6 @@ class TablesSeeder extends Seeder{
 
 
         Dic::create(array(
-            'id' => 1,
-            'slug' => '_default',
-            'name' => 'По умолчанию',
-            'entity' => '1',
-            'icon_class' => 'fa-circle-o',
-        ));
-
-
-        Dic::create(array(
             'id' => 2,
             'slug' => 'room_type',
             'name' => 'Номера',

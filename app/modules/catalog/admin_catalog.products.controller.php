@@ -73,25 +73,29 @@ class AdminCatalogProductsController extends BaseController {
 
 	public function index(){
 
-        Allow::permission($this->module['group'], 'categories_view');
+        Allow::permission($this->module['group'], 'products_view');
 
-        $elements = new CatalogCategory();
-        $tbl_cat_category = $elements->getTable();
+        $elements = new CatalogProduct();
+        $tbl_cat_product = $elements->getTable();
 
         /**
          * Подготавливаем запрос для выборки
          */
         $elements = $elements
-            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
-            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
-            ->orderBy('name', 'ASC')
+            ->orderBy(DB::raw('-' . $tbl_cat_product . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_product . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_product . '.id', 'DESC')
+            ->with('meta')
         ;
 
         /**
-         * Получаем все категории из БД
+         * Получаем все записи из БД
          */
         $elements = $elements->get();
+        $elements = DicVal::extracts($elements, 1);
         $elements = Dic::modifyKeys($elements, 'id');
+
+        #Helper::tad($elements);
 
         /**
          * Строим иерархию
@@ -105,70 +109,107 @@ class AdminCatalogProductsController extends BaseController {
         $hierarchy = (new NestedSetModel())->get_hierarchy_from_id_left_right($id_left_right);
 
 
-        if (0) {
+        if ( 0 ) {
             Helper::ta($elements);
             Helper::tad($hierarchy);
         }
 
-        $sortable = 9;
+        $sortable = 1;
 
         return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable'));
 	}
 
     /************************************************************************************/
 
-	#public function getCreate($entity){
-	public function create(){
+    public function create() {
 
-        Allow::permission($this->module['group'], 'create');
+        Allow::permission($this->module['group'], 'categories_create');
 
-        $element = new Dictionary;
-		return View::make($this->module['tpl'].'edit', compact('element'));
-	}
-    
+        $element = new CatalogProduct();
 
-	#public function getEdit($entity, $id){
-	public function edit($id){
+        $locales = Config::get('app.locales');
 
-        Allow::permission($this->module['group'], 'edit');
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+    }
 
-		$element = Dictionary::find($id);
 
-        $dic_fields_array = array();
-        if (NULL !== ($dic_fields = Config::get('dic/' . $element->slug . '.fields'))) {
-            if (is_callable($dic_fields)) {
-                $dic_fields = $dic_fields();
-                $temp = array();
-                foreach ($dic_fields as $field_name => $field_array) {
-                    if (!isset($field_array['title']) || !$field_array['title'])
-                        continue;
-                    $temp[$field_name] = $field_array['title'];
-                }
-                if (count($temp))
-                    $dic_fields_array['Обычные поля'] = $temp;
+    public function edit($id) {
 
+        Allow::permission($this->module['group'], 'categories_edit');
+
+        $element = CatalogProduct::where('id', $id)
+            ->with('category', 'seos', 'metas', 'meta')
+            ->first();
+
+        if (!is_object($element))
+            return App::abort(404);
+
+        $element->extract();
+
+        if (is_object($element) && is_object($element->meta))
+            $element->name = $element->meta->name;
+
+        /**
+         * Получаем все категории
+         */
+        $categories = new CatalogCategory();
+        $tbl_cat_category = $categories->getTable();
+        $categories = $categories
+            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_category . '.id', 'DESC')
+            ->with('meta')
+        ;
+        $categories = $categories->get();
+        if (count($categories))
+            $categories = DicVal::extracts($categories, 1);
+        $categories = Dic::modifyKeys($categories, 'id');
+
+        /**
+         * Подсчитаем отступ для каждой категории
+         */
+        $indent = 0;
+        $last_indent_increate_rgt = array();
+        foreach ($categories as $category) {
+
+            #Helper::ta($category);
+
+            $category->indent = $indent;
+
+            if ($category->lft+1 < $category->rgt) {
+                ++$indent;
+                $last_indent_increate_rgt[] = $category->rgt;
             }
-        }
-        if (NULL !== ($dic_fields = Config::get('dic/' . $element->slug . '.fields_i18n'))) {
-            if (is_callable($dic_fields)) {
-                $dic_fields = $dic_fields();
-                $temp = array();
-                foreach ($dic_fields as $field_name => $field_array) {
-                    if (!isset($field_array['title']) || !$field_array['title']) {
-                        continue;
-                    }
-                    $temp[$field_name] = $field_array['title'];
-                }
-                if (count($temp)) {
-                    $dic_fields_array['Мультиязычные поля'] = $temp;
-                }
-            }
-        }
 
-        #Helper::dd($dic_fields_array);
+            if (in_array(($category->rgt+1), $last_indent_increate_rgt))
+                --$indent;
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'dic_fields_array'));
-	}
+            /*
+            Helper::ta($category);
+            Helper::d($last_indent_increate_rgt);
+            Helper::d($indent);
+            Helper::d("<hr/>");
+            #*/
+        }
+        #Helper::ta($categories);
+
+        /**
+         * Соберем все категории в массив с отступами для select
+         */
+        $categories_for_select = array();
+        foreach ($categories as $category) {
+            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
+        }
+        #Helper::dd($categories_for_select);
+
+
+
+        $locales = Config::get('app.locales');
+
+        #Helper::tad($element);
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select'));
+    }
 
 
     /************************************************************************************/
@@ -256,20 +297,50 @@ class AdminCatalogProductsController extends BaseController {
 	#public function deleteDestroy($entity, $id){
 	public function destroy($id){
 
-        Allow::permission($this->module['group'], 'delete');
+        Allow::permission($this->module['group'], 'products_delete');
 
-		if(!Request::ajax())
+        if(!Request::ajax())
             App::abort(404);
 
-		$json_request = array('status'=>FALSE, 'responseText'=>'');
+        $json_request = array('status' => FALSE, 'responseText' => '');
 
-        if (NULL !== Dictionary::find($id))
-            Dictionary::find($id)->delete();
+        $element = CatalogProduct::where('id', $id)
+            #->with('metas')
+            ->first()
+        ;
 
-		$json_request['responseText'] = 'Удалено';
-		$json_request['status'] = TRUE;
-		return Response::json($json_request,200);
-	}
+        if (is_object($element)) {
+
+            /**
+             * Удаление:
+             * + SEO-данных,
+             * + мета-данных
+             * + самого товара
+             */
+
+            if (Allow::module('seo')) {
+                Seo::where('module', 'CatalogProduct')
+                    ->where('unit_id', $element->id)
+                    ->delete()
+                ;
+            }
+
+            $element->metas()->delete();
+
+            $element->delete();
+
+            /**
+             * Делаем сдвиг в общем дереве
+             */
+            if ($element->rgt)
+                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
+
+            $json_request['responseText'] = 'Удалено';
+            $json_request['status'] = TRUE;
+        }
+
+        return Response::json($json_request,200);
+    }
 
     public function postAjaxNestedSetModel() {
 
@@ -285,7 +356,7 @@ class AdminCatalogProductsController extends BaseController {
 
             if (count($id_left_right)) {
 
-                $cats = CatalogCategory::whereIn('id', array_keys($id_left_right))->get();
+                $cats = CatalogProduct::whereIn('id', array_keys($id_left_right))->get();
 
                 if (count($cats)) {
                     foreach ($cats as $cat) {
