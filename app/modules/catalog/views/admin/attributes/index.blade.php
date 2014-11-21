@@ -33,7 +33,7 @@
                                                 {{ $attributes_group->name }}
                                             </span>
 
-                                            <span class="pull-right txt-color-grayDark margin-right-10">
+                                            <span class="pull-right txt-color-grayDark margin-right-0">
                                                 Группа
                                             </span>
 
@@ -41,7 +41,7 @@
                                                 <span class="btn btn-xs btn-success edit-attributes-group">
                                                     <i class="fa fa-pencil"></i>
                                                 </span>
-                                                <span class="btn btn-xs btn-danger delete-attributes-group">
+                                                <span class="btn btn-xs btn-danger remove-attributes-group-list">
                                                     <i class="fa fa-trash-o"></i>
                                                 </span>
                                             </div>
@@ -53,23 +53,32 @@
                                     <div class="panel-body padding-10 menu_item_type_content">
 
                                         <div class="dd_ attributes-list">
-                                            <ul class="dd-list_ padding-left-0 list-style-none sortable attributes margin-top-10 margin-bottom-10" style="min-height:20px;">
+                                            <ul class="dd-list_ padding-left-0 list-style-none sortable attributes margin-top-10 margin-bottom-10" style="min-height:30px;">
 
                                                 @if (isset($attributes_group->attributes) && is_object($attributes_group->attributes) && count($attributes_group->attributes))
 
 
                                                     @foreach ($attributes_group->attributes as $attribute)
 
-                                                        <li class="dd-item_ sortable_item cursor-move" data-id="{{ $attribute->id }}">
+                                                        <li class="sortable-list-item sortable_item cursor-move" data-id="{{ $attribute->id }}">
                                                             <div class="dd3-content padding-left-10">
 
                                                                 <div class="pull-right txt-color-grayDark margin-right-0">
-                                                                    <a href="#" class="btn btn-xs btn-success edit-attribute">
-                                                                        <i class="fa fa-pencil"></i>
-                                                                    </a>
-                                                                    <a href="#" class="btn btn-xs btn-danger delete-attribute">
-                                                                        <i class="fa fa-trash-o"></i>
-                                                                    </a>
+
+                                                                    @if(Allow::action($module['group'], 'attributes_edit'))
+                                                                        <a href="#" class="btn btn-xs btn-success edit-attribute">
+                                                                            <i class="fa fa-pencil"></i>
+                                                                        </a>
+                                                                    @endif
+
+                                                                    @if(Allow::action($module['group'], 'attributes_delete'))
+                                                                        <form method="POST" action="{{ action('catalog.attributes.destroy', $attribute->id) }}" style="display:inline-block" class="">
+                                                                            <button type="button" class="btn btn-xs btn-danger remove-attribute-list" title="Удалить атрибут">
+                                                                                <i class="fa fa-trash-o"></i>
+                                                                            </button>
+                                                                        </form>
+
+                                                                    @endif
                                                                 </div>
 
                                                                 {{ $attribute->name }}
@@ -123,6 +132,8 @@
 
 	@endif
 
+    <textarea name="order" id="nestable-output" rows="3" class="form-control font-md hidden"></textarea>
+
     <div class="clear"></div>
 
 @stop
@@ -156,18 +167,55 @@
         /**
          * Функция обработки сортировки групп атрибутов
          */
-        var updateOutputAttributesGroup = function() {
+        var nestable_output = $('#nestable-output');
+        var updateOutputAttributesGroup = function(e, save_nestable_order) {
 
+            if (typeof save_nestable_order == 'undefined')
+                save_nestable_order = true;
+
+            var list = e.length ? e : $(e.target),
+                output = list.data('output')
+                ;
+
+            //alert(typeof output);
+            //console.log(list);
+
+            if (typeof output == 'undefined') {
+                return false;
+            }
+
+            //console.log(list.nestable('serialize'));
+            //console.log(output);
+            var last_output_val = output.val();
+
+            if (window.JSON) {
+                output.val(window.JSON.stringify(list.nestable('serialize')));
+                //, null, 2));
+            } else {
+                output.val('JSON browser support required for this demo.');
+            }
+
+            /**
+             * Если порядок изменился - сохраняем его аяксом
+             */
+            if (save_nestable_order && last_output_val != output.val()) {
+
+                //alert(output.val());
+                $.ajax({
+                    url: "{{ URL::route('catalog.attributes.nestedsetmodel-attributes-groups') }}",
+                    type: "post",
+                    data: { data: output.val() }
+                });
+            }
         }
 
         /**
          * Активируем сортировку групп атрибутов
          */
         $('.dd.attributes-groups-list').nestable({
-            maxDepth: 1,
-            //group: 1
+            maxDepth: 1
         }).on('change', updateOutputAttributesGroup);
-
+        updateOutputAttributesGroup($('.dd.attributes-groups-list').data('output', $(nestable_output)), false);
 
 
         /**

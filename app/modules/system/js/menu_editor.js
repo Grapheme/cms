@@ -13,7 +13,7 @@ var menu_editor = {
     },
 
     'update_output': function() {
-        updateOutput($('.dd.menu-list'));
+        updateOutputMenuList($('.dd.menu-list'));
         menu_editor.show_hide_info();
     },
 
@@ -244,7 +244,7 @@ $(document).on("click", ".delete_menu_item", function(e) {
 });
 
 var nestable_output = $('#nestable-output');
-var updateOutput = function(e) {
+var updateOutputMenuList = function(e) {
 
     var list = e.length ? e : $(e.target),
         output = list.data('output')
@@ -278,9 +278,9 @@ if ($('.dd').length) {
             maxDepth: nesting_level,
             expandBtnHTML: '',
             collapseBtnHTML: ''
-        }).on('change', updateOutput);
+        }).on('change', updateOutputMenuList);
 
-        updateOutput($('.dd.menu-list').data('output', $(nestable_output)));
+        updateOutputMenuList($('.dd.menu-list').data('output', $(nestable_output)));
     });
 }
 

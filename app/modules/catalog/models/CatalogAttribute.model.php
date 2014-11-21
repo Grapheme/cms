@@ -20,7 +20,9 @@ class CatalogAttribute extends BaseModel {
 
 
     public function products() {
-        return $this->hasMany('CatalogProduct', 'category_id', 'id');
+        return $this->hasMany('CatalogProduct', 'category_id', 'id')
+            ->orderBy('lft', 'ASC')
+            ;
     }
 
 

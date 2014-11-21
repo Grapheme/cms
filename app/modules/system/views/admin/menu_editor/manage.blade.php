@@ -590,7 +590,7 @@
         @if ($element->order)
             $('.dd').data('output').text('{{ $element->order }}');
         @else
-            updateOutput($('.dd'));
+            updateOutputMenuList($('.dd'));
         @endif
 
         //$('.menu_list_item_dd-handle_custom').css('height', $('.panel-default').css('height'));

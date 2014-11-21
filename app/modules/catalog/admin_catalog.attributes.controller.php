@@ -16,9 +16,9 @@ class AdminCatalogAttributesController extends BaseController {
 
         Route::group(array('before' => 'auth', 'prefix' => $prefix . "/" . $class::$group), function() use ($class, $entity) {
 
-            Route::post($entity.'/ajax-order-save-attributes', array('as' => $class::$group . '.' . $class::$name . '.order-attributes', 'uses' => $class."@postAjaxOrderSaveAttributes"));
+            Route::post($class::$name.'/ajax-order-save-attributes', array('as' => $class::$group . '.' . $class::$name . '.order-attributes', 'uses' => $class."@postAjaxOrderSaveAttributes"));
 
-            Route::post($class::$name.'/ajax-nested-set-model', array('as' => $class::$group . '.' . $class::$name . '.nestedsetmodel', 'uses' => $class."@postAjaxNestedSetModel"));
+            Route::post($class::$name.'/ajax-nested-set-model-attributes-groups', array('as' => $class::$group . '.' . $class::$name . '.nestedsetmodel-attributes-groups', 'uses' => $class."@postAjaxNestedSetModelAttributesGroups"));
 
             Route::resource($class::$name, $class,
                 array(
@@ -295,39 +295,35 @@ class AdminCatalogAttributesController extends BaseController {
 
 	public function destroy($id){
 
-        Allow::permission($this->module['group'], 'categories_delete');
+        Allow::permission($this->module['group'], 'attributes_delete');
 
 		if(!Request::ajax())
             App::abort(404);
 
 		$json_request = array('status' => FALSE, 'responseText' => '');
 
-        $element = CatalogCategory::find($id);
+        /*
+        $json_request['responseText'] = 'Удалено';
+        $json_request['status'] = TRUE;
+        return Response::json($json_request,200);
+        */
+
+        $element = CatalogAttribute::find($id);
 
         if (is_object($element)) {
 
             /**
              * Удаление:
-             * - товаров категории,
-             * + SEO-данных,
-             * - связок с атрибутами,
+             * - связок атрибута с товарами,
              * + мета-данных
-             * + и самой категории
+             * + самого атрибута
              */
 
-            if (Allow::module('seo')) {
-                Seo::where('module', 'CatalogCategory')
-                    ->where('unit_id', $element->id)
-                    ->delete()
-                ;
-            }
-
             $element->metas()->delete();
-
             $element->delete();
 
             /**
-             * Сдвигаем категории в общем дереве
+             * Сдвигаем атрибуты в общем дереве
              */
             if ($element->rgt)
                 DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
@@ -339,7 +335,7 @@ class AdminCatalogAttributesController extends BaseController {
 		return Response::json($json_request,200);
 	}
 
-    public function postAjaxNestedSetModel() {
+    public function postAjaxNestedSetModelAttributesGroups() {
 
         #$input = Input::all();
 
@@ -348,27 +344,31 @@ class AdminCatalogAttributesController extends BaseController {
         #Helper::dd($data);
 
         $offset = 0;
+        /*
+        ## Отступ
         $root_id = (int)Input::get('root');
         if ($root_id > 0) {
-            $root_category = CatalogCategory::find($root_id);
+            $root_category = CatalogAttributeGroup::find($root_id);
             if (is_object($root_category)) {
                 $offset = $root_category->lft;
             }
         }
+        */
 
         if (count($data)) {
 
             $id_left_right = (new NestedSetModel())->get_id_left_right($data);
+            #Helper::dd($id_left_right);
 
             if (count($id_left_right)) {
 
-                $cats = CatalogCategory::whereIn('id', array_keys($id_left_right))->get();
+                $list = CatalogAttributeGroup::whereIn('id', array_keys($id_left_right))->get();
 
-                if (count($cats)) {
-                    foreach ($cats as $cat) {
-                        $cat->lft = $id_left_right[$cat->id]['left'] + $offset;
-                        $cat->rgt = $id_left_right[$cat->id]['right'] + $offset;
-                        $cat->save();
+                if (count($list)) {
+                    foreach ($list as $lst) {
+                        $lst->lft = $id_left_right[$lst->id]['left'] + $offset;
+                        $lst->rgt = $id_left_right[$lst->id]['right'] + $offset;
+                        $lst->save();
                     }
                 }
             }
