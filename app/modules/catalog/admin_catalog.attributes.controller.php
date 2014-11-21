@@ -71,64 +71,22 @@ class AdminCatalogAttributesController extends BaseController {
 
 	public function index() {
 
-        Allow::permission($this->module['group'], 'categories_view');
+        Allow::permission($this->module['group'], 'attributes_view');
 
-        $elements = new CatalogCategory();
-        $tbl_cat_category = $elements->getTable();
+        $root_category = NULL;
+        if (NULL !== ($cat_id = Input::get('category'))) {
 
-        /**
-         * Подготавливаем запрос для выборки
-         */
-        $elements = $elements
-            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
-            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
-            ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta', 'products')
-        ;
-
-        /**
-         * Если задана корневая категория - выбираем только ее содержимое
-         */
-        $root_category = null;
-        if (NULL !== ($root_id = Input::get('root'))) {
-            $root_category = CatalogCategory::find($root_id);
-            $root_category->load('meta')->extract(1);
-            #Helper::tad($root_category);
-            if (is_object($root_category)) {
-                $elements = $elements
-                    ->where('lft', '>', $root_category->lft)
-                    ->where('rgt', '<', $root_category->rgt)
-                    ;
-            }
+            $root_category = CatalogCategory::where('id', $cat_id)
+                ->with('meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta')
+                ->first()
+            ;
+            if (is_object($root_category))
+                $root_category = $root_category->extract(1);
         }
 
-        /**
-         * Получаем все категории из БД
-         */
-        $elements = $elements->get();
-        $elements = DicVal::extracts($elements, 1);
-        $elements = Dic::modifyKeys($elements, 'id');
+        #Helper::tad($root_category);
 
-        /**
-         * Строим иерархию
-         */
-        $id_left_right = array();
-        foreach($elements as $element) {
-            $id_left_right[$element->id] = array();
-            $id_left_right[$element->id]['left'] = $element->lft;
-            $id_left_right[$element->id]['right'] = $element->rgt;
-        }
-        $hierarchy = (new NestedSetModel())->get_hierarchy_from_id_left_right($id_left_right);
-
-
-        if ( 0 ) {
-            Helper::ta($elements);
-            Helper::tad($hierarchy);
-        }
-
-        $sortable = 9;
-
-        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category'));
+        return View::make($this->module['tpl'].'index', compact('root_category'));
 	}
 
     /************************************************************************************/

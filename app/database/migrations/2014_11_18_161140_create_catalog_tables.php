@@ -40,7 +40,7 @@ class CreateCatalogTables extends Migration {
                 $table->text('settings')->nullable();
                 $table->timestamps();
 
-                $table->unique(array('category_id', 'language'));
+                $table->unique(array('category_id', 'language'), 'category_language');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -80,6 +80,8 @@ class CreateCatalogTables extends Migration {
 
                 $table->text('settings')->nullable();
                 $table->timestamps();
+
+                $table->unique(array('product_id', 'language'), 'product_id_language');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -93,14 +95,34 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
+                $table->integer('category_id')->unsigned()->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
-                $table->integer('category_id')->unsigned()->nullable()->index();
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
                 $table->integer('rgt')->unsigned()->nullable()->index();
                 $table->timestamps();
+            });
+            echo(' + ' . $this->table . PHP_EOL);
+        } else {
+            echo('...' . $this->table . PHP_EOL);
+        }
+
+        $this->table = $this->prefix . "attributes_groups_meta";
+        if (!Schema::hasTable($this->table)) {
+            Schema::create($this->table, function(Blueprint $table) {
+
+                $table->increments('id');
+                $table->integer('attributes_group_id')->unsigned()->nullable()->index();
+                $table->string('language')->nullable()->index();
+                $table->smallInteger('active')->unsigned()->default(0)->index();
+                $table->string('name')->nullable()->index();
+
+                $table->text('settings')->nullable();
+                $table->timestamps();
+
+                $table->unique(array('attributes_group_id', 'language'), 'attributes_group_id_language');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -114,7 +136,7 @@ class CreateCatalogTables extends Migration {
                 $table->increments('id');
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
-                $table->integer('group_id')->unsigned()->nullable()->index();
+                $table->integer('attributes_group_id')->unsigned()->nullable()->index();
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
@@ -131,12 +153,15 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
+                $table->integer('attribute_id')->unsigned()->nullable()->index();
+                $table->string('language')->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('name')->nullable()->index();
-                $table->integer('attribute_id')->unsigned()->nullable()->index();
 
                 $table->text('settings')->nullable();
                 $table->timestamps();
+
+                $table->unique(array('attribute_id', 'language'), 'attribute_id_language');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -166,6 +191,9 @@ class CreateCatalogTables extends Migration {
 
         Schema::dropIfExists($this->prefix . "attributes_groups");
         echo(' - ' . $this->prefix . "attributes_groups" . PHP_EOL);
+
+        Schema::dropIfExists($this->prefix . "attributes_groups_meta");
+        echo(' - ' . $this->prefix . "attributes_groups_meta" . PHP_EOL);
 
         Schema::dropIfExists($this->prefix . "attributes");
         echo(' - ' . $this->prefix . "attributes" . PHP_EOL);

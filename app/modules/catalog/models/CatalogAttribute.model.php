@@ -30,7 +30,7 @@ class CatalogAttribute extends BaseModel {
     * @return \Illuminate\Database\Eloquent\Relations\HasMany
     */
     public function metas() {
-        return $this->hasMany('CatalogCategoryMeta', 'category_id', 'id');
+        return $this->hasMany('CatalogAttributeMeta', 'attribute_id', 'id');
     }
 
     /**
@@ -39,7 +39,7 @@ class CatalogAttribute extends BaseModel {
      * @return mixed
      */
     public function meta() {
-        return $this->hasOne('CatalogCategoryMeta', 'category_id', 'id')
+        return $this->hasOne('CatalogAttributeMeta', 'attribute_id', 'id')
             ->where('language', Config::get('app.locale'))
             ;
     }

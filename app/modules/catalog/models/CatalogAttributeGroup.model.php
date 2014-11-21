@@ -19,8 +19,8 @@ class CatalogAttributeGroup extends BaseModel {
 	);
 
 
-    public function products() {
-        return $this->hasMany('CatalogProduct', 'category_id', 'id');
+    public function attributes() {
+        return $this->hasMany('CatalogAttribute', 'attributes_group_id', 'id');
     }
 
 
@@ -126,6 +126,13 @@ class CatalogAttributeGroup extends BaseModel {
                 }
             }
         }
+
+        /*
+        ## Extract category
+        if (isset($this->category) && is_object($this->category)) {
+            $this->category = $this->category->extract($unset);
+        }
+        */
 
         return $this;
     }

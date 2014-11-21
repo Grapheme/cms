@@ -23,6 +23,10 @@ class CatalogCategory extends BaseModel {
         return $this->hasMany('CatalogProduct', 'category_id', 'id');
     }
 
+    public function attributes_groups() {
+        return $this->hasMany('CatalogAttributeGroup', 'category_id', 'id');
+    }
+
 
     /**
     * Связь возвращает все META-данные записи (для всех языков)
@@ -125,6 +129,42 @@ class CatalogCategory extends BaseModel {
                         unset($this->seos[$s]);
                 }
             }
+        }
+
+        ## Extract attributes_groups
+        if (isset($this->attributes_groups) && is_object($this->attributes_groups) && count($this->attributes_groups)) {
+
+            #Helper::tad($this->relations['attributes_groups']);
+
+            $attributes_groups = new Collection();
+            foreach ($this->relations['attributes_groups'] as $ag => $attributes_group) {
+
+                $temp = $attributes_group->extract($unset);
+                #Helper::ta($temp->relations);
+
+                if (is_object($temp) && count($temp->relations['attributes'])) {
+
+                    $attributes = new Collection();
+                    foreach ($temp->relations['attributes'] as $ra => $attribute) {
+
+                        $attribute = $attribute->extract($unset);
+
+                        /**
+                         * Правильное обновление значения элемента коллекции
+                         */
+                        $attributes->put($attribute->slug, $attribute);
+                    }
+                    $temp->relations['attributes'] = $attributes;
+                }
+                #Helper::ta($temp->relations);
+
+                /**
+                 * Правильное обновление значения элемента коллекции
+                 */
+                $attributes_groups->put($attributes_group->slug, $temp);
+            }
+            $this->relations['attributes_groups'] = $attributes_groups;
+            #Helper::tad($this->attributes_groups);
         }
 
         return $this;

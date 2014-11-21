@@ -28,11 +28,16 @@ class AdminCatalogMenuController extends BaseController {
             'categories_delete'  => 'Удаление категорий',
             'categories_seo'     => 'SEO-оптимизация категорий',
 
-            'products_view'    => 'Просмотр товаров',
-            'products_create'  => 'Создание товаров',
-            'products_edit'    => 'Редактирование товаров',
-            'products_delete'  => 'Удаление товаров',
-            'products_seo'     => 'SEO-оптимизация товаров',
+            'products_view'      => 'Просмотр товаров',
+            'products_create'    => 'Создание товаров',
+            'products_edit'      => 'Редактирование товаров',
+            'products_delete'    => 'Удаление товаров',
+            'products_seo'       => 'SEO-оптимизация товаров',
+
+            'attributes_view'    => 'Просмотр атрибутов',
+            'attributes_create'  => 'Создание атрибутов',
+            'attributes_edit'    => 'Редактирование атрибутов',
+            'attributes_delete'  => 'Удаление атрибутов',
         );
     }
 

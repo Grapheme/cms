@@ -99,6 +99,38 @@ class CatalogTableSeeder extends Seeder{
         ));
 
 
+
+        CatalogAttributeGroup::create(array(
+            'id' => 1,
+            'category_id' => 1,
+            'active' => 1,
+            'slug' => 'default',
+            'lft' => 1,
+            'rgt' => 2,
+        ));
+        CatalogAttributeGroupMeta::create(array(
+            'id' => 1,
+            'attributes_group_id' => 1,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'По умолчанию',
+        ));
+
+        CatalogAttribute::create(array(
+            'id' => 1,
+            'active' => 1,
+            'slug' => 'wheel_radius',
+            'attributes_group_id' => 1,
+            'lft' => 1,
+            'rgt' => 2,
+        ));
+        CatalogAttributeMeta::create(array(
+            'id' => 1,
+            'attribute_id' => 1,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Радиус колеса',
+        ));
     }
 
 }
