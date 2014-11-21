@@ -9,13 +9,13 @@
 @section('content')
 
     <?
-    $create_title = "Изменить категорию";
-    $edit_title   = "Добавить категорию";
+    $create_title = "Изменить атрибут";
+    $edit_title   = "Добавить атрибут";
 
     $url =
         @$element->id
-        ? URL::route('catalog.category.update', array('id' => $element->id))
-        : URL::route('catalog.category.store');
+        ? URL::route('catalog.attributes.update', array('id' => $element->id))
+        : URL::route('catalog.attributes.store');
     $method     = @$element->id ? 'PUT' : 'POST';
     $form_title = @$element->id ? $create_title : $edit_title;
     ?>
@@ -53,6 +53,13 @@
                         </label>
                     </section>
 
+                    <section>
+                        <label class="label">Группа атрибутов</label>
+                        <label class="select">
+                            {{ Form::select('attributes_group_id', $groups, $element->attributes_group_id ?: Input::get('group')) }}
+                        </label>
+                    </section>
+
                     @if (count($locales) > 1)
                     <ul id="myTab2" class="nav nav-tabs bordered">
                         <? $i = 0; ?>
@@ -80,7 +87,7 @@
 
                             <section>
                                 <label class="checkbox">
-                                    {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || !$element->id)) }}
+                                    {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || (!$element->id && $locale_sign == Config::get('app.locale')))) }}
                                     <i></i>
                                     Активно
                                 </label>
@@ -90,17 +97,7 @@
                         @endforeach
                     </div>
 
-                    @if (0)
-                    <section>
-                        <label class="label">Название</label>
-                        <label class="input">
-                            {{ Form::text('name', null, array('required' => 'required')) }}
-                        </label>
-                    </section>
-                    @endif
-
                 </fieldset>
-
 
 
                 <footer>
@@ -116,7 +113,7 @@
     	</section>
 
 
-        @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'categories_seo'))
+        @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'categories_seo') && FALSE)
         <section class="col col-6">
             <div class="well">
                 <header>Поисковая оптимизация</header>
@@ -164,7 +161,7 @@
 
     @if(@$element->id)
     @else
-    {{ Form::hidden('redirect', URL::route('catalog.category.index') . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
+    {{ Form::hidden('redirect', URL::route('catalog.attributes.index', array('category' => Input::get('category') ?: NULL))) }}
     @endif
 
     {{ Form::close() }}
@@ -195,8 +192,8 @@
 		}        
 	</script>
 
-    {{ HTML::script('private/js/vendor/redactor.min.js') }}
-    {{ HTML::script('private/js/system/redactor-config.js') }}
+    {{-- HTML::script('private/js/vendor/redactor.min.js') --}}
+    {{-- HTML::script('private/js/system/redactor-config.js') --}}
 
     {{-- HTML::script('private/js/modules/gallery.js') --}}
     {{-- HTML::script('private/js/plugin/select2/select2.min.js') --}}

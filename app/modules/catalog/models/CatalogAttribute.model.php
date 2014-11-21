@@ -9,6 +9,7 @@ class CatalogAttribute extends BaseModel {
     protected $fillable = array(
         'active',
         'slug',
+        'attributes_group_id',
         'settings',
         'lft',
         'rgt',
@@ -18,6 +19,12 @@ class CatalogAttribute extends BaseModel {
         #'slug' => 'required',
 	);
 
+
+    public function attributes_group() {
+        return $this->belongsTo('CatalogAttributeGroup', 'attributes_group_id', 'id')
+            ->orderBy('lft', 'ASC')
+            ;
+    }
 
     public function products() {
         return $this->hasMany('CatalogProduct', 'category_id', 'id')
@@ -106,27 +113,9 @@ class CatalogAttribute extends BaseModel {
                 unset($this->meta);
         }
 
-        ## Extract SEOs
-        if (isset($this->seos)) {
-            #Helper::tad($this->seos);
-            if (count($this->seos) == 1 && count(Config::get('app.locales')) == 1) {
-                $app_locales = Config::get('app.locales');
-                foreach ($app_locales as $locale_sign => $locale_name)
-                    break;
-                foreach ($this->seos as $s => $seo) {
-                    $this->seos[$locale_sign] = $seo;
-                    break;
-                }
-                unset($this->seos[0]);
-                #Helper::tad($this->seos);
-            } else {
-                foreach ($this->seos as $s => $seo) {
-                    $this->seos[$seo->language] = $seo;
-                    #Helper::d($s . " != " . $seo->language);
-                    if ($s != $seo->language || $s === 0)
-                        unset($this->seos[$s]);
-                }
-            }
+        ## Extract attributes_group
+        if (isset($this->attributes_group)) {
+            $this->attributes_group = $this->attributes_group->extract($unset);
         }
 
         return $this;

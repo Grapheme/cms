@@ -7,7 +7,7 @@ class CatalogAttributeMeta extends BaseModel {
 	public $table = 'catalog_attributes_meta';
 
     protected $fillable = array(
-        'category_id',
+        'attribute_id',
         'language',
         'active',
         'name',
@@ -15,7 +15,7 @@ class CatalogAttributeMeta extends BaseModel {
     );
 
 	public static $rules = array(
-        'category_id' => 'required',
+        'attribute_id' => 'required',
         'language' => 'required',
 	);
 

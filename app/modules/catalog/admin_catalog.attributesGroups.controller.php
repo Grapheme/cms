@@ -1,11 +1,11 @@
 <?php
 
-class AdminCatalogAttributesController extends BaseController {
+class AdminCatalogAttributesGroupsController extends BaseController {
 
-    public static $name = 'attributes';
+    public static $name = 'attributes_groups';
     public static $group = 'catalog';
-    public static $entity = 'attribute';
-    public static $entity_name = 'атрибут';
+    public static $entity = 'attributes_group';
+    public static $entity_name = 'группа атрибутов';
 
     /****************************************************************************/
 
@@ -15,10 +15,6 @@ class AdminCatalogAttributesController extends BaseController {
         $entity = self::$entity;
 
         Route::group(array('before' => 'auth', 'prefix' => $prefix . "/" . $class::$group), function() use ($class, $entity) {
-
-            Route::post($class::$name.'/ajax-order-save-attributes', array('as' => $class::$group . '.' . $class::$name . '.order-attributes', 'uses' => $class."@postAjaxOrderSaveAttributes"));
-
-            Route::post($class::$name.'/ajax-nested-set-model-attributes-groups', array('as' => $class::$group . '.' . $class::$name . '.nestedsetmodel-attributes-groups', 'uses' => $class."@postAjaxNestedSetModelAttributesGroups"));
 
             Route::resource($class::$name, $class,
                 array(

@@ -1,8 +1,12 @@
 <?
     #Helper:dd($dic_id);
     $menus = array();
+    $array = array();
+    if (isset($root_category) && is_object($root_category))
+        $array['category'] = $root_category->id;
+
     $menus[] = array(
-        'link' => URL::route('catalog.attributes.index'),
+        'link' => URL::route('catalog.attributes.index', $array),
         'title' => 'Все атрибуты',
         'class' => 'btn btn-default'
     );
@@ -37,9 +41,10 @@
     }
     */
     if  (Allow::action($module['group'], 'attributes_create')) {
-        $current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
+        #$current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
         $menus[] = array(
-            'link' => URL::route('catalog.category.create', $current_link_attributes),
+            #'link' => URL::route('catalog.category.create', $current_link_attributes),
+            'link' => URL::route('catalog.category.create', $array),
             'title' => 'Добавить',
             'class' => 'btn btn-primary'
         );
@@ -51,11 +56,35 @@
     <h1>
         Атрибуты
         @if (isset($element) && is_object($element) && $element->name)
+
+            @if (is_object($element->attributes_group))
+
+                @if (is_object($element->attributes_group->category))
+
+                    &nbsp;&mdash;&nbsp;
+                    {{ $element->attributes_group->category->name }}
+                @endif
+
+                &nbsp;&mdash;&nbsp;
+                {{ $element->attributes_group->name }}
+
+            @endif
+
             &nbsp;&mdash;&nbsp;
             {{ $element->name }}
+
         @elseif (isset($root_category) && is_object($root_category) && $root_category->name)
+
             &nbsp;&mdash;&nbsp;
             {{ $root_category->name }}
+
+            @if (NULL !== ($group_id = Input::get('group')) && isset($groups) && isset($groups[$group_id]))
+
+                &nbsp;&mdash;&nbsp;
+                {{ $groups[$group_id] }}
+
+            @endif
+
         @endif
     </h1>
 

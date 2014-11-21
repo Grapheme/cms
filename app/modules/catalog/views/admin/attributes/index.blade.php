@@ -18,35 +18,42 @@
                 @foreach ($root_category->attributes_groups as $attributes_group)
 
                     <li class="dd-item dd3-item attributes_group clearfix" data-id="{{ $attributes_group->id }}">
-                        <div class="dd-handle dd3-handle">
+                        <div class="dd-handle dd3-handle" style="z-index:999">
                             Drag
                         </div>
 
                         <div class="dd3-content panel-group smart-accordion-default margin-top-0 margin-bottom-10 padding-0 border-0">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h4 class="panel-title panel-title-custom">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#attributes_group_{{ $attributes_group->id }}" class="collapsed--" style="padding-top: 6px; padding-bottom: 6px; padding-left: 40px">
-                                            <i class="fa fa-lg fa-angle-down pull-right margin-top-5 accordion-collapse"></i>
-                                            <i class="fa fa-lg fa-angle-up pull-right margin-top-5 accordion-collapse"></i>
-                                            <span class="menu_item_title">
-                                                {{ $attributes_group->name }}
-                                            </span>
+                                    <h4 class="panel-title panel-title-custom" style="position:relative">
+
+                                        <div class="" style="position:absolute; right:0; top:0; padding: 6px 36px 6px 10px;">
 
                                             <span class="pull-right txt-color-grayDark margin-right-0">
                                                 Группа
                                             </span>
 
                                             <div class="pull-right txt-color-grayDark margin-right-10">
-                                                <span class="btn btn-xs btn-success edit-attributes-group">
+                                                <a href="{{ URL::route('catalog.attributes.create', Input::all() + array('group' => $attributes_group->id)) }}" class="btn btn-xs btn-default add-attribute margin-right-5 display-inline-block padding-1-5" title="Добавить атрибут в группу">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                                <span class="btn btn-xs btn-success edit-attributes-group" title="Редактировать группу" data-href="">
                                                     <i class="fa fa-pencil"></i>
                                                 </span>
-                                                <span class="btn btn-xs btn-danger remove-attributes-group-list">
+                                                <span class="btn btn-xs btn-danger remove-attributes-group-list" title="Удалить группу">
                                                     <i class="fa fa-trash-o"></i>
                                                 </span>
                                             </div>
 
-                                        </a>
+                                        </div>
+
+                                        <div data-toggle="collapse" data-parent="#accordion" href="#attributes_group_{{ $attributes_group->id }}" class="panel-title-link collapsed--" style="z-index:9">
+                                            <i class="fa fa-lg fa-angle-down pull-right margin-top-5 accordion-collapse"></i>
+                                            <i class="fa fa-lg fa-angle-up pull-right margin-top-5 accordion-collapse"></i>
+                                            <span class="menu_item_title">
+                                                {{ $attributes_group->name }}
+                                            </span>
+                                        </div>
                                     </h4>
                                 </div>
                                 <div id="attributes_group_{{ $attributes_group->id }}" class="bg-color-white panel-collapse collapse in">
@@ -61,12 +68,12 @@
                                                     @foreach ($attributes_group->attributes as $attribute)
 
                                                         <li class="sortable-list-item sortable_item cursor-move" data-id="{{ $attribute->id }}">
-                                                            <div class="dd3-content padding-left-10">
+                                                            <div class="dd3-content padding-left-10 padding-right-5">
 
                                                                 <div class="pull-right txt-color-grayDark margin-right-0">
 
                                                                     @if(Allow::action($module['group'], 'attributes_edit'))
-                                                                        <a href="#" class="btn btn-xs btn-success edit-attribute">
+                                                                        <a href="{{ action('catalog.attributes.edit', $attribute->id) }}" class="btn btn-xs btn-success edit-attribute" title="Редактировать атрибут">
                                                                             <i class="fa fa-pencil"></i>
                                                                         </a>
                                                                     @endif
@@ -82,6 +89,7 @@
                                                                 </div>
 
                                                                 {{ $attribute->name }}
+                                                                &nbsp;
                                                             </div>
                                                         </li>
 
@@ -160,7 +168,7 @@
 		}
 	</script>
 
-    @if (1)
+    @if (isset($root_category) && is_object($root_category) && count($root_category->attributes_groups)))
     <script>
     $(document).ready(function() {
 

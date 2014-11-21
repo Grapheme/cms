@@ -146,7 +146,7 @@ class CatalogCategory extends BaseModel {
                 $temp = $attributes_group->extract($unset);
                 #Helper::ta($temp->relations);
 
-                if (is_object($temp) && count($temp->relations['attributes'])) {
+                if (is_object($temp) && @count($temp->relations['attributes'])) {
 
                     $attributes = new Collection();
                     foreach ($temp->relations['attributes'] as $ra => $attribute) {
