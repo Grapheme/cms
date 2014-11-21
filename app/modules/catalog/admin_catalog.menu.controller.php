@@ -74,7 +74,7 @@ class AdminCatalogMenuController extends BaseController {
         if (Allow::action(self::$group, 'attributes_view', false, true))
             $menu_child[] = array(
                 'title' => 'Атрибуты',
-                'link' => self::$group . '/attribute',
+                'link' => self::$group . '/attributes',
                 'class' => 'fa-puzzle-piece',
             );
 

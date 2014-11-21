@@ -7,6 +7,7 @@ class CatalogAttributeGroup extends BaseModel {
 	public $table = 'catalog_attributes_groups';
 
     protected $fillable = array(
+        'category_id',
         'active',
         'slug',
         'settings',

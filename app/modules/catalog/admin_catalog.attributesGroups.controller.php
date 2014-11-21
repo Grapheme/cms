@@ -67,8 +67,10 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         View::share('module', $this->module);
 	}
 
+
 	public function index() {
 
+        /*
         Allow::permission($this->module['group'], 'attributes_view');
 
         $root_category = NULL;
@@ -88,6 +90,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         #Helper::tad($root_category);
 
         return View::make($this->module['tpl'].'index', compact('root_category'));
+        */
 	}
 
     /************************************************************************************/
@@ -101,7 +104,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         if (NULL !== ($cat_id = Input::get('category'))) {
 
             $root_category = CatalogCategory::where('id', $cat_id)
-                ->with('meta', 'attributes_groups.meta')
+                ->with('meta')
                 ->first()
             ;
 
@@ -111,22 +114,16 @@ class AdminCatalogAttributesGroupsController extends BaseController {
                 $root_category = $root_category->extract(1);
         }
 
-        #Helper::ta($root_category);
+        #Helper::tad($root_category);
 
         if (!is_object($root_category))
             App::abort(404);
 
-        $groups = array();
-        if (is_object($root_category) && isset($root_category->attributes_groups) && is_object($root_category->attributes_groups) && count($root_category->attributes_groups))
-            foreach ($root_category->attributes_groups as $group)
-                $groups[$group->id] = $group->name;
-        #Helper::dd($groups);
-
-        $element = new CatalogAttribute();
+        $element = new CatalogAttributeGroup();
 
         $locales = Config::get('app.locales');
 
-		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups'));
+		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
 	}
     
 
@@ -134,44 +131,20 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
         Allow::permission($this->module['group'], 'attributes_edit');
 
-		$element = CatalogAttribute::where('id', $id)
-            ->with('metas', 'meta', 'attributes_group.meta', 'attributes_group.category.meta')
+		$element = CatalogAttributeGroup::where('id', $id)
+            ->with('metas', 'meta', 'category.meta')
             ->first()
-            ->extract();
+            ->extract(1);
 
-        $root_category = null;
+        #Helper::tad($element);
 
-        if (is_object($element) && is_object($element->meta)) {
-
-            $element->extract(1);
-
-            if (isset($element->attributes_group) && isset($element->attributes_group->category) && is_object($element->attributes_group->category)) {
-                #$root_category = $element->attributes_group->category->id;
-                $cat_id = $element->attributes_group->category->id;
-
-                $root_category = CatalogCategory::where('id', $cat_id)
-                    ->with('meta', 'attributes_groups.meta')
-                    ->first()
-                ;
-
-                if (is_object($root_category))
-                    $root_category = $root_category->extract(1);
-            }
-        }
-
-        #Helper::tad($root_category);
-
-        $groups = array();
-        if (is_object($root_category) && isset($root_category->attributes_groups) && is_object($root_category->attributes_groups) && count($root_category->attributes_groups))
-            foreach ($root_category->attributes_groups as $group)
-                $groups[$group->id] = $group->name;
-        #Helper::dd($groups);
+        $root_category = $element->category;
 
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
 	}
 
 
@@ -202,8 +175,8 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogAttribute::find($id)))
-            $element = new CatalogAttribute();
+        if (!$id || NULL === ($element = CatalogAttributeGroup::find($id)))
+            $element = new CatalogAttributeGroup();
 
         $input = Input::all();
 
@@ -219,7 +192,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         $exit = false;
         $i = 1;
         do {
-            $test = CatalogAttribute::where('slug', $slug)->first();
+            $test = CatalogAttributeGroup::where('slug', $slug)->first();
             #Helper::dd($count);
 
             if (!is_object($test) || $test->id == $element->id) {
@@ -255,7 +228,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
                 $element->update($input);
                 $redirect = false;
-                $attribute_id = $element->id;
+                $attributes_group_id = $element->id;
 
                 /**
                  * Обновим slug на форме
@@ -269,13 +242,13 @@ class AdminCatalogAttributesGroupsController extends BaseController {
                 /**
                  * Ставим элемент в конец списка
                  */
-                $temp = CatalogAttribute::selectRaw('max(rgt) AS max_rgt')->where('attributes_group_id', @$input['attributes_group_id'])->first();
+                $temp = CatalogAttributeGroup::selectRaw('max(rgt) AS max_rgt')->where('category_id', @$input['category_id'])->first();
                 $input['lft'] = $temp->max_rgt+1;
                 $input['rgt'] = $temp->max_rgt+2;
 
                 $element->save();
                 $element->update($input);
-                $attribute_id = $element->id;
+                $attributes_group_id = $element->id;
                 $redirect = Input::get('redirect');
             }
 
@@ -288,11 +261,11 @@ class AdminCatalogAttributesGroupsController extends BaseController {
                 #Helper::d($attribute_id);
                 foreach ($input['meta'] as $locale_sign => $meta_array) {
                     $meta_search_array = array(
-                        'attribute_id' => (int)$attribute_id,
+                        'attributes_group_id' => (int)$attributes_group_id,
                         'language' => $locale_sign
                     );
                     #Helper::d($meta_search_array);
-                    $attribute_meta = CatalogAttributeMeta::firstOrNew($meta_search_array);
+                    $attribute_meta = CatalogAttributeGroupMeta::firstOrNew($meta_search_array);
                     if (!$attribute_meta->id) {
                         #Helper::tad($attribute_meta);
                         $attribute_meta->save();

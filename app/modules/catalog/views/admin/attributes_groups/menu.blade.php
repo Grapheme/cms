@@ -7,7 +7,7 @@
 
     $menus[] = array(
         'link' => URL::route('catalog.attributes.index', $array),
-        'title' => 'Все атрибуты',
+        'title' => 'Все группы',
         'class' => 'btn btn-default'
     );
     /*
@@ -54,19 +54,13 @@
 ?>
     
     <h1>
-        Атрибуты
+        Группа атрибутов
         @if (isset($element) && is_object($element) && $element->name)
 
-            @if (is_object($element->attributes_group))
-
-                @if (is_object($element->attributes_group->category))
-
-                    &nbsp;&mdash;&nbsp;
-                    {{ $element->attributes_group->category->name }}
-                @endif
+            @if (is_object($element->category))
 
                 &nbsp;&mdash;&nbsp;
-                {{ $element->attributes_group->name }}
+                {{ $element->category->name }}
 
             @endif
 

@@ -17,12 +17,12 @@
 
                 @foreach ($root_category->attributes_groups as $attributes_group)
 
-                    <li class="dd-item dd3-item attributes_group clearfix margin-top-10 margin-bottom-10" data-id="{{ $attributes_group->id }}">
+                    <li class="dd-item dd3-item attributes_group clearfix" data-id="{{ $attributes_group->id }}">
                         <div class="dd-handle dd3-handle" style="z-index:999">
                             Drag
                         </div>
 
-                        <div class="dd3-content panel-group smart-accordion-default margin-top-0 margin-bottom-0 padding-0 border-0">
+                        <div class="dd3-content panel-group smart-accordion-default margin-top-0 margin-bottom-10 padding-0 border-0">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 class="panel-title panel-title-custom" style="position:relative">
