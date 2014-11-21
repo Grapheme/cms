@@ -56,7 +56,7 @@ class CreateCatalogTables extends Migration {
                 $table->increments('id');
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
-                $table->integer('category_id')->unsigned()->nullable()->index();
+                $table->integer('category_id')->unsigned()->index();
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
@@ -95,7 +95,7 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
-                $table->integer('category_id')->unsigned()->nullable()->index();
+                $table->integer('category_id')->unsigned()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
 
@@ -114,7 +114,7 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
-                $table->integer('attributes_group_id')->unsigned()->nullable()->index();
+                $table->integer('attributes_group_id')->unsigned()->index();
                 $table->string('language')->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('name')->nullable()->index();
@@ -136,7 +136,7 @@ class CreateCatalogTables extends Migration {
                 $table->increments('id');
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
-                $table->integer('attributes_group_id')->unsigned()->nullable()->index();
+                $table->integer('attributes_group_id')->unsigned()->index();
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
@@ -153,7 +153,7 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
-                $table->integer('attribute_id')->unsigned()->nullable()->index();
+                $table->integer('attribute_id')->unsigned()->index();
                 $table->string('language')->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('name')->nullable()->index();

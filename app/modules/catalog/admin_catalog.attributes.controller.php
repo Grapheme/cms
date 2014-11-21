@@ -16,6 +16,8 @@ class AdminCatalogAttributesController extends BaseController {
 
         Route::group(array('before' => 'auth', 'prefix' => $prefix . "/" . $class::$group), function() use ($class, $entity) {
 
+            Route::post($entity.'/ajax-order-save-attributes', array('as' => $class::$group . '.' . $class::$name . '.order-attributes', 'uses' => $class."@postAjaxOrderSaveAttributes"));
+
             Route::post($class::$name.'/ajax-nested-set-model', array('as' => $class::$group . '.' . $class::$name . '.nestedsetmodel', 'uses' => $class."@postAjaxNestedSetModel"));
 
             Route::resource($class::$name, $class,
@@ -80,6 +82,9 @@ class AdminCatalogAttributesController extends BaseController {
                 ->with('meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta')
                 ->first()
             ;
+
+            #Helper::tad($root_category);
+
             if (is_object($root_category))
                 $root_category = $root_category->extract(1);
         }
@@ -372,252 +377,25 @@ class AdminCatalogAttributesController extends BaseController {
         return Response::make('1');
     }
 
-    public function getImport($dic_id){
 
-        Allow::permission($this->module['group'], 'import');
+    public function postAjaxOrderSaveAttributes() {
 
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
+        $poss = Input::get('poss');
+        $group_id = Input::get('group_id');
 
-        #Helper::dd($dic);
+        $pls = CatalogAttribute::whereIn('id', $poss)->get();
 
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import', compact('dic', 'dic_id', 'element'));
-    }
-
-    public function postImport2($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        #Helper::dd( Input::all() );
-
-        $input = Input::all();
-        $lines = explode("\n", $input['import_data']);
-        $array = array();
-        $max = 0;
-        foreach ($lines as $line) {
-            if (@$input['trim'])
-                $line = trim($line, $input['trim_params'] . ' ' ?: ' ');
-            if (@$input['delimeter'])
-                $line = explode($input['delimeter'], $line);
-            else
-                $line = array($line);
-
-            if (count($line) > $max)
-                $max = count($line);
-
-            if ($line)
-                $array[] = $line;
-        }
-
-        #Helper::dd($array);
-
-        $fields = array('Выберите...', 'name' => 'Название', 'slug' => 'Системное имя') + array_keys((array)Config::get('dic/' . $dic->slug . '.fields'));
-        #Helper::dd($fields);
-
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import2', compact('dic', 'dic_id', 'element', 'array', 'max', 'fields'));
-    }
-
-    public function postImport3($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        ## Get also exists values
-        #$exist_values = $dic->values;
-        #Helper::ta($exist_values);
-
-        $input = Input::all();
-
-        /*
-        foreach ($exist_values as $e => $exist_value) {
-            if ($input['rewrite_mode'] == 1)
-                $exist_values[$exist_value->name] = $exist_value;
-            else
-                $exist_values[$exist_value->slug] = $exist_value;
-            unset($exist_values[$e]);
-        }
-        Helper::ta($exist_values);
-        */
-
-        $max = count($input['values'][0]);
-
-        $fields = $input['fields'];
-        $values = $input['values'];
-
-        ## Filter fields & values
-        foreach ($fields as $f => $field) {
-            if (is_numeric($field) && $field == 0) {
-                #Helper::d($f . " => " . $field . " = 0");
-                unset($fields[$f]);
-                unset($values[$f]);
+        if ( $pls ) {
+            foreach ($pls as $pl) {
+                $pl->rgt = (array_search($pl->id, $poss)+1) * 2;
+                $pl->lft = $pl->rgt-1;
+                if ($group_id)
+                    $pl->attributes_group_id = $group_id;
+                $pl->save();
             }
         }
 
-        #Helper::d($fields);
-        #Helper::d($values);
-
-        ## Make insertions
-        $find_key = ($input['rewrite_mode'] == 1) ? 'name' : 'slug';
-        $array = array();
-        $count = count($values[0]);
-        for ($i = 0; $i < $count; $i++) {
-            $arr = array(
-                'dic_id' => $dic->id,
-            );
-            foreach ($fields as $f => $field) {
-                $arr[$field] = @trim($values[$f][$i]);
-            }
-
-            $find = array($find_key => @$arr[$find_key], 'dic_id' => $dic->id);
-            #unset($arr[$find_key]);
-            if (
-                #$find_key != 'slug'
-                @$input['set_slug']
-                && (
-                    $input['set_slug_elements'] == 'all'
-                    || ($input['set_slug_elements'] == 'empty' && !@$arr['slug'])
-                )
-            ) {
-                $arr['slug'] = Helper::translit(@$arr['name']);
-            }
-
-            if (@$input['set_ucfirst'] && $arr['name']) {
-                $arr['name'] = Helper::mb_ucfirst($arr['name']);
-            }
-
-            #Helper::dd($find);
-
-            #/*
-            $dicval = DicVal::firstOrCreate($find);
-            $dicval->update($arr);
-            #Helper::ta($dicval);
-            #*/
-
-            unset($dicval);
-            #$array[] = $arr;
-        }
-
-        #Helper::d($array);
-
-        return Redirect::route('dicval.index', $dic_id);
-    }
-
-    public function getSphinx($dic_id) {
-
-        if (!Allow::superuser())
-            App::abort(404);
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-
-        #Helper::d('Данные словаря:') . Helper::ta($dic);
-
-        $fields = Config::get('dic/' . $dic->slug . '.fields');
-        if (isset($fields) && is_callable($fields))
-            $fields = $fields();
-
-        #Helper::d('Доп. поля словаря (fields):') . Helper::d($fields);
-
-        $fields_i18n = Config::get('dic/' . $dic->slug . '.fields_i18n');
-        if (isset($fields_i18n) && is_callable($fields_i18n))
-            $fields_i18n = $fields_i18n();
-
-        #Helper::d('Мультиязычные доп. поля словаря (fields_i18n):') . Helper::d($fields_i18n);
-
-        $tbl_dic_field_val = (new DicFieldVal)->getTable();
-        $tbl_dic_textfield_val = (new DicTextFieldVal)->getTable();
-
-        /**
-         * Будут индексироваться только поля следующих типов
-         */
-        $indexed_types = array('textarea', 'textarea_redactor', 'text');
-        $fulltext_types = array('textarea', 'textarea_redactor');
-
-        $selects = array(
-            "dicval.id AS id",
-            $dic->id . " AS dic_id",
-            "'" . $dic->name . "' AS dic_name",
-            "'" . $dic->slug . "' AS dic_slug",
-            "dicval.name AS name"
-        );
-        $sql = array();
-
-        $j = 0;
-        /**
-         * Поиск по обычным полям
-         */
-        if (isset($fields) && is_array($fields) && count($fields)) {
-            foreach ($fields as $field_key => $field) {
-
-                if (!isset($field['type']) || !in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NULL";
-            }
-        }
-        /**
-         * Поиск по мультиязычным полям
-         */
-        if (isset($fields_i18n) && is_array($fields_i18n) && count($fields_i18n)) {
-            foreach ($fields_i18n as $field_key => $field) {
-
-                if (!in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NOT NULL";
-            }
-        }
-
-        $sql[] = "WHERE dicval.version_of IS NULL AND dicval.dic_id = '" . $dic->id . "'";
-
-        $selects_compile = implode(', ', $selects);
-
-        array_unshift($sql, "SELECT " . $selects_compile . " FROM " . (new DicVal)->getTable() . " AS dicval");
-
-        return
-            "<h1>Поиск по словарю &laquo;" . $dic->name . "&raquo; (" . $dic->slug . ")</h1>" .
-            "<h3>SQL-запрос для тестирования (phpMyAdmin):</h3>" .
-            nl2br(implode("\n", $sql)) .
-            "<h3>SQL-запрос для вставки в конфиг Sphinx:</h3>" .
-            "<pre>
-    sql_query     = \\\n        " . (implode(' \\'."\n        ", $sql)) . "
-
-    sql_attr_uint = id
-</pre>"
-            ;
+        return Response::make('1');
     }
 
 }

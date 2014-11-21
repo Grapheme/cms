@@ -1,117 +1,112 @@
 @extends(Helper::acclayout())
 
 
-
-<?
-function write_level($hierarchy, $elements, $module, $sortable) {
-?>
-	@if($count = @count($elements))
-        <ol class="dd-list">
-        @foreach($hierarchy as $h)
-            <?
-            #Helper::d($h); #continue;
-            #if (!isset($h['id']))
-            #    continue;
-            $element = $elements[$h['id']];
-            $line = $element->name;
-            $line = preg_replace("~<br[/ ]*?".">~is", ' ', $line);
-            $line2 = $element->slug;
-            $line2 = preg_replace("~<br[/ ]*?".">~is", ' ', $line2);
-            ?>
-
-            <li class="dd-item dd3-item dd-item-fixed-height" data-id="{{ $element->id }}">
-                @if ($sortable > 0)
-                <div class="dd-handle dd3-handle">
-                    Drag
-                </div>
-                @endif
-                <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
-
-                    <div class="pull-right dicval-actions dicval-main-actions dicval-actions-margin-left">
-
-                        @if(Allow::action($module['group'], 'categories_edit'))
-                        <a href="{{ action('catalog.category.edit', $element->id) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Редактировать категорию">
-                            <!--Изменить-->
-                        </a>
-                        @endif
-
-                        @if(Allow::action($module['group'], 'categories_delete'))
-                        <form method="POST" action="{{ action('catalog.category.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete" data-products-count="{{ @(int)count($element->products) }}">
-                            <button type="button" class="btn btn-danger remove-category-list" title="Удалить категорию">
-                                <!--Удалить-->
-                            </button>
-                        </form>
-                        @endif
-
-                    </div>
-
-                    <div class="pull-right dicval-actions">
-
-                        <a href="{{ action('catalog.category.index', array('root' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-warning dicval-action catalog-category-root" title="Вложенная структура категорий">
-                            <i class="fa fa-sitemap"></i>
-                        </a>
-
-                        @if(Allow::action($module['group'], 'products_view'))
-                        <a href="{{ action('catalog.products.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-products-list" title="Товары в категории">
-                            <i class="fa fa-cube"></i>
-                            {{ @(int)count($element->products) }}
-                        </a>
-                        @endif
-
-                        <a href="{{ action('catalog.attributes.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-attributes-list" title="Доп. атрибуты товаров в категории">
-                            <i class="fa fa-tasks"></i>
-                        </a>
-
-                    </div>
-
-                    <div class="dicval-lines">
-                        {{ $line }}
-                        <br/>
-                        <span class="note dicval_note">
-                            {{ $line2 }}
-                        </span>
-                    </div>
-
-
-                </div>
-                @if (isset($h['children']) && is_array($h['children']) && count($h['children']))
-                    <?
-                    /**
-                     * Вывод дочерних элементов
-                     */
-                    write_level($h['children'], $elements, $module, $sortable);
-                    #Helper::dd($h['children']);
-                    ?>
-                @endif
-            </li>
-        @endforeach
-
-        </ol>
-
-    @endif
-<?
-}
-?>
-
-
-
-
 @section('content')
 
     @include($module['tpl'].'/menu')
 
 
-	@if($count = @count($elements))
+	@if(is_object($root_category))
 
-        <div class="settings settings-root hidden">{{ (int)Input::get('root') }}</div>
 
-        <div class="dd dicval-list" data-output="#nestable-output">
-            <?
-            write_level($hierarchy, $elements, $module, $sortable);
-            ?>
-        </div>
+        @if (isset($root_category->attributes_groups) && count($root_category->attributes_groups))
 
-        <div class="clear"></div>
+            <div class="dd attributes-groups-list">
+
+                <ol class="dd-list">
+
+                @foreach ($root_category->attributes_groups as $attributes_group)
+
+                    <li class="dd-item dd3-item attributes_group clearfix" data-id="{{ $attributes_group->id }}">
+                        <div class="dd-handle dd3-handle">
+                            Drag
+                        </div>
+
+                        <div class="dd3-content panel-group smart-accordion-default margin-top-0 margin-bottom-10 padding-0 border-0">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title panel-title-custom">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#attributes_group_{{ $attributes_group->id }}" class="collapsed--" style="padding-top: 6px; padding-bottom: 6px; padding-left: 40px">
+                                            <i class="fa fa-lg fa-angle-down pull-right margin-top-5 accordion-collapse"></i>
+                                            <i class="fa fa-lg fa-angle-up pull-right margin-top-5 accordion-collapse"></i>
+                                            <span class="menu_item_title">
+                                                {{ $attributes_group->name }}
+                                            </span>
+
+                                            <span class="pull-right txt-color-grayDark margin-right-10">
+                                                Группа
+                                            </span>
+
+                                            <div class="pull-right txt-color-grayDark margin-right-10">
+                                                <span class="btn btn-xs btn-success edit-attributes-group">
+                                                    <i class="fa fa-pencil"></i>
+                                                </span>
+                                                <span class="btn btn-xs btn-danger delete-attributes-group">
+                                                    <i class="fa fa-trash-o"></i>
+                                                </span>
+                                            </div>
+
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="attributes_group_{{ $attributes_group->id }}" class="bg-color-white panel-collapse collapse in">
+                                    <div class="panel-body padding-10 menu_item_type_content">
+
+                                        <div class="dd_ attributes-list">
+                                            <ul class="dd-list_ padding-left-0 list-style-none sortable attributes margin-top-10 margin-bottom-10" style="min-height:20px;">
+
+                                                @if (isset($attributes_group->attributes) && is_object($attributes_group->attributes) && count($attributes_group->attributes))
+
+
+                                                    @foreach ($attributes_group->attributes as $attribute)
+
+                                                        <li class="dd-item_ sortable_item cursor-move" data-id="{{ $attribute->id }}">
+                                                            <div class="dd3-content padding-left-10">
+
+                                                                <div class="pull-right txt-color-grayDark margin-right-0">
+                                                                    <a href="#" class="btn btn-xs btn-success edit-attribute">
+                                                                        <i class="fa fa-pencil"></i>
+                                                                    </a>
+                                                                    <a href="#" class="btn btn-xs btn-danger delete-attribute">
+                                                                        <i class="fa fa-trash-o"></i>
+                                                                    </a>
+                                                                </div>
+
+                                                                {{ $attribute->name }}
+                                                            </div>
+                                                        </li>
+
+                                                    @endforeach
+
+                                                @endif
+
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </li>
+
+                @endforeach
+
+                </ol>
+
+            </div>
+
+        @else
+
+            У категории нет групп атрибутов.
+
+        @endif
+
+        <div class="clear clearfix"></div>
+
+        {{ Helper::ta_($root_category) }}
+
+        <div class="clear clearfix"></div>
 
 	@else
 
@@ -119,7 +114,7 @@ function write_level($hierarchy, $elements, $module, $sortable) {
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="ajax-notifications custom">
                     <div class="alert alert-transparent">
-                        <h4>Список пуст</h4>
+                        <h4>Для управления атрибутами - выберите категорию</h4>
                         <p><br><i class="regular-color-light fa fa-th-list fa-3x"></i></p>
                     </div>
                 </div>
@@ -154,63 +149,119 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 		}
 	</script>
 
-    @if (@trim($dic_settings['javascript']))
-    <script>
-        {{ @$dic_settings['javascript'] }}
-    </script>
-    @endif
-
-    @if ($sortable)
+    @if (1)
     <script>
     $(document).ready(function() {
 
-        var updateOutput = function(e) {
+        /**
+         * Функция обработки сортировки групп атрибутов
+         */
+        var updateOutputAttributesGroup = function() {
 
-            show_hide_delete_buttons();
-
-            var list = e.length ? e : $(e.target), output = $(list.data('output'));
-            if (window.JSON) {
-                var data = window.JSON.stringify(list.nestable('serialize'));
-                var root = $('.settings.settings-root').text() || 0;
-                //console.log(root);
-                //return;
-                $.ajax({
-                    url: "{{ URL::route('catalog.category.nestedsetmodel') }}",
-                    type: "post",
-                    data: { data: data, root: root },
-                    success: function(jhr) {
-                        //console.clear();
-                        //console.log(jhr);
-                    }
-                });
-                output.val(data);
-            } else {
-                output.val('JSON browser support required for this demo.');
-            }
-        };
-
-        //updateOutput($('.dd.dicval-list').data('output', $('#nestable-output')));
-
-        $('.dd.dicval-list').nestable({
-            maxDepth: {{ (int)$sortable }},
-            group: 1
-        }).on('change', updateOutput);
-
-        function show_hide_delete_buttons() {
-            /*
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
-            */
-
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '0');
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '1');
-
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').show();
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').hide();
-            //*/
         }
 
-        show_hide_delete_buttons();
+        /**
+         * Активируем сортировку групп атрибутов
+         */
+        $('.dd.attributes-groups-list').nestable({
+            maxDepth: 1,
+            //group: 1
+        }).on('change', updateOutputAttributesGroup);
+
+
+
+        /**
+         * AJAX-запрос на сервер с информацией о порядке атрибутов и их принадлежности к группе
+         */
+        function init_attributes_sortable_handler(url, element, success) {
+
+            if (url) {
+
+                var $this = element;
+                //console.log($(this));
+
+                var pls = $($this).find('tr, .sortable_item');
+                var poss = [];
+                $(pls).each(function(i, item) {
+                    poss.push($(item).data('id'));
+                });
+
+                var group_id = $($this).parents('.attributes_group').attr('data-id');
+
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: { poss: poss, group_id: group_id },
+                    success: success
+                });
+            }
+
+        }
+
+        /**
+         * Активируем сортировку списков атрибутов всех групп на странице
+         */
+        function init_attributes_sortable(url, selector, success, obj_selector) {
+
+            if (typeof obj_selector == 'object')
+                full_selector = obj_selector;
+            else
+                full_selector = selector;
+
+            //alert(typeof selector);
+
+            //init_attributes_sortable_onthefly(url, selector, success);
+
+            $(full_selector).each(function(){
+
+                if ( !$(this).data('sortable') ) {
+
+                    $(this).sortable({
+                        /**
+                         * Drop элемента в том же списке, в котором он был изначально
+                         */
+                        stop: function() {
+
+                            init_attributes_sortable_handler(url, $(this), success);
+                        },
+                        /**
+                         * Drop элемента в connectWith списке
+                         */
+                        receive: function (event, ui) {
+
+                            init_attributes_sortable_handler(url, $(this), success);
+                        },
+                        cancel: ".not-sortable",
+                        distance: 5,
+                        connectWith: selector
+                    });
+                }
+            });
+        }
+
+        /**
+         * Активируем сортировку списков атрибутов групп, для которых она еще не была активирована (добавлена динамически)
+         */
+        function init_attributes_sortable_onthefly(url, selector, success) {
+
+            if (typeof success != 'function')
+                success = function(){};
+
+            var full_selector = ".sortable" + selector;
+
+            $(document).on("mouseover", full_selector, function(e){
+
+                if ( !$(this).data('sortable') ) {
+
+                    init_attributes_sortable(url, full_selector, success, $(this));
+                }
+            });
+        }
+
+        /**
+         * Активируем сортировку списков атрибутов всех групп на странице
+         */
+        init_attributes_sortable("{{ URL::route('catalog.attributes.order-attributes') }}", ".attributes", null);
 
     });
     </script>

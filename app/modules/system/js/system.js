@@ -18,9 +18,16 @@ $.extend($.validator.messages, {
     min: $.validator.format("Пожалуйста, введите число, большее или равное {0}.")
 });
 
-    function init_sortable(url, selector, success) {
+    function init_sortable(url, selector, success, connect_with) {
+
         if (typeof success != 'function')
             success = function(){};
+
+        if (typeof connect_with == 'undefined')
+            connect_with = '';
+        else
+            connect_with = '.sortable' + connect_with;
+
         $(document).on("mouseover", ".sortable" + selector, function(e){
             // Check flag of sortable activated
             if ( !$(this).data('sortable') ) {
@@ -46,7 +53,8 @@ $.extend($.validator.messages, {
                         }
                     },
                     cancel: ".not-sortable",
-                    distance: 5
+                    distance: 5,
+                    connectWith: connect_with
                 });
             }
         });

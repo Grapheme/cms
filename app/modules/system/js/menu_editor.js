@@ -1,6 +1,7 @@
 
 var menu_items = $('.dd.menu-list');
 
+
 var menu_editor = {
 
     'show_hide_info': function() {

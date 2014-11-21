@@ -131,6 +131,71 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'name' => 'Радиус колеса',
         ));
+
+        CatalogAttribute::create(array(
+            'id' => 2,
+            'active' => 1,
+            'slug' => 'material',
+            'attributes_group_id' => 1,
+            'lft' => 3,
+            'rgt' => 4,
+        ));
+        CatalogAttributeMeta::create(array(
+            'id' => 2,
+            'attribute_id' => 2,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Материал рамы',
+        ));
+
+
+        CatalogAttributeGroup::create(array(
+            'id' => 2,
+            'category_id' => 1,
+            'active' => 1,
+            'slug' => 'additional',
+            'lft' => 3,
+            'rgt' => 4,
+        ));
+        CatalogAttributeGroupMeta::create(array(
+            'id' => 2,
+            'attributes_group_id' => 2,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Дополнительно',
+        ));
+
+        CatalogAttribute::create(array(
+            'id' => 3,
+            'active' => 1,
+            'slug' => 'flashlight',
+            'attributes_group_id' => 2,
+            'lft' => 5,
+            'rgt' => 6,
+        ));
+        CatalogAttributeMeta::create(array(
+            'id' => 3,
+            'attribute_id' => 3,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Наличие фары освещения',
+        ));
+
+        CatalogAttribute::create(array(
+            'id' => 4,
+            'active' => 1,
+            'slug' => 'breaks',
+            'attributes_group_id' => 2,
+            'lft' => 7,
+            'rgt' => 8,
+        ));
+        CatalogAttributeMeta::create(array(
+            'id' => 4,
+            'attribute_id' => 4,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Тормоза',
+        ));
     }
 
 }
