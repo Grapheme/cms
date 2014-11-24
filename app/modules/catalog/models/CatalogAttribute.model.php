@@ -10,6 +10,7 @@ class CatalogAttribute extends BaseModel {
         'active',
         'slug',
         'attributes_group_id',
+        'type',
         'settings',
         'lft',
         'rgt',
@@ -91,6 +92,12 @@ class CatalogAttribute extends BaseModel {
         ## Extract metas
         if (isset($this->metas)) {
             foreach ($this->metas as $m => $meta) {
+
+                #dd($meta->settings);
+
+                if (isset($meta->settings) && $meta->settings != '' && is_string($meta->settings))
+                    $meta->settings = @json_decode($meta->settings, 1);
+
                 $this->metas[$meta->language] = $meta;
                 if ($m != $meta->language || $m === 0)
                     unset($this->metas[$m]);
@@ -104,9 +111,12 @@ class CatalogAttribute extends BaseModel {
                 is_object($this->meta)
                 && ($this->meta->language == Config::get('app.locale') || $this->meta->language == NULL)
             ) {
+
                 if ($this->meta->name != '')
                     $this->name = $this->meta->name;
 
+                if (isset($this->meta->settings) && $this->meta->settings != '' && is_string($this->meta->settings))
+                    $this->settings = @json_decode($this->meta->settings, 1);
             }
 
             if ($unset)

@@ -83,7 +83,7 @@ class AdminCatalogCategoriesController extends BaseController {
             ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
             ->orderBy($tbl_cat_category . '.created_at', 'ASC')
             ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta', 'products')
+            ->with('meta', 'products', 'attributes_groups.attributes')
         ;
 
         /**
@@ -259,15 +259,36 @@ class AdminCatalogCategoriesController extends BaseController {
                 /**
                  * Ставим элемент в конец списка
                  */
-                $temp = CatalogCategory::selectRaw('max(rgt) AS max_rgt')->first();
-                $input['lft'] = $temp->max_rgt+1;
-                $input['rgt'] = $temp->max_rgt+2;
+                $max_rgt = CatalogCategory::max('rgt');
+                $input['lft'] = @(int)$max_rgt+1;
+                $input['rgt'] = @(int)$max_rgt+2;
 
                 $element->save();
                 $element->update($input);
                 $category_id = $element->id;
                 $redirect = Input::get('redirect');
+
+                /**
+                 * Создаем группу атрибутов по умолчанию
+                 */
+                $max_rgt = CatalogAttributeGroup::where('category_id', $category_id)->max('rgt');
+                $group = CatalogAttributeGroup::create(array(
+                    'id' => null,
+                    'category_id' => $category_id,
+                    'active' => 1,
+                    'slug' => 'default',
+                    'lft' => @(int)$max_rgt+1,
+                    'rgt' => @(int)$max_rgt+2,
+                ));
+                CatalogAttributeGroupMeta::create(array(
+                    'id' => null,
+                    'attributes_group_id' => $group->id,
+                    'language' => 'ru',
+                    'active' => 1,
+                    'name' => 'По умолчанию',
+                ));
             }
+
 
             /**
              * Сохраняем META-данные
@@ -339,18 +360,56 @@ class AdminCatalogCategoriesController extends BaseController {
 
 		$json_request = array('status' => FALSE, 'responseText' => '');
 
-        $element = CatalogCategory::find($id);
+        $element = CatalogCategory::where('id', $id)->with('attributes_groups.attributes')->first();
+
+        #Helper::tad($element);
 
         if (is_object($element)) {
-
             /**
              * Удаление:
-             * - товаров категории,
+             * !! товаров категории,
+             * - связок с атрибутами/группами,
              * + SEO-данных,
-             * - связок с атрибутами,
              * + мета-данных
              * + и самой категории
              */
+
+
+            /*
+            $groups = $element->attributes_groups;
+            $attributes = $groups->attributes();
+            $groups->delete();
+            $attributes->delete();
+            */
+
+            if (isset($element->attributes_groups) && is_object($element->attributes_groups) && count($element->attributes_groups)) {
+
+                $groups_ids = array();
+                $attributes_ids = array();
+                foreach ($element->attributes_groups as $group) {
+
+                    $groups_ids[] = $group->id;
+
+                    if (isset($group->attributes) && is_object($group->attributes) && count($group->attributes)) {
+                        foreach ($group->attributes as $attribute) {
+                            $attributes_ids[] = $attribute->id;
+                        }
+                    }
+                }
+
+                #Helper::d($groups_ids);
+                #Helper::dd($attributes_ids);
+
+                if (count($attributes_ids)) {
+                    CatalogAttributeMeta::whereIn('attribute_id', $attributes_ids)->delete();
+                    CatalogAttribute::whereIn('id', $attributes_ids)->delete();
+                }
+                if (count($groups_ids)) {
+                    CatalogAttributeGroupMeta::whereIn('attributes_group_id', $groups_ids)->delete();
+                    CatalogAttributeGroup::whereIn('id', $groups_ids)->delete();
+                }
+            }
+
 
             if (Allow::module('seo')) {
                 Seo::where('module', 'CatalogCategory')

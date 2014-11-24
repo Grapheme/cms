@@ -97,18 +97,30 @@
                                 </label>
                             </section>
 
+                            @if (isset($element->attributes_groups) && is_object($element->attributes_groups) && count($element->attributes_groups))
+
+                                <hr class="margin-top-10 margin-bottom-10"/>
+
+                                @foreach ($element->attributes_groups as $group)
+                                    @if (isset($group->attributes) && is_object($group->attributes) && count($group->attributes))
+
+                                        <fieldset class="padding-0 margin-bottom-15 padding-top-10">
+
+                                            <h4>{{ $group->name }}</h4>
+
+                                            @foreach ($group->attributes as $attribute)
+                                                @include($module['gtpl'] . 'attributes._index', compact('module', 'attribute', 'locale_sign'))
+                                            @endforeach
+
+                                        </fieldset>
+
+                                    @endif
+                                @endforeach
+                            @endif
+
                         </div>
                         @endforeach
                     </div>
-
-                    @if (0)
-                    <section>
-                        <label class="label">Название</label>
-                        <label class="input">
-                            {{ Form::text('name', null, array('required' => 'required')) }}
-                        </label>
-                    </section>
-                    @endif
 
                 </fieldset>
 

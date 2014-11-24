@@ -50,15 +50,24 @@ $(function(){
  */
 $(function(){
 	
-	$(".remove-attribute-list").click(function(e) {
+	$(".remove-attributes-group-list").click(function(e) {
 
         e.preventDefault();
+
+        if ($(this).parents('.attributes_group').find('ul li').length) {
+            $.SmartMessageBox({
+                title : "Невозможно удалить непустую группу атрибутов",
+                content : "Перенесите в другую группу или удалите все вложенные атрибуты - после этого данную группу можно будет удалить",
+                buttons : '[Хорошо]'
+            });
+            return false;
+        }
 
 		var $this = this;
 
         $.SmartMessageBox({
-			title : "Удалить атрибут?",
-			content : "Восстановить его будет невозможно",
+			title : "Удалить группу атрибутов?",
+			content : "Восстановить ее будет невозможно",
 			buttons : '[Нет][Да]'
 		}, function(ButtonPressed) {
 
@@ -75,7 +84,7 @@ $(function(){
 							showMessage.smallSuccess();
 
 							//$($this).parents('tr').fadeOut(500,function(){$(this).remove();});
-                            $($this).parents('.sortable-list-item').slideUp();
+                            $($this).parents('.attributes_group').slideUp();
 
 						} else {
 							$($this).elementDisabled(false);
@@ -94,21 +103,4 @@ $(function(){
 		});
 		return false;
 	});
-});
-
-
-
-$(document).ready(function() {
-    $('select[name=type]').change(function(){
-
-        //alert( $(this).find("option:selected").attr('prefix') );
-        //alert( $(this).val() );
-
-        if ($(this).val() == 'select') {
-            $('.select-values').removeClass('hidden');
-        } else {
-            $('.select-values').addClass('hidden');
-        }
-
-    });
 });

@@ -151,13 +151,13 @@ class AdminCatalogProductsController extends BaseController {
         Allow::permission($this->module['group'], 'categories_edit');
 
         $element = CatalogProduct::where('id', $id)
-            ->with('category', 'seos', 'metas', 'meta')
+            ->with('category', 'seos', 'metas', 'meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta')
             ->first();
 
         if (!is_object($element))
-            return App::abort(404);
+            App::abort(404);
 
-        $element->extract();
+        $element->extract(1);
 
         if (is_object($element) && is_object($element->meta))
             $element->name = $element->meta->name;
@@ -317,7 +317,7 @@ class AdminCatalogProductsController extends BaseController {
          */
         $input['active'] = @$input['active'] ? 1 : NULL;
 
-        #Helper::dd($input);
+        Helper::dd($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);

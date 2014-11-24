@@ -54,7 +54,14 @@
                     </section>
 
                     <section>
-                        <label class="label">Группа атрибутов</label>
+                        <label class="label">Тип атрибута</label>
+                        <label class="select">
+                            {{ Form::select('type', @$types, $element->type ?: Input::get('type')) }}
+                        </label>
+                    </section>
+
+                    <section>
+                        <label class="label">Группа</label>
                         <label class="select">
                             {{ Form::select('attributes_group_id', $groups, $element->attributes_group_id ?: Input::get('group')) }}
                         </label>
@@ -90,6 +97,13 @@
                                     {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || (!$element->id && $locale_sign == Config::get('app.locale')))) }}
                                     <i></i>
                                     Активно
+                                </label>
+                            </section>
+
+                            <section class="select-values{{ $element->type != 'select' ? ' hidden' : '' }}">
+                                <label class="label">Значения SELECT (по одному на строку)</label>
+                                <label class="textarea">
+                                    {{ Form::textarea('meta[' . $locale_sign . '][settings][values]', @$element->metas[$locale_sign][settings]['values']) }}
                                 </label>
                             </section>
 

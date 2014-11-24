@@ -137,6 +137,7 @@ class CreateCatalogTables extends Migration {
                 $table->smallInteger('active')->unsigned()->default(0)->index();
                 $table->string('slug')->nullable()->unique();
                 $table->integer('attributes_group_id')->unsigned()->index();
+                $table->string('type')->default('text')->index();
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();

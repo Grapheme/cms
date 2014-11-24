@@ -69,7 +69,18 @@ class AdminCatalogAttributesController extends BaseController {
         );
 
         View::share('module', $this->module);
-	}
+
+        /**
+         * Типы атрибутов
+         */
+        $this->types = array(
+            'text' => 'Текстовая строка',
+            'textarea' => 'Многострочный текст',
+            'wysiwyg' => 'WYSIWYG редактор текста',
+            'checkbox' => 'Чекбокс',
+            'select' => 'Список',
+        );
+    }
 
 	public function index() {
 
@@ -128,9 +139,11 @@ class AdminCatalogAttributesController extends BaseController {
 
         $element = new CatalogAttribute();
 
+        $types = $this->types;
+
         $locales = Config::get('app.locales');
 
-		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups'));
+		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups', 'types'));
 	}
     
 
@@ -171,11 +184,13 @@ class AdminCatalogAttributesController extends BaseController {
                 $groups[$group->id] = $group->name;
         #Helper::dd($groups);
 
+        $types = $this->types;
+
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'groups', 'types'));
 	}
 
 
@@ -283,6 +298,8 @@ class AdminCatalogAttributesController extends BaseController {
                 $redirect = Input::get('redirect');
             }
 
+            #Helper::ta($element);
+
             /**
              * Сохраняем META-данные
              */
@@ -297,11 +314,24 @@ class AdminCatalogAttributesController extends BaseController {
                     );
                     #Helper::d($meta_search_array);
                     $attribute_meta = CatalogAttributeMeta::firstOrNew($meta_search_array);
+
+                    #Helper::ta($attribute_meta);
+
                     if (!$attribute_meta->id) {
                         #Helper::tad($attribute_meta);
                         $attribute_meta->save();
                     }
                     $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
+
+                    $meta_array['settings'] = @$meta_array['settings'] ? json_encode($meta_array['settings']) : NULL;
+                    #$meta_array_settings = $meta_array['settings'];
+                    #$meta_array['settings'] = NULL;
+                    #if (in_array($element->type, array('select'))) {
+                    #    $meta_array['settings']['values'] = @$meta_array_settings['values'] ?: NULL;
+                    #}
+
+                    #Helper::dd($meta_array);
+
                     $attribute_meta->update($meta_array);
                     unset($meta_search_array);
                     unset($meta_array);

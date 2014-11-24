@@ -19,4 +19,12 @@ class CatalogAttributeMeta extends BaseModel {
         'language' => 'required',
 	);
 
+
+    public function extract() {
+
+        if (isset($this->settings) && $this->settings != '') {
+            $this->settings = json_decode($this->settings);
+        }
+    }
+
 }

@@ -307,24 +307,23 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         $json_request['responseText'] = 'Удалено';
         $json_request['status'] = TRUE;
         return Response::json($json_request,200);
-        */
+        #*/
 
-        $element = CatalogAttribute::find($id);
+        $element = CatalogAttributeGroup::find($id);
 
         if (is_object($element)) {
 
             /**
              * Удаление:
-             * - связок атрибута с товарами,
-             * + мета-данных
-             * + самого атрибута
+             * - мета-данных
+             * - самой группы
              */
 
             $element->metas()->delete();
             $element->delete();
 
             /**
-             * Сдвигаем атрибуты в общем дереве
+             * Сдвигаем группы атрибудтов в общем дереве
              */
             if ($element->rgt)
                 DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
@@ -335,70 +334,6 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
 		return Response::json($json_request,200);
 	}
-
-
-    public function postAjaxNestedSetModelAttributesGroups() {
-
-        #$input = Input::all();
-
-        $data = Input::get('data');
-        $data = json_decode($data, 1);
-        #Helper::dd($data);
-
-        $offset = 0;
-        /*
-        ## Отступ
-        $root_id = (int)Input::get('root');
-        if ($root_id > 0) {
-            $root_category = CatalogAttributeGroup::find($root_id);
-            if (is_object($root_category)) {
-                $offset = $root_category->lft;
-            }
-        }
-        */
-
-        if (count($data)) {
-
-            $id_left_right = (new NestedSetModel())->get_id_left_right($data);
-            #Helper::dd($id_left_right);
-
-            if (count($id_left_right)) {
-
-                $list = CatalogAttributeGroup::whereIn('id', array_keys($id_left_right))->get();
-
-                if (count($list)) {
-                    foreach ($list as $lst) {
-                        $lst->lft = $id_left_right[$lst->id]['left'] + $offset;
-                        $lst->rgt = $id_left_right[$lst->id]['right'] + $offset;
-                        $lst->save();
-                    }
-                }
-            }
-        }
-
-        return Response::make('1');
-    }
-
-
-    public function postAjaxOrderSaveAttributes() {
-
-        $poss = Input::get('poss');
-        $group_id = Input::get('group_id');
-
-        $pls = CatalogAttribute::whereIn('id', $poss)->get();
-
-        if ( $pls ) {
-            foreach ($pls as $pl) {
-                $pl->rgt = (array_search($pl->id, $poss)+1) * 2;
-                $pl->lft = $pl->rgt-1;
-                if ($group_id)
-                    $pl->attributes_group_id = $group_id;
-                $pl->save();
-            }
-        }
-
-        return Response::make('1');
-    }
 
 }
 

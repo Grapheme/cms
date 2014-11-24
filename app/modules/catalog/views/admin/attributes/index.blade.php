@@ -34,15 +34,26 @@
                                             </span>
 
                                             <div class="pull-right txt-color-grayDark margin-right-10">
-                                                <a href="{{ URL::route('catalog.attributes.create', Input::all() + array('group' => $attributes_group->id)) }}" class="btn btn-xs btn-default add-attribute margin-right-5 display-inline-block padding-1-5" title="Добавить атрибут в группу">
-                                                    <i class="fa fa-plus"></i>
-                                                </a>
-                                                <a href="{{ URL::route('catalog.attributes_groups.edit', Input::all()) }}" class="btn btn-xs btn-success edit-attributes-group display-inline-block padding-1-5" title="Редактировать группу">
-                                                    <i class="fa fa-pencil"></i>
-                                                </a>
-                                                <span class="btn btn-xs btn-danger remove-attributes-group-list" title="Удалить группу">
-                                                    <i class="fa fa-trash-o"></i>
-                                                </span>
+
+                                                @if(Allow::action($module['group'], 'attributes_create'))
+                                                    <a href="{{ URL::route('catalog.attributes.create', Input::all() + array('group' => $attributes_group->id)) }}" class="btn btn-xs btn-default add-attribute margin-right-5 display-inline-block padding-1-5" title="Добавить атрибут в группу">
+                                                        <i class="fa fa-plus"></i>
+                                                    </a>
+                                                @endif
+
+                                                @if(Allow::action($module['group'], 'attributes_edit'))
+                                                    <a href="{{ URL::route('catalog.attributes_groups.edit', Input::all()) }}" class="btn btn-xs btn-success edit-attributes-group display-inline-block padding-1-5" title="Редактировать группу">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </a>
+                                                @endif
+
+                                                @if(Allow::action($module['group'], 'attributes_delete'))
+                                                    <form method="POST" action="{{ action('catalog.attributes_groups.destroy', $attributes_group->id) }}" style="display:inline-block" class="">
+                                                        <button type="button" class="btn btn-xs btn-danger remove-attributes-group-list" title="Удалить атрибут">
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
 
                                         </div>
@@ -52,6 +63,7 @@
                                             <i class="fa fa-lg fa-angle-up pull-right margin-top-5 accordion-collapse"></i>
                                             <span class="menu_item_title">
                                                 {{ $attributes_group->name }}
+                                                &nbsp;
                                             </span>
                                         </div>
                                     </h4>
