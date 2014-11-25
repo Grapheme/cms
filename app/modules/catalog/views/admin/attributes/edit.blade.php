@@ -60,6 +60,14 @@
                         </label>
                     </section>
 
+                    <section class="select-values{{ $element->type != 'select' ? ' hidden' : '' }}">
+                        <label class="checkbox">
+                            {{ Form::checkbox('settings[selectable]', 1, @$element->settings['selectable']) }}
+                            <i></i>
+                            Покупатель должен будет выбрать значение при заказе
+                        </label>
+                    </section>
+
                     <section>
                         <label class="label">Группа</label>
                         <label class="select">

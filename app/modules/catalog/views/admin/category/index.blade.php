@@ -58,9 +58,12 @@ function write_level($hierarchy, $elements, $module, $sortable) {
                         </a>
                         @endif
 
-                        <a href="{{ action('catalog.attributes.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-attributes-list" title="Атрибуты товаров в категории">
+                        <a href="{{ action('catalog.attributes.index', array('category' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-default dicval-action catalog-attributes-list" title="Кол-во &laquo;Групп атрибутов&raquo;/&laquo;Атрибутов&raquo; товаров в категории">
                             <i class="fa fa-puzzle-piece"></i>
-                            {{ $element->attributes_count }}
+                            @if (count($element->attributes_groups))
+                                {{ count($element->attributes_groups) }} /
+                                {{ $element->attributes_count }}
+                            @endif
                         </a>
 
                     </div>

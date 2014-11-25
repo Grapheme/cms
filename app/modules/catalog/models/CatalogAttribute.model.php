@@ -33,6 +33,16 @@ class CatalogAttribute extends BaseModel {
             ;
     }
 
+    public function values() {
+        return $this->hasMany('CatalogAttributeValue', 'attribute_id', 'id');
+    }
+
+    public function value() {
+        return $this->hasOne('CatalogAttributeValue', 'attribute_id', 'id')
+            ->where('language', Config::get('app.locale'))
+            ;
+    }
+
 
     /**
     * Связь возвращает все META-данные записи (для всех языков)
@@ -104,6 +114,8 @@ class CatalogAttribute extends BaseModel {
             }
         }
 
+        $this->settings = @(array)json_decode($this->settings, 1);
+
         ## Extract meta
         if (isset($this->meta)) {
 
@@ -116,7 +128,7 @@ class CatalogAttribute extends BaseModel {
                     $this->name = $this->meta->name;
 
                 if (isset($this->meta->settings) && $this->meta->settings != '' && is_string($this->meta->settings))
-                    $this->settings = @json_decode($this->meta->settings, 1);
+                    $this->settings = $this->settings + @json_decode($this->meta->settings, 1);
             }
 
             if ($unset)
@@ -127,6 +139,44 @@ class CatalogAttribute extends BaseModel {
         if (isset($this->attributes_group)) {
             $this->attributes_group = $this->attributes_group->extract($unset);
         }
+
+        ## Extract values
+        if (isset($this->values) && is_object($this->values) && count($this->values)) {
+            foreach ($this->values as $v => $value) {
+
+                #echo $value['type'];
+                #Helper::ta($this->type);
+
+                if (in_array($this->type, array('textarea', 'wysiwyg'))) {
+                    $settings = json_decode($value->settings, 1);
+                    $value->value = $settings['value'];
+                }
+
+                $this->values[$value->language] = $value;
+                if ($v != $value->language || $v === 0)
+                    unset($this->values[$v]);
+            }
+        }
+
+
+        ## Extract value
+        if (isset($this->value) && is_object($this->value)) {
+
+            $value = $this->value;
+
+            #/*
+            if (in_array($this->type, array('textarea', 'wysiwyg'))) {
+                $settings = json_decode($value->settings, 1);
+                $value->value = $settings['value'];
+            }
+            #*/
+
+            #Helper::d($value->value);
+            #$this->relations['value'] = $value->value;
+            unset($this->relations['value']);
+            $this->value = $value->value;
+        }
+
 
         return $this;
     }

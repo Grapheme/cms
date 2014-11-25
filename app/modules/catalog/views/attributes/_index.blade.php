@@ -1,5 +1,12 @@
 
 {{ Helper::ta_($attribute) }}
+<?
+$value = @$attribute->values[$locale_sign];
+if (is_object($value))
+    $value = $value->value;
+else
+    $value = NULL;
+?>
 
 @include($module['gtpl'] . 'attributes.' . $attribute->type)
 

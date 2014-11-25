@@ -138,11 +138,106 @@ class AdminCatalogProductsController extends BaseController {
 
         Allow::permission($this->module['group'], 'categories_create');
 
-        $element = new CatalogProduct();
+        $element = CatalogProduct::firstOrNew(array('category_id' => Input::get('category'), 'id' => NULL));
+
+        #Helper::d($element);
+
+        $element->load(
+            'category', 'seos',
+            'metas', 'meta',
+            'attributes_groups.meta', 'attributes_groups.attributes.meta'
+        );
+
+
+        $element->extract(1);
+
+        if (is_object($element) && is_object($element->meta))
+            $element->name = $element->meta->name;
+
+        #Helper::tad($element);
+
+        /**
+         * Получаем все категории
+         */
+        $categories = new CatalogCategory();
+        $tbl_cat_category = $categories->getTable();
+        $categories = $categories
+            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_category . '.id', 'DESC')
+            ->with('meta')
+        ;
+        $categories = $categories->get();
+        if (count($categories))
+            $categories = DicVal::extracts($categories, 1);
+        $categories = Dic::modifyKeys($categories, 'id');
+
+        /**
+         * Подсчитаем отступ для каждой категории
+         */
+        $indent_debug = 0;
+        $indent = 0;
+        $last_indent_increate_rgt = array();
+        foreach ($categories as $category) {
+
+            if ($indent_debug)
+                Helper::ta($category);
+
+            $category->indent = $indent;
+
+            if ($indent_debug)
+                Helper::d("Устанавливаем текущий отступ категории: " . $indent);
+
+            if ($category->lft+1 < $category->rgt) {
+
+                ++$indent;
+                $last_indent_increate_rgt[] = $category->rgt;
+
+                if ($indent_debug) {
+                    Helper::d("Увеличиваем текущий уровень отступа: " . $indent . " (" . $category->lft . "+1 < " . $category->rgt . ")");
+                    Helper::d("Добавляем RGT в массив 'RGT родительских категории': " . $category->rgt . " => " . implode(', ', $last_indent_increate_rgt));
+                }
+            }
+
+            #/*
+
+            $plus = 1;
+            $exit = false;
+            do {
+                if (in_array(($category->lft+(++$plus)), $last_indent_increate_rgt)) {
+
+                    --$indent;
+
+                    /*
+                    Helper::d("LFT категории + " . $plus . " (" . ($category->lft+$plus) . ") найдено в массиве 'RGT родительских категорий' => " . implode(', ', $last_indent_increate_rgt));
+                    Helper::d("Уменьшаем текущий уровень отступа: " . $indent);
+                    #*/
+
+                } else {
+                    $exit = true;
+                }
+
+            } while(!$exit);
+
+            #Helper::d("<hr/>");
+        }
+
+        #Helper::tad($categories);
+
+        /**
+         * Соберем все категории в массив с отступами для select
+         */
+        $categories_for_select = array();
+        foreach ($categories as $category) {
+            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
+        }
+        if ($indent_debug)
+            Helper::dd($categories_for_select);
+
 
         $locales = Config::get('app.locales');
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select'));
     }
 
 
@@ -150,8 +245,38 @@ class AdminCatalogProductsController extends BaseController {
 
         Allow::permission($this->module['group'], 'categories_edit');
 
+
+        /**
+         * Выборка одного товара со всеми данными, для вывода
+         */
+        #/*
         $element = CatalogProduct::where('id', $id)
-            ->with('category', 'seos', 'metas', 'meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta')
+            ->with(
+                'seo', 'meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta'
+            )
+            ->with(
+                array('attributes_groups.attributes.value' => function($query) use ($id) {
+                    $query->where('product_id', $id);
+                })
+            )
+            ->first();
+        if (!is_object($element))
+            $element->extract(1);
+        #Helper::tad($element);
+        #*/
+
+
+        $element = CatalogProduct::where('id', $id)
+            ->with(
+                'category', 'seos',
+                'metas', 'meta',
+                'attributes_groups.meta', 'attributes_groups.attributes.meta'
+            )
+            ->with(
+                array('attributes_groups.attributes.values' => function($query) use ($id) {
+                    $query->where('product_id', $id);
+                })
+            )
             ->first();
 
         if (!is_object($element))
@@ -282,6 +407,13 @@ class AdminCatalogProductsController extends BaseController {
         if (!$id || NULL === ($element = CatalogProduct::find($id)))
             $element = new CatalogProduct();
 
+        /**
+         * Подгружаем все возможные атрибуты (через группы атрибутов)
+         */
+        $element->load('attributes_groups.attributes');
+        $element->extract(1);
+        #Helper::tad($element);
+
         $input = Input::all();
 
         /**
@@ -317,7 +449,7 @@ class AdminCatalogProductsController extends BaseController {
          */
         $input['active'] = @$input['active'] ? 1 : NULL;
 
-        Helper::dd($input);
+        #Helper::dd($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
@@ -373,6 +505,82 @@ class AdminCatalogProductsController extends BaseController {
                         $product_meta->save();
                     $product_meta->update($meta_array);
                     unset($product_meta);
+                }
+            }
+
+            /**
+             * Сохраняем значения атрибутов (для каждого языка)
+             */
+            if (
+                isset($element->attributes_groups) && is_object($element->attributes_groups) && count($element->attributes_groups)
+                && isset($input['attributes']) && is_array($input['attributes']) && count($input['attributes'])
+            ) {
+                /**
+                 * Перебираем все доступные атрибуты
+                 */
+                foreach ($element->attributes_groups as $group_slug => $group) {
+
+                    /**
+                     * Если внутри группы есть атрибуты...
+                     */
+                    if (isset($group->attributes) && is_object($group->attributes) && count($group->attributes)) {
+
+                        /**
+                         * Перебираем все доступные атрибуты внутри группы
+                         */
+                        foreach ($group->attributes as $attribute) {
+
+                            #Helper::ta($attribute);
+
+                            /**
+                             * Перебираем все переданные с формы атрибуты
+                             */
+                            foreach ($input['attributes'] as $locale_sign => $attributes_array) {
+
+                                #Helper::d($attribute->slug . '[' . $locale_sign . ']');
+                                $attribute_value = isset($attributes_array[$attribute->slug]) ? $attributes_array[$attribute->slug] : NULL;
+
+                                #Helper::d($attribute_value);
+                                #continue;
+
+                                /**
+                                 * Условия для поиска или создания новой записи
+                                 */
+                                $temp_search_array = array(
+                                    'product_id' => $product_id,
+                                    'attribute_id' => $attribute->id,
+                                    'language' => $locale_sign
+                                );
+
+                                $product_attribute_value = CatalogAttributeValue::firstOrNew($temp_search_array);
+                                if (!$product_attribute_value->id)
+                                    $product_attribute_value->save();
+
+                                #Helper::ta($product_attribute_value);
+
+                                /**
+                                 * Обновления значения записи
+                                 */
+                                if (in_array($attribute->type, array('textarea', 'wysiwyg'))) {
+                                    $temp_array_settings = json_decode($product_attribute_value->settings, 1);
+                                    $temp_array['value'] = '';
+                                    $temp_array_settings['value'] = $attribute_value;
+                                    $product_attribute_value->settings = json_encode($temp_array_settings);
+                                } else {
+                                    $temp_array['value'] = $attribute_value;
+                                }
+
+                                #Helper::ta($temp_array);
+
+                                $product_attribute_value->update($temp_array);
+                                unset($product_attribute_value);
+
+                            }
+
+                        }
+
+                    }
+
                 }
             }
 

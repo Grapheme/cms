@@ -34,10 +34,12 @@
         );
     }
 
-    if  (Allow::action($module['group'], 'categories_create')) {
-        $current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
+    if  (Allow::action($module['group'], 'products_create')) {
+        #$current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
+        $array = array();
+        $array['category'] = Input::get('category');
         $menus[] = array(
-            'link' => URL::route('catalog.category.create', $current_link_attributes),
+            'link' => URL::route('catalog.products.create', $array),
             'title' => 'Добавить',
             'class' => 'btn btn-primary'
         );

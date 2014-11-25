@@ -87,6 +87,8 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'category_id' => 1,
             'slug' => 'normal_bike',
+            'article' => 'sku0001',
+            'amount' => '5',
             'lft' => 1,
             'rgt' => 2,
         ));
@@ -96,6 +98,8 @@ class CatalogTableSeeder extends Seeder{
             'language' => 'ru',
             'active' => 1,
             'name' => 'Обычный велосипед',
+            'description' => 'Какое-то описание продукта...',
+            'price' => '25000',
         ));
 
 
@@ -121,6 +125,7 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'wheel_radius',
             'attributes_group_id' => 1,
+            'type' => 'text',
             'lft' => 1,
             'rgt' => 2,
         ));
@@ -137,6 +142,7 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'material',
             'attributes_group_id' => 1,
+            'type' => 'textarea',
             'lft' => 3,
             'rgt' => 4,
         ));
@@ -170,6 +176,7 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'flashlight',
             'attributes_group_id' => 2,
+            'type' => 'wysiwyg',
             'lft' => 5,
             'rgt' => 6,
         ));
@@ -186,6 +193,7 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'breaks',
             'attributes_group_id' => 2,
+            'type' => 'checkbox',
             'lft' => 7,
             'rgt' => 8,
         ));

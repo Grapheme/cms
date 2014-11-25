@@ -76,7 +76,7 @@ class AdminCatalogAttributesController extends BaseController {
         $this->types = array(
             'text' => 'Текстовая строка',
             'textarea' => 'Многострочный текст',
-            'wysiwyg' => 'WYSIWYG редактор текста',
+            #'wysiwyg' => 'WYSIWYG редактор текста',
             'checkbox' => 'Чекбокс',
             'select' => 'Список',
         );
@@ -154,13 +154,15 @@ class AdminCatalogAttributesController extends BaseController {
 		$element = CatalogAttribute::where('id', $id)
             ->with('metas', 'meta', 'attributes_group.meta', 'attributes_group.category.meta')
             ->first()
-            ->extract();
+        ;
+
+        #Helper::tad($element);
 
         $root_category = null;
 
         if (is_object($element) && is_object($element->meta)) {
 
-            $element->extract(1);
+            $element->extract(0);
 
             if (isset($element->attributes_group) && isset($element->attributes_group->category) && is_object($element->attributes_group->category)) {
                 #$root_category = $element->attributes_group->category->id;
@@ -258,6 +260,11 @@ class AdminCatalogAttributesController extends BaseController {
          * Проверяем флаг активности
          */
         $input['active'] = @$input['active'] ? 1 : NULL;
+
+        $input['settings']['selectable'] = Input::get('settings.selectable') ? 1 : NULL;
+
+        if (isset($input['settings']) && is_array($input['settings']))
+            $input['settings'] = json_encode($input['settings']);
 
         #Helper::dd($input);
 

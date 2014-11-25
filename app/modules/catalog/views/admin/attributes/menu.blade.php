@@ -51,7 +51,7 @@
             $array2['group'] = $element->attributes_group->id;
 
         $menus[] = array(
-            'link' => URL::route('catalog.attributes.create', $array2),
+            'link' => URL::route('catalog.attributes_groups.create', $array2),
             'title' => 'Добавить',
             'class' => 'btn btn-primary'
         );

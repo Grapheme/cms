@@ -310,7 +310,7 @@ margin-left: 0;
 	display: inline;
 }
 
-.redactor {
+.redactor, .redactor_redactor {
 	min-height: 200px !important;
 }
 

@@ -56,6 +56,20 @@
                     </section>
 
                     <section>
+                        <label class="label">Артикул</label>
+                        <label class="input">
+                            {{ Form::text('article') }}
+                        </label>
+                    </section>
+
+                    <section>
+                        <label class="label">Количество</label>
+                        <label class="input">
+                            {{ Form::text('amount') }}
+                        </label>
+                    </section>
+
+                    <section>
                         <label class="label" data-helpmessage="Основная категория, к которой относится данный товар">
                             Категория товара
                         </label>
@@ -94,6 +108,20 @@
                                     {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || !$element->id)) }}
                                     <i></i>
                                     Активно
+                                </label>
+                            </section>
+
+                            <section>
+                                <label class="label">Описание</label>
+                                <label class="textarea">
+                                    {{ Form::textarea('meta[' . $locale_sign . '][description]', @$element->metas[$locale_sign]['description']) }}
+                                </label>
+                            </section>
+
+                            <section>
+                                <label class="label">Цена</label>
+                                <label class="input">
+                                    {{ Form::text('meta[' . $locale_sign . '][price]', @$element->metas[$locale_sign]['price']) }}
                                 </label>
                             </section>
 

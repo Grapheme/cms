@@ -22,7 +22,7 @@ class CatalogProduct extends BaseModel {
 
 
     public function attributes_groups() {
-        return $this->hasMany('CatalogAttributeGroup', 'category_id', 'id')
+        return $this->hasMany('CatalogAttributeGroup', 'category_id', 'category_id')
             ->orderBy('lft', 'ASC')
             ;
     }
@@ -34,6 +34,13 @@ class CatalogProduct extends BaseModel {
             ;
     }
 
+    /*
+    public function attributes_meta() {
+        return $this->hasOne('CatalogProductMeta', 'product_id', 'id')
+            ->where('language', Config::get('app.locale'))
+            ;
+    }
+    */
 
     /**
     * Связь возвращает все META-данные записи (для всех языков)
@@ -177,6 +184,8 @@ class CatalogProduct extends BaseModel {
             $this->relations['attributes_groups'] = $attributes_groups;
             #Helper::tad($this->attributes_groups);
         }
+
+        #Helper::tad($this);
 
         return $this;
     }

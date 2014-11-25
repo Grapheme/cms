@@ -58,6 +58,9 @@ class CreateCatalogTables extends Migration {
                 $table->string('slug')->nullable()->unique();
                 $table->integer('category_id')->unsigned()->index();
 
+                $table->string('article')->default('')->unique();
+                $table->integer('amount')->unsigned()->default(0)->index();
+
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
                 $table->integer('rgt')->unsigned()->nullable()->index();
@@ -76,7 +79,10 @@ class CreateCatalogTables extends Migration {
                 $table->integer('product_id')->unsigned()->nullable()->index();
                 $table->string('language')->nullable()->index();
                 $table->smallInteger('active')->unsigned()->default(0)->index();
+
                 $table->string('name')->nullable()->index();
+                $table->text('description');
+                $table->string('price')->unsigned()->nullable()->index();
 
                 $table->text('settings')->nullable();
                 $table->timestamps();
@@ -169,6 +175,28 @@ class CreateCatalogTables extends Migration {
             echo('...' . $this->table . PHP_EOL);
         }
 
+        $this->table = $this->prefix . "attributes_values";
+        if (!Schema::hasTable($this->table)) {
+            Schema::create($this->table, function(Blueprint $table) {
+
+                $table->increments('id');
+                $table->integer('product_id')->unsigned()->index();
+                $table->integer('attribute_id')->unsigned()->index();
+                $table->string('language')->nullable()->index();
+
+                $table->string('value')->nullable();
+
+                $table->text('settings')->nullable();
+                $table->integer('lft')->unsigned()->nullable()->index();
+                $table->integer('rgt')->unsigned()->nullable()->index();
+                $table->timestamps();
+
+                $table->unique(array('attribute_id', 'product_id', 'language'), 'attribute_product_language');
+            });
+            echo(' + ' . $this->table . PHP_EOL);
+        } else {
+            echo('...' . $this->table . PHP_EOL);
+        }
     }
 
 
@@ -201,6 +229,9 @@ class CreateCatalogTables extends Migration {
 
         Schema::dropIfExists($this->prefix . "attributes_meta");
         echo(' - ' . $this->prefix . "attributes_meta" . PHP_EOL);
+
+        Schema::dropIfExists($this->prefix . "attributes_values");
+        echo(' - ' . $this->prefix . "attributes_values" . PHP_EOL);
 	}
 
 }
