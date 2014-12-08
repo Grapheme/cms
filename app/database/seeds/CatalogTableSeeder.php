@@ -98,11 +98,48 @@ class CatalogTableSeeder extends Seeder{
             'rgt' => 2,
         ));
         CatalogProductMeta::create(array(
-            'id' => 1,
             'product_id' => 1,
             'language' => 'ru',
             'active' => 1,
             'name' => 'Обычный велосипед',
+            'description' => 'Какое-то описание продукта...',
+            'price' => '25000',
+        ));
+
+        CatalogProduct::create(array(
+            'id' => 2,
+            'active' => 1,
+            'category_id' => 1,
+            'slug' => 'normal_bike_2',
+            'article' => 'sku0002',
+            'amount' => '5',
+            'lft' => 3,
+            'rgt' => 4,
+        ));
+        CatalogProductMeta::create(array(
+            'product_id' => 2,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Обычный велосипед 2',
+            'description' => 'Какое-то описание продукта...',
+            'price' => '25000',
+        ));
+
+        CatalogProduct::create(array(
+            'id' => 3,
+            'active' => 1,
+            'category_id' => 1,
+            'slug' => 'normal_bike_3',
+            'article' => 'sku0003',
+            'amount' => '5',
+            'lft' => 5,
+            'rgt' => 6,
+        ));
+        CatalogProductMeta::create(array(
+            'product_id' => 3,
+            'language' => 'ru',
+            'active' => 1,
+            'name' => 'Обычный велосипед 3',
             'description' => 'Какое-то описание продукта...',
             'price' => '25000',
         ));
@@ -120,7 +157,6 @@ class CatalogTableSeeder extends Seeder{
             'rgt' => 2,
         ));
         CatalogAttributeGroupMeta::create(array(
-            'id' => 1,
             'attributes_group_id' => 1,
             'language' => 'ru',
             'active' => 1,
@@ -137,7 +173,6 @@ class CatalogTableSeeder extends Seeder{
             'rgt' => 2,
         ));
         CatalogAttributeMeta::create(array(
-            'id' => 1,
             'attribute_id' => 1,
             'language' => 'ru',
             'active' => 1,
@@ -154,7 +189,6 @@ class CatalogTableSeeder extends Seeder{
             'rgt' => 4,
         ));
         CatalogAttributeMeta::create(array(
-            'id' => 2,
             'attribute_id' => 2,
             'language' => 'ru',
             'active' => 1,
@@ -171,7 +205,6 @@ class CatalogTableSeeder extends Seeder{
             'rgt' => 4,
         ));
         CatalogAttributeGroupMeta::create(array(
-            'id' => 2,
             'attributes_group_id' => 2,
             'language' => 'ru',
             'active' => 1,
@@ -183,12 +216,12 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'flashlight',
             'attributes_group_id' => 2,
-            'type' => 'wysiwyg',
+            #'type' => 'wysiwyg',
+            'type' => 'checkbox',
             'lft' => 5,
             'rgt' => 6,
         ));
         CatalogAttributeMeta::create(array(
-            'id' => 3,
             'attribute_id' => 3,
             'language' => 'ru',
             'active' => 1,
@@ -200,16 +233,48 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'slug' => 'breaks',
             'attributes_group_id' => 2,
-            'type' => 'checkbox',
+            'type' => 'select',
+            'settings' => '{"selectable":1}',
             'lft' => 7,
             'rgt' => 8,
         ));
         CatalogAttributeMeta::create(array(
-            'id' => 4,
             'attribute_id' => 4,
             'language' => 'ru',
             'active' => 1,
             'name' => 'Тормоза',
+            'settings' => '{"values":"\u0414\u0438\u0441\u043a\u043e\u0432\u044b\u0435\n\u041a\u043e\u043b\u043e\u0434\u043e\u0447\u043d\u044b\u0435"}',
+        ));
+
+
+
+        /**
+         * ЗНАЧЕНИЯ АТРИБУТОВ для ТОВАРА
+         */
+        CatalogAttributeValue::create(array(
+            'product_id' => 1,
+            'attribute_id' => 1,
+            'language' => 'ru',
+            'value' => 'R22',
+        ));
+        CatalogAttributeValue::create(array(
+            'product_id' => 1,
+            'attribute_id' => 2,
+            'language' => 'ru',
+            'value' => '',
+            'settings' => '{"value":"\u041a\u0430\u0440\u0431\u043e\u043d\/\u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0439"}',
+        ));
+        CatalogAttributeValue::create(array(
+            'product_id' => 1,
+            'attribute_id' => 3,
+            'language' => 'ru',
+            'value' => '1',
+        ));
+        CatalogAttributeValue::create(array(
+            'product_id' => 1,
+            'attribute_id' => 4,
+            'language' => 'ru',
+            'value' => 'Дисковые',
         ));
 
 
@@ -263,6 +328,88 @@ class CatalogTableSeeder extends Seeder{
             'title' => 'Завершен',
         ));
 
+
+        /**
+         * ЗАКАЗЫ
+         */
+        CatalogOrder::create(array(
+            'id' => 1,
+            'status_id' => 4,
+            'client_id' => NULL,
+            'client_name' => 'Покупатель',
+            'delivery_info' => 'г.Ростов-на-Дону, ул Суворова 52а, оф.301',
+        ));
+
+        CatalogOrderProduct::create(array(
+            'order_id' => 1,
+            'product_id' => 1,
+            'count' => 2,
+            'product_cache' => '[]',
+        ));
+        CatalogOrderProductAttribute::create(array(
+            'order_id' => 1,
+            'product_id' => 1,
+            'attribute_id' => 4,
+            'attribute_cache' => 'Тормоза',
+            'value' => 'Дисковые',
+        ));
+
+        CatalogOrderProduct::create(array(
+            'order_id' => 1,
+            'product_id' => 2,
+            'count' => 3,
+            'product_cache' => '[]',
+        ));
+        CatalogOrderProductAttribute::create(array(
+            'order_id' => 1,
+            'product_id' => 2,
+            'attribute_id' => 4,
+            'attribute_cache' => 'Тормоза',
+            'value' => 'Колодочные',
+        ));
+
+        CatalogOrderProduct::create(array(
+            'order_id' => 1,
+            'product_id' => 3,
+            'count' => 1,
+            'product_cache' => '[]',
+        ));
+        CatalogOrderProductAttribute::create(array(
+            'order_id' => 1,
+            'product_id' => 3,
+            'attribute_id' => 4,
+            'attribute_cache' => 'Тормоза',
+            'value' => 'Без тормозов',
+        ));
+
+
+        /**
+         * ИСТОРИЯ СТАТУСОВ ЗАКАЗА
+         */
+        CatalogOrderStatusHistory::create(array(
+            'order_id' => 1,
+            'status_id' => 1,
+            'info' => 'Заказ сделан, ожидает обработки...',
+            'changer_name' => 'Покупатель',
+        ));
+        CatalogOrderStatusHistory::create(array(
+            'order_id' => 1,
+            'status_id' => 2,
+            'info' => 'Менеджер обработал заказ, ожидание оплаты',
+            'changer_name' => 'Продавец',
+        ));
+        CatalogOrderStatusHistory::create(array(
+            'order_id' => 1,
+            'status_id' => 3,
+            'info' => 'Покупатель оплатил товар',
+            'changer_name' => 'Покупатель',
+        ));
+        CatalogOrderStatusHistory::create(array(
+            'order_id' => 1,
+            'status_id' => 4,
+            'info' => 'Товар был успешно оплачен, ожидание отправки',
+            'changer_name' => 'Продавец',
+        ));
 
     }
 

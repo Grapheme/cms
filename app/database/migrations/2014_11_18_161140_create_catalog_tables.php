@@ -245,6 +245,7 @@ class CreateCatalogTables extends Migration {
                 $table->integer('order_id')->unsigned()->nullable()->index();
                 $table->integer('product_id')->unsigned()->nullable()->index();
                 $table->integer('attribute_id')->unsigned()->nullable()->index();
+                $table->string('attribute_cache')->nullable();
                 $table->string('value')->nullable()->index();
 
                 $table->timestamps();
