@@ -22,7 +22,7 @@ class CatalogOrderProduct extends BaseModel {
         return $this->belongsTo('CatalogOrder', 'status_id', 'id');
     }
 
-    public function product() {
+    public function info() {
         return $this->belongsTo('CatalogProduct', 'product_id', 'id');
     }
 }

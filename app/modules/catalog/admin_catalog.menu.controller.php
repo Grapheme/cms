@@ -38,6 +38,11 @@ class AdminCatalogMenuController extends BaseController {
             'attributes_create'  => 'Создание атрибутов',
             'attributes_edit'    => 'Редактирование атрибутов',
             'attributes_delete'  => 'Удаление атрибутов',
+
+            'orders_view'        => 'Просмотр заказов',
+            'orders_create'      => 'Создание заказов', ## ???
+            'orders_edit'        => 'Редактирование заказов', ## ???
+            'orders_delete'      => 'Удаление заказов',
         );
     }
 
@@ -76,6 +81,13 @@ class AdminCatalogMenuController extends BaseController {
                 'title' => 'Атрибуты',
                 'link' => self::$group . '/attributes',
                 'class' => 'fa-puzzle-piece',
+            );
+
+        if (Allow::action(self::$group, 'orders_view', false, true))
+            $menu_child[] = array(
+                'title' => 'Заказы',
+                'link' => self::$group . '/orders',
+                'class' => 'fa-shopping-cart',
             );
 
         if (count($menu_child) && Allow::action(self::$group, 'catalog_allow', false, true))

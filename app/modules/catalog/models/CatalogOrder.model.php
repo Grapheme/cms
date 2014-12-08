@@ -5,6 +5,7 @@ class CatalogOrder extends BaseModel {
 	protected $guarded = array();
 
 	public $table = 'catalog_orders';
+    protected $softDelete = true;
 
     protected $fillable = array(
         'status_id',
@@ -19,6 +20,10 @@ class CatalogOrder extends BaseModel {
 
 
     public function status() {
-        return $this->hasOne('CatalogOrderStatus', 'status_id', 'id');
+        return $this->hasOne('CatalogOrderStatus', 'id', 'status_id');
+    }
+
+    public function products() {
+        return $this->hasMany('CatalogOrderProduct', 'order_id', 'id');
     }
 }

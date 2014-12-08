@@ -335,6 +335,7 @@ class CatalogTableSeeder extends Seeder{
         CatalogOrder::create(array(
             'id' => 1,
             'status_id' => 4,
+            'total_sum' => 120000,
             'client_id' => NULL,
             'client_name' => 'Покупатель',
             'delivery_info' => 'г.Ростов-на-Дону, ул Суворова 52а, оф.301',
@@ -344,6 +345,7 @@ class CatalogTableSeeder extends Seeder{
             'order_id' => 1,
             'product_id' => 1,
             'count' => 2,
+            'price' => 25000,
             'product_cache' => '[]',
         ));
         CatalogOrderProductAttribute::create(array(
@@ -358,6 +360,7 @@ class CatalogTableSeeder extends Seeder{
             'order_id' => 1,
             'product_id' => 2,
             'count' => 3,
+            'price' => 24000,
             'product_cache' => '[]',
         ));
         CatalogOrderProductAttribute::create(array(
@@ -372,6 +375,7 @@ class CatalogTableSeeder extends Seeder{
             'order_id' => 1,
             'product_id' => 3,
             'count' => 1,
+            'price' => 23000,
             'product_cache' => '[]',
         ));
         CatalogOrderProductAttribute::create(array(

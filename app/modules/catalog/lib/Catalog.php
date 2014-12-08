@@ -13,4 +13,15 @@ class Catalog extends BaseController {
 		##
 	}
 
+
+    public static function create_order(array $array) {
+
+        if (!isset($array) || !is_array($array))
+            return false;
+
+        /**
+         * Создаем заказ
+         */
+    }
+
 }

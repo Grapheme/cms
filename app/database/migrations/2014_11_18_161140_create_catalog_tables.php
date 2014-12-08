@@ -206,10 +206,12 @@ class CreateCatalogTables extends Migration {
 
                 $table->increments('id');
                 $table->smallInteger('status_id')->unsigned()->nullable()->index();
+                $table->float('total_sum')->unsigned()->index();
                 $table->integer('client_id')->nullable()->unsigned()->index();
                 $table->string('client_name')->nullable();
                 $table->text('delivery_info')->nullable();
 
+                $table->softDeletes();
                 $table->timestamps();
             });
             echo(' + ' . $this->table . PHP_EOL);
@@ -225,6 +227,7 @@ class CreateCatalogTables extends Migration {
                 $table->integer('order_id')->unsigned()->index();
                 $table->integer('product_id')->unsigned()->index();
                 $table->integer('count')->unsigned()->default(1);
+                $table->float('price')->unsigned()->index();
 
                 $table->text('product_cache')->nullable();
 
