@@ -71,16 +71,33 @@ class BaseController extends Controller {
     public function templates($path = '', $post_path = '/views') {
 
         #Helper::dd($path . ' | ' . $post_path . ' | ' . "/*");
+        #Helper::dd($path.$post_path."/*");
 
         $templates = array();
         $temp = glob($path.$post_path."/*");
+        #Helper::dd($temp);
+
         foreach ($temp as $t => $tmp) {
             if (is_dir($tmp))
                 continue;
+
+            #Helper::d($tmp);
+            $properties = Helper::getFileProperties($tmp);
+            #var_dump($properties);
+            #echo (int)(in_array('TEMPLATE_IS_NOT_SETTABLE', $properties));
+            #echo "<hr/>";
+            if (
+                @$properties['TEMPLATE_IS_NOT_SETTABLE']
+                #|| (@$properties['AVAILABLE_ONLY_IN_ADVANCED_MODE'] && !Allow::action('pages', 'advanced'))
+                || (!Allow::action('pages', 'advanced') && !@$properties['AVAILABLE_IN_SIMPLE_MODE'])
+            )
+                continue;
+
             $name = basename($tmp);
             $name = str_replace(".blade.php", "", $name);
-            $templates[] = $name;
+            $templates[$name] = @$properties['TITLE'] ?: $name;
         }
+        #Helper::dd($templates);
         return $templates;
     }
 }

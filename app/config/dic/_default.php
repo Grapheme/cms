@@ -43,6 +43,9 @@
  * - select-multiple
  * - checkbox
  * - checkboxes (замена select-multiple)
+ * - hidden
+ * - custom
+ * - textview (если нет значения - текстовая строка, если есть - значение из view_text)
  *
  * Типы полей, запланированных к разработке:
  * - radio
@@ -61,7 +64,7 @@ return array(
     /**
      * FIELDS - задает для всех сущностей словаря набор дополнительных полей для редактирования.
      */
-    'fields' => function () {
+    'fields' => function ($dicval = NULL) {
 
         /**
          * Предзагружаем нужные словари с данными, по системному имени словаря, для дальнейшего использования.
@@ -238,7 +241,12 @@ if (len > 0) {
                         : $return = array();
                     return $return;
                 },
-            )
+            ),
+            'promise_id' => array(
+                'title' => 'Обещание',
+                'type' => 'textline',
+                'view_text' => @$lists['promises'][$dicval->promise_id], ## Используется предзагруженный словарь
+            ),
 
         );
 
@@ -421,6 +429,18 @@ if (len > 0) {
 
     ),
 
+    /*
+    'first_line_modifier' => function($line, $dic, $dicval) {
+        return '<a href="' . URL::route('feedback.view', $dicval->id) . '" target="_blank">' . $line . '</a> <i class="fa fa-arrow-right"></i>';
+    },
+    #*/
+
+    /*
+    'second_line_modifier' => function($line, $dic, $dicval) {
+        return 'От: ' . $dicval->message_name . ($dicval->message_email ? ' &lt;<a href="mailto:' . $dicval->message_email . '">' . $dicval->message_email . '</a>>' : '') . ', ' . $dicval->created_at->format('d.m.Y в H:i');
+    },
+    #*/
+
     /**
      * Вкл./выкл. модуль SEO для данного словаря
      */
@@ -500,6 +520,12 @@ HTML
      * По умолчанию пусто
      */
     'name_note' => '',
+
+    /**
+     * Скрыть Название с формы
+     * По умолчанию название отображается
+     */
+    'hide_name' => 1,
 
     /**
      * Если установлено в TRUE - перед добавлением/сохранением записи поле "Системное имя"

@@ -156,23 +156,23 @@
         //var onsuccess_function = 'update_blocks()';
     </script>
 
-	{{ HTML::script('js/modules/standard.js') }}
+	{{ HTML::script('private/js/modules/standard.js') }}
 
 	<script src="{{ link::path('js/vendor/jquery.ui.datepicker-ru.js') }}"></script>
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runFormValidation === 'function'){
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}",runFormValidation);
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}",runFormValidation);
 		}else{
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}");
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}");
 		}
 	</script>
 
-    {{ HTML::script('js/plugin/select2/select2.min.js') }}
+    {{ HTML::script('private/js/plugin/select2/select2.min.js') }}
 
-    {{ HTML::script('js/vendor/redactor.min.js') }}
-    {{ HTML::script('js/system/redactor-config.js') }}
+    {{ HTML::script('private/js/vendor/redactor.min.js') }}
+    {{ HTML::script('private/js/system/redactor-config.js') }}
 
-    {{-- HTML::script('js/modules/gallery.js') --}}
+    {{-- HTML::script('private/js/modules/gallery.js') --}}
 
 @stop

@@ -11,6 +11,8 @@ class CatalogProductMeta extends BaseModel {
         'language',
         'active',
         'name',
+        'description',
+        'price',
         'settings',
     );
 

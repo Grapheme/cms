@@ -21,4 +21,13 @@ class DicFieldVal extends BaseModel {
         'key' => 'required',
 	);
 
+    /**
+     * Связь возвращает родительскую запись DicVal
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dicval() {
+        return $this->belongsTo('DicVal', 'dicval_id');
+    }
+
 }

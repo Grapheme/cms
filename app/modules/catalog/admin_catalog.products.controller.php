@@ -235,9 +235,19 @@ class AdminCatalogProductsController extends BaseController {
             Helper::dd($categories_for_select);
 
 
+        $root_category = NULL;
+        if (NULL !== ($cat_id = Input::get('category'))) {
+            $root_category = CatalogCategory::where('id', $cat_id)
+                ->with('meta')
+                ->first()
+            ;
+            if (is_object($root_category))
+                $root_category = $root_category->extract();
+        }
+
         $locales = Config::get('app.locales');
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select', 'root_category'));
     }
 
 
@@ -368,12 +378,22 @@ class AdminCatalogProductsController extends BaseController {
             Helper::dd($categories_for_select);
 
 
+        $root_category = NULL;
+        if (NULL !== ($cat_id = Input::get('category'))) {
+            $root_category = CatalogCategory::where('id', $cat_id)
+                ->with('meta')
+                ->first()
+            ;
+            if (is_object($root_category))
+                $root_category = $root_category->extract();
+        }
+
 
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'categories', 'categories_for_select', 'root_category'));
     }
 
 

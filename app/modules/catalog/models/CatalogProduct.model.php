@@ -10,6 +10,8 @@ class CatalogProduct extends BaseModel {
         'active',
         'slug',
         'category_id',
+        'article',
+        'amount',
         'settings',
         'lft',
         'rgt',

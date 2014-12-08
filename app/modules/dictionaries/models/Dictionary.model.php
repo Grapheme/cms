@@ -111,6 +111,24 @@ class Dictionary extends BaseModel {
         return $array;
     }
 
+    public static function modifyAttrKeys(&$collection, $relation_name = '', $key = 'slug') {
+        #Helper::d($collection);
+        #$array = array();
+        $array = array();
+
+        foreach ($collection->attributes[$relation_name] as $c => $col) {
+            $current_key = is_object($col) ? $col->$key : @$col[$key];
+            if (NULL !== $current_key) {
+                $array[$current_key] = $col;
+            }
+        }
+        #return $array;
+        unset($collection->attributes[$relation_name]);
+        $collection->attributes[$relation_name] = $array;
+
+        #Helper::dd($collection);
+    }
+
     /**
      * В функцию передается коллекция объектов, полученная из Eloguent методом ->get(),
      * которая имеет в себе некоторую коллекцию прочих объектов, полученную через связь hasMany (с помощью ->with('...')).
@@ -231,6 +249,7 @@ class Dictionary extends BaseModel {
      * @return mixed
      */
     public static function valuesBySlug($slug, Closure $conditions = NULL) {
+
         #Helper::dd($slug);
         $return = Dic::where('slug', $slug);
         #dd($conditions);
@@ -246,7 +265,7 @@ class Dictionary extends BaseModel {
         if (is_object($return))
             $return = isset($return->values_no_conditions) ? $return->values_no_conditions : $return->values;
         else
-            $return = Dic::firstOrNew(array('slug' => $slug, 'version_of' => NULL))->with('values')->first()->values;
+            $return = Dic::firstOrNew(array('slug' => $slug))->with('values')->first()->values;
         #return self::firstOrNew(array('slug' => $slug))->values;
         return $return;
     }
@@ -269,10 +288,14 @@ class Dictionary extends BaseModel {
                 $query->where('version_of', NULL);
                 $query->where('slug', $val_slug);
                 $query->with('meta', 'fields', 'seo', 'related_dicvals');
-            }))->first()->value;
+            }))->first();
 
-        if ($extract) {
-            $data->extract(0);
+        if (is_object($data)) {
+            $data = $data->value;
+
+            if ($extract) {
+                $data->extract(0);
+            }
         }
 
         #Helper::tad($data);
@@ -295,16 +318,19 @@ class Dictionary extends BaseModel {
         $data = self::where('slug', $dic_slug)->with(array('value' => function($query) use ($val_id){
             $query->where('version_of', NULL);
             $query->where('id', $val_id);
-            $query->with('meta', 'fields', 'seo', 'related_dicvals');
+            $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
         }))
             ->first()
-            ->value
         ;
-        #Helper::tad($data);
 
-        if ($extract)
-            $data->extract(0);
-        #Helper::tad($data);
+        if (is_object($data)) {
+
+            $data = $data->value;
+            #Helper::tad($data);
+            if ($extract)
+                $data->extract(0);
+            #Helper::tad($data);
+        }
 
         return is_object($data) ? $data : self::firstOrNew(array('id' => 0));
     }

@@ -1,11 +1,18 @@
 <?
     #Helper:dd($dic_id);
     $menus = array();
+
+    $array = array();
+    if (isset($root_category) && is_object($root_category) && $root_category->id)
+        $array['category'] = $root_category->id;
+
     $menus[] = array(
-        'link' => URL::route('catalog.category.index'),
+        'link' => URL::route('catalog.products.index', $array),
         'title' => 'Все товары',
         'class' => 'btn btn-default'
     );
+
+    /*
     if (
         Allow::action($module['group'], 'categories_delete')
         && isset($element) && is_object($element) && $element->id
@@ -21,7 +28,9 @@
             ]
         );
     }
+    */
 
+    /*
     if  (
         Allow::action($module['group'], 'categories_edit')
         && isset($root_category) && is_object($root_category) && $root_category->id
@@ -33,6 +42,7 @@
             'class' => 'btn btn-success'
         );
     }
+    */
 
     if  (Allow::action($module['group'], 'products_create')) {
         #$current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
@@ -51,11 +61,20 @@
     <h1>
         Товары
         @if (isset($element) && is_object($element) && $element->name)
+
+            @if (isset($element->category) && is_object($element->category) && $element->category->name)
+            &nbsp;&mdash;&nbsp;
+            {{ $element->category->name }}
+            @endif
+
             &nbsp;&mdash;&nbsp;
             {{ $element->name }}
+
         @elseif (isset($root_category) && is_object($root_category) && $root_category->name)
+
             &nbsp;&mdash;&nbsp;
             {{ $root_category->name }}
+
         @endif
     </h1>
 

@@ -83,6 +83,7 @@
                     </section>
                     @endif
 
+                    @if (!@$dic_settings['hide_name'])
                     <section>
                         <label class="label">{{ $dic->name_title ?: 'Название' }}</label>
                         <label class="input">
@@ -92,12 +93,13 @@
                             @endif
                         </label>
                     </section>
+                    @endif
 
                 </fieldset>
 
                 {{ Helper::dd_($dic_settings) }}
 
-                @if (@is_callable($dic_settings['fields']) && NULL !== ($fields_general = $dic_settings['fields']()) && count($fields_general))
+                @if (@is_callable($dic_settings['fields']) && NULL !== ($fields_general = $dic_settings['fields']($element)) && count($fields_general))
                 <?
                 #Helper::ta($element);
                 $onsuccess_js = array();
@@ -393,17 +395,17 @@
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runDicValFormValidation === 'function') {
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
 		} else {
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}");
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}");
 		}        
 	</script>
 
-    {{ HTML::script('js/vendor/redactor.min.js') }}
-    {{ HTML::script('js/system/redactor-config.js') }}
+    {{ HTML::script('private/js/vendor/redactor.min.js') }}
+    {{ HTML::script('private/js/system/redactor-config.js') }}
 
-    {{-- HTML::script('js/modules/gallery.js') --}}
-    {{ HTML::script('js/plugin/select2/select2.min.js') }}
+    {{-- HTML::script('private/js/modules/gallery.js') --}}
+    {{ HTML::script('private/js/plugin/select2/select2.min.js') }}
 
     @if (@trim($dic_settings['javascript']))
     <script>

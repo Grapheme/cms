@@ -151,9 +151,9 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runDicValFormValidation === 'function'){
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}", runDicValFormValidation);
 		}else{
-			loadScript("{{ asset('js/vendor/jquery-form.min.js'); }}");
+			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}");
 		}
 	</script>
 

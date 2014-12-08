@@ -85,12 +85,20 @@
                         </label>
                     </section>
 
-                    <section class="col col-lg-6 col-sm-12">
-                        <label class="label">Шаблон</label>
-                        <label class="input select input-select2">
-                            {{ Form::select('template', array('Выберите...')+$templates) }}
-                        </label>
-                    </section>
+                    @if ($show_template_select)
+                        <section class="col col-lg-6 col-sm-12">
+                            <label class="label">Шаблон</label>
+                            <label class="input select input-select2">
+                                {{-- Form::select('template', array('Выберите...')+$templates) --}}
+                                {{ Form::select('template', $templates) }}
+                            </label>
+                            <label class="note">
+                                При добавлении новой страницы выбирайте шаблон "Простая страница"
+                            </label>
+                        </section>
+                    @else
+                        {{ Form::hidden('template') }}
+                    @endif
 
                 </div>
 
@@ -137,6 +145,10 @@
                     </section>
 
                 </fieldset>
+                @else
+
+                    {{ Form::hidden('start_page') }}
+
                 @endif
 
                 <fieldset class="clearfix">

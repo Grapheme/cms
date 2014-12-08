@@ -3,10 +3,12 @@
 #Helper::tad($element->metas->where('language', $locale_sign)->first());
 #Helper::ta($element);
 #Helper::dd($dic_settings);
-/*{{--
+/*
+{{--
 if (@is_callable($dic_settings['fields_i18n']))
     $fields_i18n = $dic_settings['fields_i18n']();
-#--}}*/
+--}}
+*/
 
 $element_meta = new DicValMeta;
 if (@is_object($element->metas) && $element->metas->count())
@@ -19,17 +21,18 @@ if (@is_object($element->metas) && $element->metas->count())
     }
 ?>
 
-@if (count($locales) > 1)
-{{-- @if (count($fields_i18n)) --}}
+@if (count($locales) > 1 && 0)
     <section>
-        <label class="label">Название</label>
+        <label class="label">{{ $dic->name_title ?: 'Название' }}</label>
         <label class="input select input-select2">
             {{ Form::text('locales[' . $locale_sign . '][name]', $element_meta->name, array()) }}
+            @if (isset($dic_settings['name_note']))
+                {{ $dic_settings['name_note'] }}
+            @endif
         </label>
     </section>
 @endif
 
-{{-- @if (count($locales) > 1) --}}
 @if (count($fields_i18n))
 
 <?

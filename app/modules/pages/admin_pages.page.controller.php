@@ -107,24 +107,44 @@ class AdminPagesPageController extends BaseController {
         $locales = $this->locales;
         #Helper::dd($locales);
 
-        foreach ($this->templates(__DIR__) as $template)
-            @$templates_module[$template] = $template;
+
+        $template_exists = false;
 
         foreach ($this->templates(Helper::theme_dir(), '') as $key => $template)
             @$templates_theme[$key] = $template;
-
-        $templates = array();
         if (@count($templates_theme)) {
+
+            if (@$templates_theme[$element->template])
+                $template_exists = true;
+
             natsort($templates_theme);
             $templates['Тема оформления'] = $templates_theme;
         }
-        if (@count($templates_module)) {
-            natsort($templates_module);
-            $templates['Модуль'] = $templates_module;
+
+        if (Allow::action('pages', 'advanced')) {
+            foreach ($this->templates(__DIR__) as $template)
+                @$templates_module[$template] = $template;
+            if (@count($templates_module)) {
+
+                if (@$templates_theme[$element->template])
+                    $template_exists = true;
+
+                natsort($templates_module);
+                $templates['Модуль'] = $templates_module;
+            }
         }
         #Helper::dd($templates);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'templates'));
+        $show_template_select = false;
+        if (
+            Allow::action('pages', 'advanced')
+            || !isset($element->template)
+            || $template_exists
+        ) {
+            $show_template_select = true;
+        }
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'templates', 'show_template_select'));
     }
 
 
@@ -154,24 +174,45 @@ class AdminPagesPageController extends BaseController {
         $locales = $this->locales;
         #Helper::dd($locales);
 
-        foreach ($this->templates(__DIR__) as $template)
-            @$templates_module[$template] = $template;
+        $templates = array();
+
+        $template_exists = false;
 
         foreach ($this->templates(Helper::theme_dir(), '') as $key => $template)
             @$templates_theme[$key] = $template;
-
-        $templates = array();
         if (@count($templates_theme)) {
+
+            if (@$templates_theme[$element->template])
+                $template_exists = true;
+
             natsort($templates_theme);
             $templates['Тема оформления'] = $templates_theme;
         }
-        if (@count($templates_module)) {
-            natsort($templates_module);
-            $templates['Модуль'] = $templates_module;
+
+        if (Allow::action('pages', 'advanced')) {
+            foreach ($this->templates(__DIR__) as $template)
+                @$templates_module[$template] = $template;
+            if (@count($templates_module)) {
+
+                if (@$templates_theme[$element->template])
+                    $template_exists = true;
+
+                natsort($templates_module);
+                $templates['Модуль'] = $templates_module;
+            }
         }
         #Helper::dd($templates);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'templates'));
+        $show_template_select = false;
+        if (
+            Allow::action('pages', 'advanced')
+            || !isset($element->template)
+            || $template_exists
+        ) {
+            $show_template_select = true;
+        }
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'templates', 'show_template_select'));
     }
 
 

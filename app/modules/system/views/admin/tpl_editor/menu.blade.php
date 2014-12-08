@@ -1,7 +1,7 @@
 <?
     $menus = array();
 
-    if (Allow::action($module['group'], 'permissions')) {
+    if (Allow::action($module['group'], 'tpl_editor')) {
         $menus[] = array(
             'link' => substr(URL::action($module['class'] . '@getIndex'), 0, -6 ),
             'title' => 'Все шаблоны',
