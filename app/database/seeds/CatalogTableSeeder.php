@@ -4,6 +4,9 @@ class CatalogTableSeeder extends Seeder{
 
 	public function run(){
 
+        /**
+         * КАТЕГОРИИ
+         */
         CatalogCategory::create(array(
             'id' => 1,
             'active' => 1,
@@ -81,7 +84,9 @@ class CatalogTableSeeder extends Seeder{
         ));
 
 
-
+        /**
+         * ТОВАРЫ
+         */
         CatalogProduct::create(array(
             'id' => 1,
             'active' => 1,
@@ -103,7 +108,9 @@ class CatalogTableSeeder extends Seeder{
         ));
 
 
-
+        /**
+         * АТРИБУТЫ
+         */
         CatalogAttributeGroup::create(array(
             'id' => 1,
             'category_id' => 1,
@@ -204,6 +211,59 @@ class CatalogTableSeeder extends Seeder{
             'active' => 1,
             'name' => 'Тормоза',
         ));
+
+
+
+        /**
+         * СТАТУСЫ ЗАКАЗОВ
+         */
+        CatalogOrderStatus::create(array(
+            'id' => 1,
+            'sort_order' => 1,
+        ));
+        CatalogOrderStatusMeta::create(array(
+            'status_id' => 1,
+            'language' => 'ru',
+            'title' => 'В обработке',
+        ));
+        CatalogOrderStatus::create(array(
+            'id' => 2,
+            'sort_order' => 2,
+        ));
+        CatalogOrderStatusMeta::create(array(
+            'status_id' => 2,
+            'language' => 'ru',
+            'title' => 'Ожидает оплаты',
+        ));
+        CatalogOrderStatus::create(array(
+            'id' => 3,
+            'sort_order' => 3,
+        ));
+        CatalogOrderStatusMeta::create(array(
+            'status_id' => 3,
+            'language' => 'ru',
+            'title' => 'Оплачен',
+        ));
+        CatalogOrderStatus::create(array(
+            'id' => 4,
+            'sort_order' => 4,
+        ));
+        CatalogOrderStatusMeta::create(array(
+            'status_id' => 4,
+            'language' => 'ru',
+            'title' => 'Ожидает отправки',
+        ));
+        CatalogOrderStatus::create(array(
+            'id' => 5,
+            'sort_order' => 5,
+        ));
+        CatalogOrderStatusMeta::create(array(
+            'status_id' => 5,
+            'language' => 'ru',
+            'title' => 'Завершен',
+        ));
+
+
     }
 
 }

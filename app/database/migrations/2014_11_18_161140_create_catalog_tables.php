@@ -199,12 +199,14 @@ class CreateCatalogTables extends Migration {
         }
 
 
+
         $this->table = $this->prefix . "orders";
         if (!Schema::hasTable($this->table)) {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
                 $table->smallInteger('status_id')->unsigned()->nullable()->index();
+                $table->integer('client_id')->nullable()->unsigned()->index();
                 $table->string('client_name')->nullable();
                 $table->text('delivery_info')->nullable();
 
@@ -240,12 +242,13 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
-                $table->integer('order_product_id')->unsigned()->nullable()->index();
+                $table->integer('order_id')->unsigned()->nullable()->index();
+                $table->integer('product_id')->unsigned()->nullable()->index();
                 $table->integer('attribute_id')->unsigned()->nullable()->index();
                 $table->string('value')->nullable()->index();
 
                 $table->timestamps();
-                $table->unique(array('order_product_id', 'attribute_id'), 'order_product_attribute');
+                $table->unique(array('order_id', 'product_id', 'attribute_id'), 'order_product_attribute');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -257,9 +260,27 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
+                $table->integer('sort_order')->unsigned()->index();
+
+                $table->timestamps();
+            });
+            echo(' + ' . $this->table . PHP_EOL);
+        } else {
+            echo('...' . $this->table . PHP_EOL);
+        }
+
+        $this->table = $this->prefix . "orders_statuses_meta";
+        if (!Schema::hasTable($this->table)) {
+            Schema::create($this->table, function(Blueprint $table) {
+
+                $table->increments('id');
+                $table->integer('status_id')->nullable()->unsigned()->index();
+                $table->string('language')->nullable()->index();
                 $table->string('title')->nullable();
 
                 $table->timestamps();
+
+                $table->unique(array('status_id', 'language'), 'status_id_language');
             });
             echo(' + ' . $this->table . PHP_EOL);
         } else {
@@ -275,8 +296,9 @@ class CreateCatalogTables extends Migration {
                 $table->integer('status_id')->unsigned()->nullable()->index();
 
                 $table->text('info')->nullable();
-                $table->string('changer')->nullable()->index();
-                $table->string('status_text')->nullable()->index();
+                $table->string('changer_id')->nullable()->index();
+                $table->string('changer_name')->nullable()->index();
+                $table->text('status_cache')->nullable();
 
                 $table->timestamps();
             });
@@ -335,6 +357,9 @@ class CreateCatalogTables extends Migration {
 
         Schema::dropIfExists($this->prefix . "orders_statuses");
         echo(' - ' . $this->prefix . "order_statuses" . PHP_EOL);
+
+        Schema::dropIfExists($this->prefix . "orders_statuses_meta");
+        echo(' - ' . $this->prefix . "order_statuses_meta" . PHP_EOL);
 
         Schema::dropIfExists($this->prefix . "orders_statuses_history");
         echo(' - ' . $this->prefix . "order_statuses_history" . PHP_EOL);

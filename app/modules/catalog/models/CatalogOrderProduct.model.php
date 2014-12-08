@@ -1,0 +1,28 @@
+<?php
+
+class CatalogOrderProduct extends BaseModel {
+
+	protected $guarded = array();
+
+	public $table = 'catalog_orders_products';
+
+    protected $fillable = array(
+        'order_id',
+        'product_id',
+        'count',
+        'product_cache',
+    );
+
+	public static $rules = array(
+        #'slug' => 'required',
+	);
+
+
+    public function order() {
+        return $this->belongsTo('CatalogOrder', 'status_id', 'id');
+    }
+
+    public function product() {
+        return $this->belongsTo('CatalogProduct', 'product_id', 'id');
+    }
+}
