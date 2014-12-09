@@ -140,9 +140,19 @@ class AdminCatalogOrdersController extends BaseController {
             $element->extract(1);
         }
 
+        $temp = (new CatalogOrderStatus())
+            ->with('meta')
+            ->orderBy('sort_order', 'ASC')
+            ->get()
+        ;
+        $statuses = array();
+        foreach ($temp as $tmp) {
+            $statuses[$tmp->id] = $tmp->meta->title;
+        }
+
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category', 'statuses'));
 	}
 
 
@@ -173,120 +183,17 @@ class AdminCatalogOrdersController extends BaseController {
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogAttributeGroup::find($id)))
-            $element = new CatalogAttributeGroup();
-
         $input = Input::all();
+        #Helper::tad($input);
 
-        /**
-         * Проверяем системное имя
-         */
-        if (!trim($input['slug'])) {
-            $input['slug'] = $input['meta'][Config::get('app.locale')]['name'];
-        }
-        $input['slug'] = Helper::translit($input['slug']);
-
-        $slug = $input['slug'];
-        $exit = false;
-        $i = 1;
-        do {
-            $test = CatalogAttributeGroup::where('slug', $slug)->first();
-            #Helper::dd($count);
-
-            if (!is_object($test) || $test->id == $element->id) {
-                $input['slug'] = $slug;
-                $exit = true;
-            } else
-                $slug = $input['slug'] . (++$i);
-
-            if ($i >= 10 && !$exit) {
-                $input['slug'] = $input['slug'] . '_' . md5(rand(999999, 9999999) . '-' . time());
-                $exit = true;
-            }
-
-        } while (!$exit);
-
-        /**
-         * Проверяем флаг активности
-         */
-        $input['active'] = @$input['active'] ? 1 : NULL;
-
-        #Helper::dd($input);
-
-        $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
-        #return Response::json($json_request,200);
+        if ($id)
+            $updated = Catalog::update_order($id, $input);
 
         $json_request = array('status' => FALSE, 'responseText' => '', 'responseErrorText' => '', 'redirect' => FALSE);
-		$validator = Validator::make($input, array('slug' => 'required'));
-		if($validator->passes()) {
-
-            #$redirect = false;
-
-            if ($element->id > 0) {
-
-                $element->update($input);
-                $redirect = false;
-                $attributes_group_id = $element->id;
-
-                /**
-                 * Обновим slug на форме
-                 */
-                if (Input::get('slug') != $input['slug']) {
-                    $json_request['form_values'] = array('input[name=slug]' => $input['slug']);
-                }
-
-            } else {
-
-                /**
-                 * Ставим элемент в конец списка
-                 */
-                $temp = CatalogAttributeGroup::selectRaw('max(rgt) AS max_rgt')->where('category_id', @$input['category_id'])->first();
-                $input['lft'] = $temp->max_rgt+1;
-                $input['rgt'] = $temp->max_rgt+2;
-
-                $element->save();
-                $element->update($input);
-                $attributes_group_id = $element->id;
-                $redirect = Input::get('redirect');
-            }
-
-            /**
-             * Сохраняем META-данные
-             */
-            if (
-                isset($input['meta']) && is_array($input['meta']) && count($input['meta'])
-            ) {
-                #Helper::d($attribute_id);
-                foreach ($input['meta'] as $locale_sign => $meta_array) {
-                    $meta_search_array = array(
-                        'orders_group_id' => (int)$attributes_group_id,
-                        'language' => $locale_sign
-                    );
-                    #Helper::d($meta_search_array);
-                    $attribute_meta = CatalogAttributeGroupMeta::firstOrNew($meta_search_array);
-                    if (!$attribute_meta->id) {
-                        #Helper::tad($attribute_meta);
-                        $attribute_meta->save();
-                    }
-                    $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
-                    $attribute_meta->update($meta_array);
-                    unset($meta_search_array);
-                    unset($meta_array);
-                    unset($attribute_meta);
-                }
-                #Helper::d($attribute_id);
-            }
-
-            $json_request['responseText'] = 'Сохранено';
-            if ($redirect)
-			    $json_request['redirect'] = $redirect;
-			$json_request['status'] = TRUE;
-
-		} else {
-
-			$json_request['responseText'] = 'Неверно заполнены поля';
-			$json_request['responseErrorText'] = $validator->messages()->all();
-		}
+        $json_request['responseText'] = 'Сохранено';
+        if (@$redirect)
+            $json_request['redirect'] = $redirect;
+        $json_request['status'] = TRUE;
 		return Response::json($json_request, 200);
 	}
 

@@ -38,8 +38,12 @@
                 @if (count($element->products))
 
                     @foreach ($element->products as $product)
+                        <?
+                        if (!is_object($product->info) || !is_object($product->info->meta) || !($product->info->meta->name))
+                            continue;
+                        ?>
 
-                        <fieldset>
+                        <fieldset class="catalog-product-block">
 
                             <section class="col-xs-12 col-sm-12 col-md-12 col-lg-8 pull-left">
                                 <label class="label">
@@ -48,6 +52,10 @@
                                 @if (count($product->attributes))
                                 <label class="note">
                                     @foreach ($product->attributes as $product_attribute)
+                                        <?
+                                        if (!is_object($product_attribute))
+                                            continue;
+                                        ?>
                                         <b>{{ $product_attribute->attribute_cache }}</b>: {{ $product_attribute->value }} &nbsp; &nbsp; &nbsp; &nbsp;
                                     @endforeach
                                 </label>
@@ -57,7 +65,7 @@
                             <section class="col-xs-12 col-sm-12 col-md-12 col-lg-4 pull-left text-right">
 
                                 <label class="input display-inline-block" style="width:40px">
-                                    {{ Form::text('product[' . $product->id . '][count]', (int)$product->count, array('class' => 'text-center', 'data-original' => (int)$product->count)) }}
+                                    {{ Form::text('products[' . $product->id . '][count]', (int)$product->count, array('class' => 'text-center catalog-product-count catalog-check-value', 'data-original' => (int)$product->count)) }}
                                 </label>
 
                                 <label class="input display-inline-block text-center" style="width:10px; position:relative; top:-10px">
@@ -65,7 +73,7 @@
                                 </label>
 
                                 <label class="input display-inline-block" style="width:80px">
-                                    {{ Form::text('product[' . $product->id . '][price]', (int)$product->price, array('class' => 'text-center', 'data-original' => (int)$product->price)) }}
+                                    {{ Form::text('products[' . $product->id . '][price]', (int)$product->price, array('class' => 'text-center catalog-product-price catalog-check-value', 'data-original' => (int)$product->price)) }}
                                 </label>
                             </section>
 
@@ -82,14 +90,13 @@
                         <section class="col-xs-12 col-sm-12 col-md-12 col-lg-4 pull-left text-right">
 
                             <div>
-                                <label class="label2" style="font-size:24px; text-decoration:line-through" data-original="{{ (int)$element->total_sum }}">
+                                <label class="catalog-current-order-price" style="font-size:24px;" data-original="{{ (int)$element->total_sum }}">
                                     {{ $element->total_sum }}
                                 </label>
-                                <label class="label2 hidden-" style="font-size:24px; color:red;">
+                                <label class="catalog-new-order-price hidden" style="font-size:24px; color:red;">
                                     {{ $element->total_sum }}
                                 </label>
                             </div>
-                            {{ Form::hidden('total_sum') }}
 
                         </section>
 
@@ -115,6 +122,26 @@
                     Информация о заказе
                 </header>
                 <fieldset class="padding-bottom-15">
+
+                    @if (isset($element->status) && is_object($element->status) && isset($element->status->meta) && is_object($element->status->meta) && $element->status->meta->title)
+                    <section>
+                        <label class="label">Статус:</label>
+                        <label class="input catalog-current-order-status">
+                            <b>{{ $element->status->meta->title }}</b>
+                            <span class="catalog-change-order-status" style="border-bottom:1px dashed #333; cursor:pointer;">Изменить статус</span>
+                        </label>
+                        <div class="catalog-order-status-select hidden">
+                            <label class="select">
+                                {{ Form::select('status', $statuses, $element->status->id) }}
+                            </label>
+                            <label class="textarea">
+                                {{ Form::textarea('status_comment', NULL, array('placeholder' => 'Комментарий к новому статусу')) }}
+                            </label>
+                            {{ Form::hidden('changer_id', Auth::user()->id) }}
+                            {{ Form::hidden('changer_name', Auth::user()->name) }}
+                        </div>
+                    </section>
+                    @endif
 
                     <section>
                         <label class="label">Покупатель:</label>
@@ -160,16 +187,24 @@
                     @if (count($element->statuses))
 
                         @foreach($element->statuses as $status)
+                        <?
+                        if (!is_object($status->info) || !is_object($status->info->meta) || !($status->info->meta->title))
+                            continue;
+                        ?>
+                            {{-- Helper::d($status) --}}
 
-                            {{ Helper::d($status) }}
 
                             <section>
                                 <label class="label">
-                                    {{-- $status->info->meta->title --}}
-                                    {{ $status->info }}
+                                    {{ $status->info->meta->title }}
                                 </label>
                                 <label class="note">
                                     {{ $status->created_at->format('H:i, d.m.Y') }}
+                                    @if ($status->changer_name)
+                                    - {{ $status->changer_name }}@if ($status->comment):
+                                           {{ $status->comment }}
+                                        @endif
+                                    @endif
                                 </label>
                             </section>
 

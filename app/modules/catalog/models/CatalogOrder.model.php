@@ -25,8 +25,8 @@ class CatalogOrder extends BaseModel {
 
     public function statuses() {
         return $this->hasMany('CatalogOrderStatusHistory', 'order_id', 'id')
-            ->orderBy('created_at', 'ASC')
-            ->orderBy('id', 'ASC')
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
             ;
     }
 

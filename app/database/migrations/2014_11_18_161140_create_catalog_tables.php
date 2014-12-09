@@ -205,7 +205,7 @@ class CreateCatalogTables extends Migration {
             Schema::create($this->table, function(Blueprint $table) {
 
                 $table->increments('id');
-                $table->smallInteger('status_id')->unsigned()->nullable()->index();
+                $table->smallInteger('status_id')->unsigned()->nullable()->default(1)->index();
                 $table->float('total_sum')->unsigned()->index();
                 $table->integer('client_id')->nullable()->unsigned()->index();
                 $table->string('client_name')->nullable();
