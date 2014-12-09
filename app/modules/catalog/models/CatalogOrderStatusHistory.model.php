@@ -24,7 +24,7 @@ class CatalogOrderStatusHistory extends BaseModel {
         return $this->belongsTo('CatalogOrder', 'order_id', 'id');
     }
 
-    public function status() {
+    public function info() {
         return $this->belongsTo('CatalogOrderStatus', 'status_id', 'id');
     }
 

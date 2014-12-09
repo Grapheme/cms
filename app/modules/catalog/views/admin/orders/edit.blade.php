@@ -2,6 +2,7 @@
 
 
 @section('style')
+    {{ HTML::style('private/css/redactor.css') }}
 @stop
 
 
@@ -9,219 +10,91 @@
 
     <?
     $create_title = "Просмотр заказа";
-    $edit_title   = "Добавить продукцию";
+    $edit_title   = "Добавить заказ";
 
     $url =
         @$element->id
         ? URL::route('catalog.orders.update', array('id' => $element->id))
         : URL::route('catalog.orders.store');
+
     $method     = @$element->id ? 'PUT' : 'POST';
     $form_title = @$element->id ? $create_title : $edit_title;
     ?>
 
     @include($module['tpl'].'/menu')
 
-    {{ Form::model($element, array('url' => $url, 'class' => 'smart-form clearfix', 'id' => $module['entity'].'-form', 'role' => 'form', 'method' => $method, 'files' => true)) }}
+    {{ Form::model($element, array('url' => $url, 'class' => 'smart-form', 'id' => $module['entity'].'-form', 'role' => 'form', 'method' => $method, 'files' => true)) }}
 
     <!-- Fields -->
-	<div class="row clearfix">
+	<div class="row">
 
-
-        <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 clearfix">
+        <!-- Form -->
+        <section class="col col-6">
             <div class="well">
-
                 <header>
-                    {{ $form_title }}
+                    Состав заказа
                 </header>
 
-                <fieldset class="padding-bottom-15">
-                    <div class="widget-body">
+                @if (count($element->products))
 
-                        <ul class="nav nav-tabs bordered">
-                            <li class="active">
-                                <a href="#tab_main" data-toggle="tab">
-                                    Основное
-                                </a>
-                            </li>
-                            <li class="">
-                                <a href="#tab_attributes" data-toggle="tab">
-                                    Описание
-                                </a>
-                            </li>
-                            @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'products_seo'))
-                            <li class="">
-                                <a href="#tab_seo" data-toggle="tab">
-                                    SEO-оптимизация
-                                </a>
-                            </li>
-                            @endif
-                        </ul>
+                    @foreach ($element->products as $product)
 
-                        <div class="tab-content">
+                        <fieldset>
 
-                            <div class="tab-pane fade active in clearfix" id="tab_main">
-                                <fieldset class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <section class="col-xs-12 col-sm-12 col-md-12 col-lg-8 pull-left">
+                                <label class="label">
+                                    {{ $product->info->meta->name }}
+                                </label>
+                                @if (count($product->attributes))
+                                <label class="note">
+                                    @foreach ($product->attributes as $product_attribute)
+                                        <b>{{ $product_attribute->attribute_cache }}</b>: {{ $product_attribute->value }} &nbsp; &nbsp; &nbsp; &nbsp;
+                                    @endforeach
+                                </label>
+                                @endif
+                            </section>
 
-                                    <section>
-                                        <label class="label" data-helpmessage="Уникальное системное имя">
-                                            Системное имя
-                                        </label>
-                                        <label class="input">
-                                            {{ Form::text('slug', null, array()) }}
-                                        </label>
-                                        <label class="note second_note">
-                                            Только символы англ. алфавита, знаки _ и -, цифры.<br/>
-                                            Если оставить поле пустым - будет сгенерировано автоматически.
-                                        </label>
-                                    </section>
+                            <section class="col-xs-12 col-sm-12 col-md-12 col-lg-4 pull-left text-right">
 
-                                    <section>
-                                        <label class="checkbox">
-                                            {{ Form::checkbox('active', 1, ($element->active || !$element->id)) }}
-                                            <i></i>
-                                            Активно
-                                        </label>
-                                    </section>
+                                <label class="input display-inline-block" style="width:40px">
+                                    {{ Form::text('product[' . $product->id . '][count]', (int)$product->count, array('class' => 'text-center', 'data-original' => (int)$product->count)) }}
+                                </label>
 
-                                    <section>
-                                        <label class="label">Артикул</label>
-                                        <label class="input">
-                                            {{ Form::text('article') }}
-                                        </label>
-                                    </section>
+                                <label class="input display-inline-block text-center" style="width:10px; position:relative; top:-10px">
+                                    <i class="fa fa-remove"></i>
+                                </label>
 
-                                    <section>
-                                        <label class="label">Количество</label>
-                                        <label class="input">
-                                            {{ Form::text('amount') }}
-                                        </label>
-                                    </section>
+                                <label class="input display-inline-block" style="width:80px">
+                                    {{ Form::text('product[' . $product->id . '][price]', (int)$product->price, array('class' => 'text-center', 'data-original' => (int)$product->price)) }}
+                                </label>
+                            </section>
 
-                                </fieldset>
+                        </fieldset>
+
+                    @endforeach
+
+                    <fieldset>
+
+                        <section class="col-xs-12 col-sm-12 col-md-12 col-lg-8 pull-left">
+                            Общая сумма:
+                        </section>
+
+                        <section class="col-xs-12 col-sm-12 col-md-12 col-lg-4 pull-left text-right">
+
+                            <div>
+                                <label class="label2" style="font-size:24px; text-decoration:line-through" data-original="{{ (int)$element->total_sum }}">
+                                    {{ $element->total_sum }}
+                                </label>
+                                <label class="label2 hidden-" style="font-size:24px; color:red;">
+                                    {{ $element->total_sum }}
+                                </label>
                             </div>
+                            {{ Form::hidden('total_sum') }}
 
+                        </section>
 
-                            <div class="tab-pane fade clearfix" id="tab_attributes">
-                                <fieldset class="col col-xs-12 col-sm-9 col-md-9 col-lg-9">
-
-                                    <div class="widget-body">
-                                        @if (count($locales) > 1)
-                                        <ul class="nav nav-tabs bordered">
-                                            <? $i = 0; ?>
-                                            @foreach ($locales as $locale_sign => $locale_name)
-                                            <li class="{{ !$i++ ? 'active' : '' }}">
-                                                <a href="#product_locale_{{ $locale_sign }}" data-toggle="tab">
-                                                    {{ $locale_name }}
-                                                </a>
-                                            </li>
-                                            @endforeach
-                                        </ul>
-                                        @endif
-
-                                        <div class="tab-content @if(count($locales) > 1) padding-10 @endif">
-
-                                            <? $i = 0; ?>
-                                            @foreach ($locales as $locale_sign => $locale_name)
-                                            <div class="tab-pane fade {{ !$i++ ? 'active in' : '' }} clearfix" id="product_locale_{{ $locale_sign }}">
-
-                                                <section>
-                                                    <label class="label">Название</label>
-                                                    <label class="input">
-                                                        {{ Form::text('meta[' . $locale_sign . '][name]', @$element->metas[$locale_sign]['name']) }}
-                                                    </label>
-                                                </section>
-
-                                                <section>
-                                                    <label class="checkbox">
-                                                        {{ Form::checkbox('meta[' . $locale_sign . '][active]', 1, (@$element->metas[$locale_sign]['active'] || !$element->id)) }}
-                                                        <i></i>
-                                                        Активно
-                                                    </label>
-                                                </section>
-
-                                                <section>
-                                                    <label class="label">Описание</label>
-                                                    <label class="textarea">
-                                                        {{ Form::textarea('meta[' . $locale_sign . '][description]', @$element->metas[$locale_sign]['description']) }}
-                                                    </label>
-                                                </section>
-
-                                                <section>
-                                                    <label class="label">Цена</label>
-                                                    <label class="input">
-                                                        {{ Form::text('meta[' . $locale_sign . '][price]', @$element->metas[$locale_sign]['price']) }}
-                                                    </label>
-                                                </section>
-
-                                                @if (isset($element->attributes_groups) && is_object($element->attributes_groups) && count($element->attributes_groups))
-
-                                                    <hr class="margin-top-10 margin-bottom-10"/>
-
-                                                    @foreach ($element->attributes_groups as $group)
-                                                        @if (isset($group->attributes) && is_object($group->attributes) && count($group->attributes))
-
-                                                            <fieldset class="padding-0 margin-bottom-15 padding-top-20 border-top-0">
-
-                                                                <h4>{{ $group->name }}</h4>
-
-                                                                @foreach ($group->attributes as $attribute)
-                                                                    @include($module['gtpl'] . 'attributes._index', compact('module', 'attribute', 'locale_sign'))
-                                                                @endforeach
-
-                                                            </fieldset>
-
-                                                        @endif
-                                                    @endforeach
-                                                @endif
-
-                                            </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-
-                                </fieldset>
-                            </div>
-
-
-                            @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'products_seo'))
-                            <div class="tab-pane fade clearfix" id="tab_seo">
-                                <fieldset class="col col-xs-12 col-sm-9 col-md-9 col-lg-9">
-
-                                    <div class="widget-body">
-                                        @if (count($locales) > 1)
-                                        <ul class="nav nav-tabs bordered">
-                                            <? $i = 0; ?>
-                                            @foreach ($locales as $locale_sign => $locale_name)
-                                            <li class="{{ !$i++ ? 'active' : '' }}">
-                                                <a href="#seo_locale_{{ $locale_sign }}" data-toggle="tab">
-                                                    {{ $locale_name }}
-                                                </a>
-                                            </li>
-                                            @endforeach
-                                        </ul>
-                                        @endif
-
-                                        <div class="tab-content @if(count($locales) > 1) padding-10 @endif">
-                                            <? $i = 0; ?>
-                                            @foreach ($locales as $locale_sign => $locale_name)
-                                            <div class="tab-pane fade {{ !$i++ ? 'active in' : '' }} clearfix" id="seo_locale_{{ $locale_sign }}">
-
-                                                {{ ExtForm::seo('seo[' . $locale_sign . ']', @$element->seos[$locale_sign]) }}
-
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-                                </fieldset>
-                            </div>
-                            @endif
-
-                        </div>
-
-                    </div>
-                </fieldset>
+                    </fieldset>
+                @endif
 
                 <footer>
                     <a class="btn btn-default no-margin regular-10 uppercase pull-left btn-spinner" href="{{ link::previous() }}">
@@ -231,14 +104,88 @@
                         <i class="fa fa-spinner fa-spin hidden"></i> <span class="btn-response-text">Сохранить</span>
                     </button>
                 </footer>
+
+		    </div>
+    	</section>
+
+
+        <section class="col col-6">
+            <div class="well">
+                <header>
+                    Информация о заказе
+                </header>
+                <fieldset class="padding-bottom-15">
+
+                    <section>
+                        <label class="label">Покупатель:</label>
+                        <label class="input">
+                            {{ Form::text('client_name') }}
+                        </label>
+                    </section>
+
+                    <section>
+                        <label class="label">Информация о доставке:</label>
+                        <label class="textarea">
+                            {{ Form::textarea('delivery_info') }}
+                        </label>
+                    </section>
+
+                    <section>
+                        <label class="label">Создан:</label>
+                        <label class="text">
+                            {{ $element->created_at->format('H:i, d.m.Y') }}
+                        </label>
+                    </section>
+
+                    @if ($element->created_at != $element->updated_at)
+                    <section>
+                        <label class="label">Обновлен:</label>
+                        <label class="text">
+                            {{ $element->updated_at->format('H:i, d.m.Y') }}
+                        </label>
+                    </section>
+                    @endif
+
+                </fieldset>
             </div>
         </section>
 
+        <section class="col col-6 pull-right">
+            <div class="well">
+                <header>
+                    История статусов
+                </header>
+                <fieldset class="padding-bottom-15">
+
+                    @if (count($element->statuses))
+
+                        @foreach($element->statuses as $status)
+
+                            {{ Helper::d($status) }}
+
+                            <section>
+                                <label class="label">
+                                    {{-- $status->info->meta->title --}}
+                                    {{ $status->info }}
+                                </label>
+                                <label class="note">
+                                    {{ $status->created_at->format('H:i, d.m.Y') }}
+                                </label>
+                            </section>
+
+                        @endforeach
+
+                    @endif
+
+                </fieldset>
+            </div>
+        </section>
+        <!-- /Form -->
    	</div>
 
     @if(@$element->id)
     @else
-    {{ Form::hidden('redirect', URL::route('catalog.order.index') . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
+    {{ Form::hidden('redirect', URL::route('catalog.category.index') . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
     @endif
 
     {{ Form::close() }}
@@ -268,5 +215,11 @@
 			loadScript("{{ asset('private/js/vendor/jquery-form.min.js'); }}");
 		}        
 	</script>
+
+    {{ HTML::script('private/js/vendor/redactor.min.js') }}
+    {{ HTML::script('private/js/system/redactor-config.js') }}
+
+    {{-- HTML::script('private/js/modules/gallery.js') --}}
+    {{-- HTML::script('private/js/plugin/select2/select2.min.js') --}}
 
 @stop

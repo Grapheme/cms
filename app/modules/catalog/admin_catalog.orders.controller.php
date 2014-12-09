@@ -87,6 +87,7 @@ class AdminCatalogOrdersController extends BaseController {
 
     /************************************************************************************/
 
+    /*
 	public function create() {
 
         Allow::permission($this->module['group'], 'orders_create');
@@ -117,22 +118,27 @@ class AdminCatalogOrdersController extends BaseController {
 
 		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
 	}
+    */
     
 
 	public function edit($id) {
 
         Allow::permission($this->module['group'], 'orders_edit');
 
-		$element = CatalogAttributeGroup::where('id', $id)
-            ->with('metas', 'meta', 'category.meta')
+		$element = (new CatalogOrder)
+            ->where('id', $id)
+            ->with('status.meta')
+            ->with('statuses.info.meta')
+            ->with('products.info.meta')
+            #->with('products_attributes.info.meta')
+            ->with('products_attributes')
+            #->with('products.attributes')
             ->first()
-            ->extract(1);
+        ;
 
-        #Helper::tad($element);
-
-        $root_category = $element->category;
-
-        $locales = Config::get('app.locales');
+        if (is_object($element)) {
+            $element->extract(1);
+        }
 
         #Helper::tad($element);
 

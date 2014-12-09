@@ -25,4 +25,11 @@ class CatalogOrderProduct extends BaseModel {
     public function info() {
         return $this->belongsTo('CatalogProduct', 'product_id', 'id');
     }
+
+    public function scopeAttributess() {
+        #Helper::dd($this);
+        return $this->hasMany('CatalogOrderProductAttribute', 'product_id', 'id')
+            ->where('order_id', $this->order_id)
+            ;
+    }
 }

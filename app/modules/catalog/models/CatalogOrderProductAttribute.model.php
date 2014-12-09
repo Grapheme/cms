@@ -21,7 +21,7 @@ class CatalogOrderProductAttribute extends BaseModel {
         return $this->belongsTo('CatalogProduct', 'status_id', 'id');
     }
 
-    public function attribute() {
-        return $this->belongsTo('CatalogOrderProductAttribute', 'attribute_id', 'id');
+    public function info() {
+        return $this->belongsTo('CatalogAttribute', 'attribute_id', 'id');
     }
 }

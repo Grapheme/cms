@@ -299,7 +299,7 @@ class CreateCatalogTables extends Migration {
                 $table->integer('order_id')->unsigned()->nullable()->index();
                 $table->integer('status_id')->unsigned()->nullable()->index();
 
-                $table->text('info')->nullable();
+                $table->text('comment')->nullable();
                 $table->string('changer_id')->nullable()->index();
                 $table->string('changer_name')->nullable()->index();
                 $table->text('status_cache')->nullable();

@@ -393,25 +393,25 @@ class CatalogTableSeeder extends Seeder{
         CatalogOrderStatusHistory::create(array(
             'order_id' => 1,
             'status_id' => 1,
-            'info' => 'Заказ сделан, ожидает обработки...',
+            'comment' => 'Заказ сделан, ожидает обработки...',
             'changer_name' => 'Покупатель',
         ));
         CatalogOrderStatusHistory::create(array(
             'order_id' => 1,
             'status_id' => 2,
-            'info' => 'Менеджер обработал заказ, ожидание оплаты',
+            'comment' => 'Менеджер обработал заказ, ожидание оплаты',
             'changer_name' => 'Продавец',
         ));
         CatalogOrderStatusHistory::create(array(
             'order_id' => 1,
             'status_id' => 3,
-            'info' => 'Покупатель оплатил товар',
+            'comment' => 'Покупатель оплатил товар',
             'changer_name' => 'Покупатель',
         ));
         CatalogOrderStatusHistory::create(array(
             'order_id' => 1,
             'status_id' => 4,
-            'info' => 'Товар был успешно оплачен, ожидание отправки',
+            'comment' => 'Товар был успешно оплачен, ожидание отправки',
             'changer_name' => 'Продавец',
         ));
 
