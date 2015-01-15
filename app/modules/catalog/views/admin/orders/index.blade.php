@@ -32,9 +32,9 @@
                         </a>
                         @endif
 
-                        @if(Allow::action($module['group'], 'orders_delete'))
+                        @if(Allow::action($module['group'], 'orders_delete') && !$element->deleted_at)
                         <form method="POST" action="{{ action('catalog.orders.destroy', $element->id) }}" style="display:inline-block" class="dicval-action dicval-actions-delete">
-                            <button type="button" class="btn btn-danger remove-order-list" title="Удалить">
+                            <button type="button" class="btn btn-danger remove-order-list" title="Перенести в архив">
                                 <!--Удалить-->
                             </button>
                         </form>

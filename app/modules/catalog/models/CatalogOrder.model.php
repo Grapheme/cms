@@ -1,11 +1,18 @@
 <?php
+/**
+ * Soft Delete
+ * http://stackoverflow.com/questions/22426165/laravel-soft-delete-posts
+ */
+use Illuminate\Database\Eloquent\SoftDeletingTrait; // <-- This is required
 
 class CatalogOrder extends BaseModel {
 
-	protected $guarded = array();
+    protected $guarded = array();
 
 	public $table = 'catalog_orders';
-    protected $softDelete = true;
+
+    #protected $softDelete = true;
+    use SoftDeletingTrait; // <-- Use This Insteaf Of protected $softDelete = true;
 
     protected $fillable = array(
         'status_id',

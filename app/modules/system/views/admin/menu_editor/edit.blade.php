@@ -78,7 +78,8 @@
 
 
                     <?
-                    $placements = @Helper::getLayoutProperties()['MENU_PLACEMENTS'];
+                    $placements = Helper::getLayoutProperties();
+                    $placements = @$placements['MENU_PLACEMENTS'];
                     ?>
                     @if (isset($placements) && is_array($placements) && count($placements))
                     <hr class="simple" />

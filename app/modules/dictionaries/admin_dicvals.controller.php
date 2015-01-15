@@ -721,7 +721,8 @@ class AdminDicvalsController extends BaseController {
 
             if (@count($element->related_dicvals)) {
                 foreach ($element->related_dicvals as $el)
-                    $el->delete();
+                    if (is_object($el) && isset($el->pivot) && is_object($el->pivot))
+                        $el->pivot->delete();
             }
 
             if ((int)$element->rgt > 0) {

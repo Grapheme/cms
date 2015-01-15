@@ -77,6 +77,11 @@ class AdminCatalogOrdersController extends BaseController {
             ->with('status.meta')
             #->with('products.info.meta')
         ;
+
+        if (Input::get('archive') == 1) {
+            $elements = $elements->onlyTrashed();
+        }
+
         $elements = $elements->paginate(30);
 
         #Helper::tad($elements);
@@ -132,13 +137,18 @@ class AdminCatalogOrdersController extends BaseController {
             ->with('products.info.meta')
             #->with('products_attributes.info.meta')
             ->with('products_attributes')
-            #->with('products.attributes')
-            ->first()
         ;
 
-        if (is_object($element)) {
-            $element->extract(1);
+        if (Input::get('archive') == 1) {
+            $element = $element->onlyTrashed();
         }
+
+        $element = $element->first();
+
+        if (!is_object($element))
+            App::abort(404);
+
+        $element->extract(1);
 
         $temp = (new CatalogOrderStatus())
             ->with('meta')
@@ -159,12 +169,13 @@ class AdminCatalogOrdersController extends BaseController {
     /************************************************************************************/
 
 
+    /*
 	public function store() {
 
         Allow::permission($this->module['group'], 'orders_create');
 		return $this->postSave();
 	}
-
+    */
 
 	public function update($id) {
 
@@ -214,27 +225,13 @@ class AdminCatalogOrdersController extends BaseController {
         return Response::json($json_request,200);
         #*/
 
-        $element = CatalogAttributeGroup::find($id);
+        $element = CatalogOrder::find($id);
 
         if (is_object($element)) {
 
-            /**
-             * Удаление:
-             * - мета-данных
-             * - самой группы
-             */
-
-            $element->metas()->delete();
-            $element->delete();
-
-            /**
-             * Сдвигаем группы атрибудтов в общем дереве
-             */
-            if ($element->rgt)
-                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
-
             $json_request['responseText'] = 'Удалено';
             $json_request['status'] = TRUE;
+            $element->delete();
         }
 
 		return Response::json($json_request,200);

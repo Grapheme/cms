@@ -30,4 +30,12 @@ class Photo extends Eloquent {
         return $this;
     }
 
+	public function cachepath($w, $h, $method = 'crop') {
+		return URL::to(Config::get('site.galleries_cache_public_dir') . "/" . $this->id . "_" . $w . "x" . $h . ($method == 'resize' ? 'r' : '') . ".png");
+	}
+
+	public function fullcachepath($w, $h, $method = 'crop') {
+		return str_replace('//', '/', public_path(Config::get('site.galleries_cache_public_dir') . "/" . $this->id . "_" . $w . "x" . $h . ($method == 'resize' ? 'r' : '') . ".png"));
+	}
+
 }

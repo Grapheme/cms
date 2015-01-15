@@ -2,13 +2,15 @@
     #Helper:dd($dic_id);
     $menus = array();
 
-    $array = array();
-    if (isset($root_category) && is_object($root_category) && $root_category->id)
-        $array['category'] = $root_category->id;
+    $menus[] = array(
+        'link' => URL::route('catalog.orders.index'),
+        'title' => 'Все заказы',
+        'class' => 'btn btn-default'
+    );
 
     $menus[] = array(
-        'link' => URL::route('catalog.orders.index', $array),
-        'title' => 'Все заказы',
+        'link' => URL::route('catalog.orders.index', ['archive' => 1]),
+        'title' => 'Архивные',
         'class' => 'btn btn-default'
     );
 
@@ -60,23 +62,13 @@
     
     <h1>
         Заказы
-        @if (0)
-            @if (isset($element) && is_object($element) && $element->name)
-
-                @if (isset($element->category) && is_object($element->category) && $element->category->name)
-                &nbsp;&mdash;&nbsp;
-                {{ $element->category->name }}
-                @endif
-
-                &nbsp;&mdash;&nbsp;
-                {{ $element->name }}
-
-            @elseif (isset($root_category) && is_object($root_category) && $root_category->name)
-
-                &nbsp;&mdash;&nbsp;
-                {{ $root_category->name }}
-
-            @endif
+        @if (Input::get('archive') == 1)
+            &nbsp;&mdash;&nbsp;
+            Архивные
+        @endif
+        @if (isset($element) && is_object($element) && $element->id)
+            &nbsp;&mdash;&nbsp;
+            Заказ №{{ $element->id }}
         @endif
     </h1>
 

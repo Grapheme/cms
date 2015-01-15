@@ -82,6 +82,7 @@ return array(
         $dics = Dic::modifyKeys($dics, 'slug');
         #Helper::tad($dics);
         $lists = Dic::makeLists($dics, 'values', 'name', 'id');
+        $lists_ids = Dic::makeLists($dics, null, 'id', 'slug');
         #Helper::dd($lists);
 
         /**
@@ -195,6 +196,7 @@ if (len > 0) {
                 'title' => 'Выпадающий список для выбора одного значения',
                 'type' => 'select',
                 'values' => array('Выберите..') + $lists['product_type'], ## Используется предзагруженный словарь
+                'default' => Input::get('filter.fields.product_type') ?: null,
             ),
 
             'scope_id' => array(
@@ -202,6 +204,11 @@ if (len > 0) {
                 'type' => 'select-multiple',
                 'values' => $lists['scope'],
                 'handler' => function($value, $element) {
+                    /**
+                     * Тут нужно проверить работу с новым форматом данных в DicValRel,
+                     * привести в соответствие с методом из scope_id.
+                     * Сделать это нужно при первой же необходимости использования select-multiple.
+                     */
                     $value = (array)$value;
                     $value = array_flip($value);
                     foreach ($value as $v => $null)
@@ -231,7 +238,7 @@ if (len > 0) {
                 'columns' => 2, ## Количество колонок
                 'values' => $lists['scope'],
                 'handler' => function ($value, $element) {
-                    $value = (array)$value;
+                    $value = DicLib::formatDicValRel($value, 'scope_id', $element->dic_id, $lists_ids['scope']);
                     $element->related_dicvals()->sync($value);
                     return @count($value);
                 },

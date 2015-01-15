@@ -35,7 +35,7 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
 
                     @if (@$actions_column || 1)
 
-                        <div class="pull-right dicval-actions dicval-actions-margin-left">
+                        <div class="pull-right dicval-actions dicval-main-actions dicval-actions-margin-left">
                             @if(Allow::action($module['group'], 'dicval_edit'))
                             <a href="{{ action(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, 'id' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '') }}" class="btn btn-success dicval-action dicval-actions-edit" title="Изменить">
                                 <!--Изменить-->

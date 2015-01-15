@@ -8,8 +8,8 @@ $(function(){
     $(".remove-order-record").click(function() {
         var $this = this;
         $.SmartMessageBox({
-            title : "Удалить этот заказ?",
-            content : "Восстановить его будет невозможно",
+            title : "Перенести заказ в архив?",
+            content : "",
             buttons : '[Нет][Да]'
         },function(ButtonPressed) {
             if(ButtonPressed == "Да") {
@@ -27,7 +27,7 @@ $(function(){
                             return false;
                         } else {
                             $($this).elementDisabled(false);
-                            showMessage.constructor('Удаление', 'Возникла ошибка. Обновите страницу и повторите снова.');
+                            showMessage.constructor('Архивирование', 'Возникла ошибка. Обновите страницу и повторите снова.');
                             showMessage.smallError();
                         }
                     },
@@ -57,8 +57,8 @@ $(function(){
 		var $this = this;
 
         $.SmartMessageBox({
-			title : "Удалить этот заказ?",
-			content : "Восстановить его будет невозможно",
+			title : "Перенести заказ в архив?",
+			content : "",
 			buttons : '[Нет][Да]'
 		}, function(ButtonPressed) {
 
@@ -71,7 +71,7 @@ $(function(){
 					beforeSend: function(){$($this).elementDisabled(true);},
 					success: function(response, textStatus, xhr){
 						if(response.status == true){
-							showMessage.constructor('Удалить заказ', response.responseText);
+							showMessage.constructor('Архивирование', response.responseText);
 							showMessage.smallSuccess();
 
 							//$($this).parents('tr').fadeOut(500,function(){$(this).remove();});
@@ -79,13 +79,13 @@ $(function(){
 
 						} else {
 							$($this).elementDisabled(false);
-							showMessage.constructor('Удалить заказ', 'Возникла ошибка. Обновите страницу и повторите снова.');
+							showMessage.constructor('Архивирование', 'Возникла ошибка. Обновите страницу и повторите снова.');
 							showMessage.smallError();
 						}
 					},
 					error: function(xhr, textStatus, errorThrown){
 						$($this).elementDisabled(false);
-						showMessage.constructor('Удалить заказ', 'Возникла ошибка. Повторите снова.');
+						showMessage.constructor('Архивирование', 'Возникла ошибка. Повторите снова.');
 						showMessage.smallError();
 					}
 				});

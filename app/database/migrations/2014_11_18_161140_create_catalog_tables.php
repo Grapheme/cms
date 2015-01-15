@@ -210,6 +210,7 @@ class CreateCatalogTables extends Migration {
                 $table->integer('client_id')->nullable()->unsigned()->index();
                 $table->string('client_name')->nullable();
                 $table->text('delivery_info')->nullable();
+                $table->text('comment')->nullable();
 
                 $table->softDeletes();
                 $table->timestamps();

@@ -159,6 +159,12 @@ class AdminPagesPageController extends BaseController {
             ->with('versions', 'original_version.versions')
             ->first();
 
+        if (!isset($element) || !is_object($element) || !$element->id) {
+            #App::abort(404);
+            $class = __CLASS__;
+            return Redirect::route($class::$entity . '.index');
+        }
+
         $element->extract(false);
 
         ##
@@ -184,6 +190,9 @@ class AdminPagesPageController extends BaseController {
 
             if (@$templates_theme[$element->template])
                 $template_exists = true;
+
+            #die;
+            #Helper::dd($templates_theme);
 
             natsort($templates_theme);
             $templates['Тема оформления'] = $templates_theme;

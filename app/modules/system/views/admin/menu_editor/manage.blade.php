@@ -335,6 +335,14 @@
                                         Открывать в новом окне
                                     </label>
                                     <label class="checkbox">
+                                        <input type="checkbox" name="items[%N%][use_active_regexp]" value="1" class="use_active_regexp" %use_active_regexp% />
+                                        <i></i>
+                                        Шаблон активности (regexp)
+                                    </label>
+                                    <label class="input">
+                                        {{ Form::text('items[%N%][active_regexp]', '%active_regexp%', ['class' => 'active_regexp']) }}
+                                    </label>
+                                    <label class="checkbox">
                                         <input type="checkbox" name="items[%N%][hidden]" value="1" %is_hidden% />
                                         <i></i>
                                         Скрыть
@@ -588,12 +596,13 @@
         @endif
 
         @if ($element->order)
-            $('.dd').data('output').text('{{ $element->order }}');
+            $('.dd.menu-list').data('output').text('{{ $element->order }}');
         @else
-            updateOutputMenuList($('.dd'));
+            updateOutputMenuList($('.dd.menu-list'));
         @endif
 
         //$('.menu_list_item_dd-handle_custom').css('height', $('.panel-default').css('height'));
+
 
         menu_items_loaded = true;
 

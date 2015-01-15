@@ -1,4 +1,9 @@
 <?
+/**
+ * TEMPLATE_IS_NOT_SETTABLE
+ */
+?>
+<?
 #Helper::dd(Config::get('app.locale'));
 
 $route = Route::currentRouteName();

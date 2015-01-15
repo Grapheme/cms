@@ -6,4 +6,6 @@ return array(
 
     'versions' => 1,
 
+    'disable_mainpage_route' => true,
+    
 );

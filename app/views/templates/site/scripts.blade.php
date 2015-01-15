@@ -1,3 +1,8 @@
+<?
+/**
+ * TEMPLATE_IS_NOT_SETTABLE
+ */
+?>
 
     @if(Config::get('app.use_scripts_local'))
         {{ HTML::scriptmod('js/vendor/jquery.min.js') }}

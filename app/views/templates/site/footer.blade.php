@@ -1,3 +1,8 @@
+<?
+/**
+ * TEMPLATE_IS_NOT_SETTABLE
+ */
+?>
 
             <footer class="main-footer">
                 <div class="copy">

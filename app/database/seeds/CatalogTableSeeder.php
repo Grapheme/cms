@@ -339,6 +339,7 @@ class CatalogTableSeeder extends Seeder{
             'client_id' => NULL,
             'client_name' => 'Покупатель',
             'delivery_info' => 'г.Ростов-на-Дону, ул Суворова 52а, оф.301',
+            'comment' => 'Комментарий покупателя к заказу',
         ));
 
         CatalogOrderProduct::create(array(

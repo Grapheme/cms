@@ -1115,21 +1115,58 @@ HTML;
 
                     $buffer = trim($buffer, " \r\n\t*");
                     $buffer = explode(':', $buffer);
+
+                    #Helper::d('<hr/>');
                     #Helper::d($buffer);
+                    #Helper::d('<hr/><hr/>');
+
+                    $key = @trim($buffer[0]);
+                    if (!$key)
+                        continue;
 
                     $value = @trim($buffer[1]) ?: true;
-                    if ($value !== true && is_string($value) && mb_strlen($value) && mb_strpos($value, '|')) {
-                        $temp = explode('|', $value);
-                        $value = array();
-                        foreach ($temp as $tmp) {
-                            $tmp = trim($tmp);
-                            if (mb_strpos($tmp, '=')) {
-                                $keyval = explode('=', $tmp, 2);
-                                $value[trim($keyval[0])] = trim($keyval[1]);
-                            } else {
-                                $value[$tmp] = true;
-                            }
+
+                    #Helper::d($buffer[0] . ' ================> ' . @trim($buffer[1]));
+
+                    #if ($key == 'TITLE') {
+                    #    Helper::d($key . ' ================> ' . @trim($buffer[1]));
+                    #}
+
+                    if ($value !== true && is_string($value) && mb_strlen($value)) {
+
+                        if (!mb_strpos($value, '|')) {
+                            $value .= '|';
                         }
+
+                        #if (mb_strpos($value, '|')) {
+
+                            $temp = explode('|', $value);
+                            $value = array();
+
+                            foreach ($temp as $t => $tmp) {
+                                $tmp = trim($tmp);
+                                if (!$tmp)
+                                    unset($temp[$t]);
+                            }
+
+                            foreach ($temp as $tmp) {
+                                $tmp = trim($tmp);
+                                if (!$tmp)
+                                    continue;
+                                #Helper::d($tmp);
+                                if (mb_strpos($tmp, '=')) {
+                                    $keyval = explode('=', $tmp, 2);
+                                    $value[trim($keyval[0])] = trim($keyval[1]);
+                                    #Helper::dd(trim($keyval[0]) . ' === ' . trim($keyval[1]));
+                                } else {
+                                    #Helper::dd($tmp);
+                                    if (count($temp) == 1)
+                                        $value = $tmp;
+                                    else
+                                    $value[$tmp] = true;
+                                }
+                            }
+                        #}
                     }
 
                     $properties[@trim($buffer[0])] = $value;
@@ -1141,6 +1178,10 @@ HTML;
             }
             fclose($handle);
         }
+
+        #Helper::d("PROPERTIES:");
+        #Helper::d($properties);
+
         return $properties;
     }
 

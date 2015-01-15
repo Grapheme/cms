@@ -110,9 +110,13 @@ ALTER TABLE `dictionary` ADD `settings` TEXT NULL AFTER `order`
         $this->table = "dictionary_values_rel";
         if (!Schema::hasTable($this->table)) {
             Schema::create($this->table, function(Blueprint $table) {
+
                 $table->integer('dicval_parent_id')->unsigned()->nullable()->index();
                 $table->integer('dicval_child_id')->unsigned()->nullable()->index();
-                $table->string('dicval_child_dic', 256)->nullable()->index();
+                $table->integer('dicval_parent_dic_id')->unsigned()->nullable()->index();
+                $table->integer('dicval_child_dic_id')->unsigned()->nullable()->index();
+                $table->string('dicval_parent_field', 256)->nullable()->index();
+
                 $table->primary(array('dicval_parent_id', 'dicval_child_id'));
             });
             echo(' + ' . $this->table . PHP_EOL);

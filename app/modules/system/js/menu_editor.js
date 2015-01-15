@@ -1,7 +1,6 @@
 
 var menu_items = $('.dd.menu-list');
 
-
 var menu_editor = {
 
     'show_hide_info': function() {
@@ -13,7 +12,7 @@ var menu_editor = {
     },
 
     'update_output': function() {
-        updateOutputMenuList($('.dd.menu-list'));
+        updateOutput($(menu_items));
         menu_editor.show_hide_info();
     },
 
@@ -25,9 +24,10 @@ var menu_editor = {
         //var menu = '';
         var menu = $this.get_menu_list(order, items);
 
-        //$('.dd.menu-list').append(menu);
+        //$('.dd').append(menu);
         $(menu_items).find('ol:first').append(menu);
         $this.update_output();
+        showHideAllActiveRegExp();
     },
 
 
@@ -72,19 +72,31 @@ var menu_editor = {
             menu_item = $this.get_menu_list_item(items[val.id], inner_list);
             //console.log(menu_item);
 
-            menu_list += menu_item;
+            if (menu_item)
+                menu_list += menu_item;
         });
 
         return menu_list;
     },
 
     'get_menu_list_item': function(params, inner_list) {
-        var type = params.type;
+        if (typeof params == 'undefined')
+            return false;
         //console.log(params);
+        var type = params.type;
         var main_block = $('#templates .main').html();
         var block = $('#templates .' + type).html();
-        if (!N)
-            var N = $(menu_items).find('.dd-item').length;
+        if (!N) {
+
+            //var N = $(menu_items).find('.dd-item').length;
+            var temp = 0;
+            $(menu_items).find('.dd-item').each(function(){
+                var tmp = parseInt($(this).attr('data-id'), 10);
+                if (tmp > 0 && tmp > temp)
+                    temp = tmp;
+            });
+            var N = temp;
+        }
         //alert(N);
         switch (type) {
             case 'page':
@@ -125,6 +137,8 @@ var menu_editor = {
         main_block = str_replace('%attr_title%', params.title || '', main_block);
 
         main_block = str_replace('%target_blank%', params.target == '_blank' ? 'checked' : '', main_block);
+        main_block = str_replace('%use_active_regexp%', params.use_active_regexp == '1' ? 'checked' : '', main_block);
+        main_block = str_replace('%active_regexp%', typeof params.active_regexp != 'undefined' ? params.active_regexp : '', main_block);
         main_block = str_replace('%is_hidden%', params.hidden == '1' ? 'checked' : '', main_block);
 
         var inner_list_block = '';
@@ -243,8 +257,9 @@ $(document).on("click", ".delete_menu_item", function(e) {
     return false;
 });
 
+
 var nestable_output = $('#nestable-output');
-var updateOutputMenuList = function(e) {
+var updateOutput = function(e) {
 
     var list = e.length ? e : $(e.target),
         output = list.data('output')
@@ -267,22 +282,76 @@ var updateOutputMenuList = function(e) {
 };
 
 //init_sortable(false, '.menu_items');
-if ($('.dd').length) {
-    loadScript(base_url + '/private/js/plugin/jquery-nestable/jquery.nestable.js', function() {
+//if ($(menu_items).length) {
 
-        //alert(nesting_level);
-        var nesting_level = nesting_level || 5;
+    /*
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = base_url + '/private/js/plugin/jquery-nestable/jquery.nestable.js';
+    document.getElementsByTagName('head')[0].appendChild(script);
+    //*/
 
-        $('.dd.menu-list').nestable({
-            //group : 1
-            maxDepth: nesting_level,
-            expandBtnHTML: '',
-            collapseBtnHTML: ''
-        }).on('change', updateOutputMenuList);
+    //loadScript(base_url + '/private/js/plugin/jquery-nestable/jquery.nestable.js', function() {
 
-        updateOutputMenuList($('.dd.menu-list').data('output', $(nestable_output)));
+        //console.log($.nestable);
+
+        if ($(menu_items).length) {
+
+            //alert(nesting_level);
+
+            if (typeof nesting_level == 'undefined' || !nesting_level) {
+                var nesting_level = 5;
+            }
+
+            $(menu_items).nestable({
+                //group : 1
+                maxDepth: nesting_level || 5,
+                expandBtnHTML: '',
+                collapseBtnHTML: ''
+            }).on('change', updateOutput);
+
+            updateOutput($(menu_items).data('output', $(nestable_output)));
+        }
+    //});
+//}
+
+
+function showHideActiveRexExp(_this) {
+    //var checked = $(this).is(':checked');
+    var checked = $(_this).attr('checked');
+    checked = (typeof checked !== typeof undefined && checked !== false);
+    var element = $(_this).parent().parent().find(".active_regexp").parent();
+
+    if (checked) {
+        //console.log(checked);
+        //console.log($(_this));
+        $(element).show();
+    } else
+        $(element).hide();
+
+}
+
+function showHideAllActiveRegExp() {
+    $(".use_active_regexp").each(function(e) {
+        showHideActiveRexExp($(this));
     });
 }
+
+$(document).on("click", ".use_active_regexp", function(e) {
+    var _this = $(this);
+    var checked = $(_this).is(':checked');
+    //var checked = $(_this).attr('checked');
+    //checked = (typeof checked !== typeof undefined && checked !== false);
+    var element = $(_this).parent().parent().find(".active_regexp").parent();
+
+    if (checked) {
+        //console.log(checked);
+        //console.log($(_this));
+        $(element).show();
+    } else
+        $(element).hide();
+
+});
 
 function str_replace(search, replace, subject) {
     return subject.split(search).join(replace);

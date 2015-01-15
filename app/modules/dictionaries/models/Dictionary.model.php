@@ -38,13 +38,14 @@ class Dictionary extends BaseModel {
     public function values() {
         return $this->hasMany('DicVal', 'dic_id', 'id')
             ->where('version_of', NULL)
-            ->with('meta', 'fields', 'textfields')
+            ->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals')
             /*
             ->with('meta', array('fields' => function($query){
                 #$query->whereIn('name', array_keys((array)Config::get('dic.dic_name.fields')));
             }))
             */
-            ->orderBy('order', 'ASC')
+            #->orderBy('order', 'ASC')
+            ->orderBy(DB::raw('-lft'), 'DESC')
             ->orderBy('slug', 'ASC')
             ->orderBy('name', 'ASC')
             ->orderBy('id', 'ASC')
@@ -64,7 +65,7 @@ class Dictionary extends BaseModel {
         return $this->hasMany('DicVal', 'dic_id', 'id')
             ->select($tbl_dicval.'.*')
             ->where('version_of', NULL)
-            ->with('meta', 'fields', 'textfields')
+            ->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals')
             ;
     }
 
@@ -145,11 +146,15 @@ class Dictionary extends BaseModel {
      *
      * @author Alexander Zelensky
      */
-    public static function makeLists($collection, $listed_key = 'values', $value, $key = '') {
+    public static function makeLists($collection, $listed_key = 'values', $value, $key = '', $hasOne = false) {
+
         #Helper::ta($collection);
+
         #$lists = new Collection;
         $lists = array();
+
         foreach ($collection as $c => $col) {
+
             if (!$listed_key) {
 
                 #Helper::d((int)$col->$value);
@@ -162,18 +167,40 @@ class Dictionary extends BaseModel {
 
             } else {
 
-                $list = array();
-                if (isset($col->$listed_key) && count($col->$listed_key))
-                    #Helper::ta($col->$listed_key);
-                    foreach ($col->$listed_key as $e => $el) {
-                        #Helper::d("$e => $el");
-                        if ($key != '')
-                            $list[$el->$key] = $el->$value;
-                        else
-                            $list[] = $el->$value;
+
+                if (!$hasOne) {
+
+                    /**
+                     * Если использовалась связь hasMany
+                     */
+                    $list = array();
+                    if (isset($col->$listed_key) && count($col->$listed_key)) {
+                        foreach ($col->$listed_key as $e => $el) {
+                            if ($key != '') {
+                                $list[$el->$key] = $el->$value;
+                            } else {
+                                $list[] = $el->$value;
+                            }
+                        }
                     }
-                    #Helper::dd($list);
-                $lists[$c] = $list;
+                    $lists[$c] = $list;
+
+                } else {
+
+                    /**
+                     * Если использовалась связь hasOne
+                     */
+                    if (isset($col->$listed_key) && is_object($col->$listed_key)) {
+                        #Helper::d($col->$listed_key);
+                        #Helper::d($key . ' => ' . $value);
+                        #$col->$listed_key->attributes[$key]
+                        if ($key != '') {
+                            $lists[$col->$listed_key->attributes[$key]] = @$col->$listed_key->attributes[$value];
+                        } else {
+                            $lists[] = @$col->$listed_key->attributes[$value];
+                        }
+                    }
+                }
             }
             #Helper::ta($col);
         }
@@ -287,7 +314,7 @@ class Dictionary extends BaseModel {
         $data = self::where('slug', $dic_slug)->with(array('value' => function($query) use ($val_slug){
                 $query->where('version_of', NULL);
                 $query->where('slug', $val_slug);
-                $query->with('meta', 'fields', 'seo', 'related_dicvals');
+                $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
             }))->first();
 
         if (is_object($data)) {
@@ -349,7 +376,7 @@ class Dictionary extends BaseModel {
         $data = self::where('slug', $dic_slug)->with(array('values_no_conditions' => function($query) use ($val_ids){
                 $query->where('version_of', NULL);
                 $query->whereIn('id', $val_ids);
-                $query->with('meta', 'fields', 'seo', 'related_dicvals');
+                $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
             }))
             ->first()
             ->values_no_conditions

@@ -86,7 +86,7 @@ class PublicPagesController extends BaseController {
                 ));
 
                 ## Main page for non-default locale
-                if (!$default_locale_mainpage)
+                if (!Config::get('pages.disable_mainpage_route') && !$default_locale_mainpage)
                     Route::any('/', array(
                         'as' => 'mainpage',
                         'before' => 'i18n_url',
@@ -96,7 +96,7 @@ class PublicPagesController extends BaseController {
             });
 
             ## Main page for default locale
-            if ($default_locale_mainpage)
+            if (!Config::get('pages.disable_mainpage_route') && $default_locale_mainpage)
                 Route::any('/', array(
                     'as' => 'mainpage',
                     'before' => '',
@@ -115,16 +115,19 @@ class PublicPagesController extends BaseController {
                 ));
 
                 ## Main page
-                Route::any('/', array(
-                    'as' => 'mainpage',
-                    'uses' => $class.'@showPage'
-                ));
+                if (!Config::get('pages.disable_mainpage_route')) {
+
+                    Route::any('/', array(
+                        'as' => 'mainpage',
+                        'uses' => $class.'@showPage'
+                    ));
+                }
             });
 
         }
 
     }
-    
+
     ## Shortcodes of module
     public static function returnShortCodes() {
     }
@@ -164,8 +167,11 @@ class PublicPagesController extends BaseController {
     ## Функция для просмотра мультиязычной страницы
     public function showPage($url = false){
 
-        if (!$this->page->count())
-            return View::make(Config::get('app.welcome_page_tpl'));
+        if (!$this->page->count()) {
+
+            #return View::make(Config::get('app.welcome_page_tpl'));
+            App::abort(404);
+        }
 
         if (!$url)
             $url = Input::get('url');
@@ -182,7 +188,10 @@ class PublicPagesController extends BaseController {
         #Helper::dd($url);
         #Helper::dd( Request::segment(1) );
 
-        $page = $this->page->where('publication', 1);
+        $page = $this->page
+            ->where('publication', 1)
+            ->where('version_of', NULL)
+        ;
 
         ## Page by ID
         if (is_numeric($url)) {
@@ -242,8 +251,8 @@ class PublicPagesController extends BaseController {
 
             } else {
 
-                ## Search slug in SLUG
-                $page = $this->page
+                ## Search page in pages by slug
+                $page = $page
                     ->where('slug', $url)
                     ->with('meta', 'blocks.meta', 'seo')
                     ->first();
@@ -270,8 +279,8 @@ class PublicPagesController extends BaseController {
 
         } else {
 
-            $page = $page->where('start_page', 1)
-                ->where('version_of', NULL)
+            $page = $page
+                ->where('start_page', 1)
                 ->with('meta', 'blocks.meta', 'seo')
                 ->first();
 

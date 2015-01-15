@@ -119,37 +119,53 @@ class MenuConstructor {
             /**
              * Отрисовываем элемент меню
              */
-            $element = $this->get_element($id);
+            $element = $this->get_check_element($id);
             #Helper::dd($element);
 
             if (!$element)
                 continue;
 
             /**
-             * Отрисовываем дочерние элементы текущего пункта меню, если они есть
+             * Одиночный элемент или массив элементов
              */
-            $child_level = '';
-            if (isset($element_array['children'])) {
-                $children = $element_array['children'];
-                $child_level = $this->get_level($element_array['children']);
+            #Helper::d(' [ ' . $element .' ] ');
+            if (is_string($element))
+                $element = array($element);
+
+            $elements = $element;
+            unset($element);
+
+            foreach ($elements as $element) {
+
+                if (!$element)
+                    continue;
+
+                /**
+                 * Отрисовываем дочерние элементы текущего пункта меню, если они есть
+                 */
+                $child_level = '';
+                if (isset($element_array['children'])) {
+                    $children = $element_array['children'];
+                    $child_level = $this->get_level($element_array['children']);
+                }
+
+                /**
+                 * Отрисовываем текущий элемент меню
+                 */
+                $element = strtr(
+                    $this->tpl['element_container'],
+                    array(
+                        '%element%' => $element,
+                        '%children%' => @$child_level ?: '',
+                        '%attr%' => '',
+                    )
+                );
+
+                /**
+                 * Добавляем отрисованный элемент меню в текущий уровень
+                 */
+                $level[] = $element;
             }
-
-            /**
-             * Отрисовываем текущий элемент меню
-             */
-            $element = strtr(
-                $this->tpl['element_container'],
-                array(
-                    '%element%' => $element,
-                    '%children%' => @$child_level ?: '',
-                    '%attr%' => '',
-                )
-            );
-
-            /**
-             * Добавляем отрисованный элемент меню в текущий уровень
-             */
-            $level[] = $element;
 
         }
         #Helper::dd($level);
@@ -174,6 +190,68 @@ class MenuConstructor {
 
 
     /**
+     * Проверяем элемент меню
+     */
+    private function get_check_element($element_id) {
+
+        if (!isset($this->items[$element_id]))
+            return false;
+
+        /**
+         * Получаем данные об элементе меню
+         */
+        $data = $this->items[$element_id];
+        #Helper::d($data);
+
+        if (@$data['type'] == 'function') {
+
+            #Helper::d($data);
+
+            $function = Config::get('menu.functions.' . $data['function_name']);
+            if (isset($function) && is_callable($function)) {
+                $result = $function();
+                #Helper::d($result);
+
+
+                if (isset($result['url']))
+                    $result = array($result);
+
+                $return = array();
+                foreach ($result as $res) {
+
+                    #Helper::d($res);
+
+                    if (!@$data['use_function_data']) {
+                        $res['text'] = @$data['text'];
+                        $res['title'] = @$data['title'];
+                    }
+
+                    #@$return .=
+                    #return $this->get_element_info_by_data($res);
+                    #Helper::d( $this->get_element_info_by_data($res) );
+
+                    $tmp = $this->get_element_info_by_data($res);
+
+                    if ($tmp)
+                        $return[] = $tmp;
+                }
+
+                #Helper::d($return);
+
+                return $return;
+
+            }
+
+
+            return false;
+
+        } else {
+
+            return $this->get_element($element_id);
+        }
+    }
+
+    /**
      * Отрисовываем элемент меню
      *
      * @param $element_id
@@ -189,10 +267,21 @@ class MenuConstructor {
          * Получаем данные об элементе меню
          */
         $data = $this->items[$element_id];
+        #Helper::d($data);
 
         #Helper::d($data);
         if (@$data['hidden'])
-            return;
+            return false;
+
+        return $this->get_element_info_by_data($data);
+    }
+
+
+    private function get_element_info_by_data($data) {
+
+        #Helper::d($data);
+        if (!is_array($data))
+            return false;
 
         /**
          * Определяем атрибуты ссылки (class, title, target и т.д.)
@@ -234,7 +323,6 @@ class MenuConstructor {
         return $return;
     }
 
-
     /**
      * Возвращаем URL элемента меню
      *
@@ -248,7 +336,7 @@ class MenuConstructor {
         /**
          * Возвращаем URL элемента меню, в зависимости от типа элемента меню
          */
-        switch($element['type']) {
+        switch(@$element['type']) {
 
             case 'page':
                 if (isset($this->pages[$element['page_id']]) && is_object($this->pages[$element['page_id']]))
@@ -308,11 +396,26 @@ class MenuConstructor {
         #return false;
 
         /**
+         * Собственное правило для определения активности пункта меню
+         * Проверка текущего URL на соответствие шаблону регулярного выражения
+         */
+        if (@$element['use_active_regexp'] && @$element['active_regexp']) {
+            #Helper::dd(Request::path());
+            #Helper::dd($element['active_regexp']);
+            #Helper::dd(preg_match($element['active_regexp'], Request::path()));
+            return @(bool)preg_match($element['active_regexp'], Request::path());
+        }
+
+        /**
          * Возвращаем пометку об активности ссылки, в зависимости от типа элемента меню
          */
-        switch($element['type']) {
+        switch(@$element['type']) {
 
             case 'page':
+                #Helper::tad($this->pages[$element['page_id']]);
+                if ($this->pages[$element['page_id']]->start_page) {
+                    return $this->isRoute('mainpage', $this->pages[$element['page_id']]->slug);
+                }
                 return $this->isRoute('page', $this->pages[$element['page_id']]->slug);
                 break;
 
@@ -348,7 +451,22 @@ class MenuConstructor {
                 if (isset($function) && is_callable($function)) {
                     $result = $function();
                     #return $result['url'];
-                    return (bool)preg_match('~' . $result['url'] . '$~s', Request::fullUrl());
+
+
+                    /**
+                     * Одиночная ссылка
+                     */
+                    #return (bool)preg_match('~' . $result['url'] . '$~s', Request::fullUrl());
+                    if (isset($result['url']))
+                        $result = array($result);
+
+                    /**
+                     * Перебираем весь массив ссылок
+                     */
+                    foreach ($result as $res)
+                        if (isset($res['url']) && (bool)preg_match('~' . $res['url'] . '$~s', Request::fullUrl()) == true)
+                            return true;
+
                 }
                 return false;
                 break;

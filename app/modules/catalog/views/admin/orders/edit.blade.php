@@ -104,6 +104,14 @@
                 @endif
 
                 <footer>
+
+                    @if (Input::get('archive') == 1)
+                        <div class="margin-bottom-15 text-center">
+                            Внимание! Данный заказ находится в архиве. При сохранении он автоматически станет активным.
+                        </div>
+                    @endif
+
+
                     <a class="btn btn-default no-margin regular-10 uppercase pull-left btn-spinner" href="{{ link::previous() }}">
                         <i class="fa fa-arrow-left hidden"></i> <span class="btn-response-text">Назад</span>
                     </a>

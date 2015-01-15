@@ -14,6 +14,7 @@
 	{{ HTML::script('private/js/vendor/bootstrap-slider.min.js') }}
 	{{ HTML::script('private/js/vendor/smartclick.js') }}
 	{{ HTML::script('private/js/vendor/dropzone.min.js') }}
+	{{ HTML::script('private/js/plugin/jquery-nestable/jquery.nestable.js') }}
 
     {{ HTML::script('private/js/plugin/pace/pace.min.js', array('data-pace-options' => '{ "restartOnRequestAfter": true }')) }}
 

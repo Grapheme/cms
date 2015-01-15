@@ -1,3 +1,8 @@
+<?
+/**
+ * MENU_PLACEMENTS: main_menu=Основное меню
+ */
+?>
 @if (@is_object($page->meta->seo))
 @section('title'){{ $page->meta->seo->title ? $page->meta->seo->title : $page->name }}@stop
 @section('description'){{ $page->meta->seo->description }}@stop
@@ -10,24 +15,31 @@
 @section('description'){{ $seo->description }}@stop
 @section('keywords'){{ $seo->keywords }}@stop
 @endif
+@section('page_class')index @stop
 <!DOCTYPE html>
-    <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-    <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-    <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-    <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
+<html class="@yield('page_class') no-js" style="@yield('page_style')">
+<head>
 	@include(Helper::layout('head'))
-	@yield('style')
-    </head>
-<body>
+
+    @section('style')
+    @show
+</head>
+<body class="@yield('page_class')" style="@yield('page_style')">
     <!--[if lt IE 7]>
         <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
     @include(Helper::layout('header'))
-    @yield('content', @$content)
-    @include(Helper::layout('footer'))
+
+    @section('content')
+        {{ @$content }}
+    @show
+
+    @section('footer')
+        @include(Helper::layout('footer'))
+    @show
     @include(Helper::layout('scripts'))
-    @yield('overlays')
-    @yield('scripts')
+
+    @section('scripts')
+    @show
 </body>
 </html>

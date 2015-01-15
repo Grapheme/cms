@@ -155,6 +155,26 @@ class AdminMenuEditorController extends BaseController {
         #Helper::dd(StringView::force($element->items->{5}->title));
 
         $pages = Page::where('version_of', NULL)->orderBy('created_at', 'DESC')->get();
+        $pages = Dic::modifyKeys($pages, 'id');
+        #Helper::ta($pages);
+
+        /**
+         * Убираем из набора ссылок меню те страницы, которых несуществует (скорее всего они были удалены)
+         */
+        #/*
+        if (isset($element->items) && count($element->items) && $pages !== NULL && count($pages)) {
+            foreach ($element->items as $i => $item) {
+                if (!is_object($item) || $item->type != 'page')
+                    continue;
+                #Helper::d($i);
+                #Helper::d($item);
+                if (!isset($pages[$item->page_id])) {
+                    unset($element->items->{$i});
+                }
+            }
+            #Helper::tad($element);
+        }
+        #*/
 
         $functions = array();
         $temp = Config::get('menu.functions');
