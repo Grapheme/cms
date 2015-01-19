@@ -92,6 +92,42 @@ class CatalogAttribute extends BaseModel {
         }
 
 
+        ## Extract attributes_group
+        if (isset($this->attributes_group)) {
+
+            if (
+                is_object($this->attributes_group->meta)
+                && ($this->attributes_group->meta->language == Config::get('app.locale') || $this->attributes_group->meta->language == NULL)
+            ) {
+                if ($this->attributes_group->meta->name != '')
+                    $this->attributes_group->name = $this->attributes_group->meta->name;
+
+            }
+
+            if ($unset)
+                unset($this->attributes_group->relations['meta']);
+
+
+
+
+            ## Extract attributes_group
+            if (isset($this->attributes_group->category)) {
+
+                if (
+                    is_object($this->attributes_group->category->meta)
+                    && ($this->attributes_group->category->meta->language == Config::get('app.locale') || $this->attributes_group->category->meta->language == NULL)
+                ) {
+                    if ($this->attributes_group->category->meta->name != '')
+                        $this->attributes_group->category->name = $this->attributes_group->category->meta->name;
+
+                }
+
+                if ($unset)
+                    unset($this->attributes_group->category->relations['meta']);
+            }
+
+        }
+
         return $this;
     }
 

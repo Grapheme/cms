@@ -98,6 +98,8 @@ class CatalogAttributeGroup extends BaseModel {
         ## Extract meta
         if (isset($this->meta)) {
 
+            #Helper::tad($this->meta);
+
             if (
                 is_object($this->meta)
                 && ($this->meta->language == Config::get('app.locale') || $this->meta->language == NULL)

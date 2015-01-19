@@ -89,7 +89,7 @@
 
 
 @section('scripts')
-	<script src="{{ link::to('js/modules/users.js') }}"></script>
+	<!--<script src="{{ link::to('js/modules/users.js') }}"></script>-->
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runFormValidation === 'function'){

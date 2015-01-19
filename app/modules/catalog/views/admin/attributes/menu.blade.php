@@ -40,22 +40,27 @@
         );
     }
     */
-    if  (Allow::action($module['group'], 'attributes_create')) {
-        #$current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
 
-        $array2 = $array;
-        if (
-            isset($element) && is_object($element)
-            && isset($element->attributes_group) && is_object($element->attributes_group)
-        )
-            $array2['group'] = $element->attributes_group->id;
+    if (isset($element) && is_object($element)) {
 
-        $menus[] = array(
-            'link' => URL::route('catalog.attributes_groups.create', $array2),
-            'title' => 'Добавить группу',
-            'class' => 'btn btn-primary'
-        );
+        if  (Allow::action($module['group'], 'attributes_create')) {
+            #$current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
+
+            $array2 = $array;
+            if (
+                    isset($element) && is_object($element)
+                    && isset($element->attributes_group) && is_object($element->attributes_group)
+            )
+                $array2['group'] = $element->attributes_group->id;
+
+            $menus[] = array(
+                    'link' => URL::route('catalog.attributes_groups.create', $array2),
+                    'title' => 'Добавить группу',
+                    'class' => 'btn btn-primary'
+            );
+        }
     }
+
 
     #Helper::d($menus);
 ?>
