@@ -317,6 +317,22 @@ class CreateCatalogTables extends Migration {
         }
 
 
+        $this->table = $this->prefix . "related_products";
+        if (!Schema::hasTable($this->table)) {
+            Schema::create($this->table, function(Blueprint $table) {
+
+                $table->integer('product_id')->unsigned()->index();
+                $table->integer('related_product_id')->unsigned()->index();
+
+                #$table->timestamps();
+                $table->unique(array('product_id', 'related_product_id'), 'related_products_pair');
+            });
+            echo(' + ' . $this->table . PHP_EOL);
+        } else {
+            echo('...' . $this->table . PHP_EOL);
+        }
+
+
     }
 
 
@@ -372,6 +388,10 @@ class CreateCatalogTables extends Migration {
 
         Schema::dropIfExists($this->prefix . "orders_statuses_history");
         echo(' - ' . $this->prefix . "order_statuses_history" . PHP_EOL);
+
+
+        Schema::dropIfExists($this->prefix . "related_products");
+        echo(' - ' . $this->prefix . "related_products" . PHP_EOL);
 	}
 
 }
