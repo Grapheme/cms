@@ -16,6 +16,7 @@ class CreateCatalogTables extends Migration {
                 $table->increments('id');
                 $table->smallInteger('active')->unsigned()->default(1)->index();
                 $table->string('slug')->nullable()->unique();
+                $table->integer('image_id')->unsigned()->default(0);
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();
@@ -60,6 +61,9 @@ class CreateCatalogTables extends Migration {
 
                 $table->string('article')->default('')->unique();
                 $table->integer('amount')->unsigned()->index();
+
+                $table->integer('image_id')->unsigned()->default(0);
+                $table->integer('gallery_id')->unsigned()->default(0);
 
                 $table->text('settings')->nullable();
                 $table->integer('lft')->unsigned()->nullable()->index();

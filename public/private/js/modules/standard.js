@@ -89,13 +89,17 @@ function runFormValidation() {
                 //alert(typeof response.form_values);
                 //alert(response.form_values.length);
 
+				//console.log(response);
+				//console.log(response.form_values);
+				//console.log(typeof response.form_values);
+
                 if(typeof response.form_values == 'object') {
-                    $(response.form_values).each(function(i) {
+                    //$(response.form_values).each(function(i) {
                         //alert(i + ' > ' + data[i] + " | ");
                         $.each(response.form_values, function(i, val) {
                             $(i).val(val).text(val);
                         });
-                    });
+                    //});
                 }
 
                 //alert(typeof(onsuccess_function));

@@ -49,6 +49,11 @@
                                     Описание
                                 </a>
                             </li>
+                            <li class="">
+                                <a href="#tab_multimedia" data-toggle="tab">
+                                    Мультимедиа
+                                </a>
+                            </li>
                             @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'products_seo'))
                             <li class="">
                                 <a href="#tab_seo" data-toggle="tab">
@@ -60,7 +65,7 @@
 
                         <div class="tab-content">
 
-                            <div class="tab-pane fade active in clearfix" id="tab_main">
+                            <div class="tab-pane active fade in clearfix" id="tab_main">
                                 <fieldset class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
 
                                     <section>
@@ -194,7 +199,28 @@
                             </div>
 
 
-                            @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'products_seo'))
+                            <div class="tab-pane fade in clearfix" id="tab_multimedia">
+                                <fieldset class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+                                    <section>
+                                        <label class="label">Основное изображение</label>
+                                        <label class="input">
+                                            {{ ExtForm::image('image_id', null) }}
+                                        </label>
+                                    </section>
+
+                                    <section>
+                                        <label class="label">Галерея</label>
+                                        <label class="input">
+                                            {{ ExtForm::gallery('gallery_id', null) }}
+                                        </label>
+                                    </section>
+
+                                </fieldset>
+                            </div>
+
+
+                        @if (Allow::action('seo', 'edit') && Allow::action($module['group'], 'products_seo'))
                             <div class="tab-pane fade clearfix" id="tab_seo">
                                 <fieldset class="col col-xs-12 col-sm-9 col-md-9 col-lg-9">
 

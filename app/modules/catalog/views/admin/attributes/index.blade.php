@@ -42,7 +42,7 @@
                                                 @endif
 
                                                 @if(Allow::action($module['group'], 'attributes_edit'))
-                                                    <a href="{{ URL::route('catalog.attributes_groups.edit', Input::all()) }}" class="btn btn-xs btn-success edit-attributes-group display-inline-block padding-1-5" title="Редактировать группу">
+                                                    <a href="{{ URL::route('catalog.attributes_groups.edit', $attributes_group->id) }}" class="btn btn-xs btn-success edit-attributes-group display-inline-block padding-1-5" title="Редактировать группу">
                                                         <i class="fa fa-pencil"></i>
                                                     </a>
                                                 @endif

@@ -105,8 +105,7 @@ class AdminCatalogProductsController extends BaseController {
          * Получаем все записи из БД
          */
         $elements = $elements->get();
-        $elements = DicVal::extracts($elements, 1);
-        $elements = Dic::modifyKeys($elements, 'id');
+        $elements = DicVal::extracts($elements, null, true, true);
 
         #Helper::tad($elements);
 
@@ -169,8 +168,10 @@ class AdminCatalogProductsController extends BaseController {
         ;
         $categories = $categories->get();
         if (count($categories))
-            $categories = DicVal::extracts($categories, 1);
-        $categories = Dic::modifyKeys($categories, 'id');
+            $categories = DicVal::extracts($categories, null, true, true);
+        #$categories = Dic::modifyKeys($categories, 'id');
+
+        #Helper::tad($categories);
 
         /**
          * Подсчитаем отступ для каждой категории
@@ -312,7 +313,7 @@ class AdminCatalogProductsController extends BaseController {
         ;
         $categories = $categories->get();
         if (count($categories))
-            $categories = DicVal::extracts($categories, 1);
+            $categories = DicVal::extracts($categories, null, true, true);
         $categories = Dic::modifyKeys($categories, 'id');
 
         /**
@@ -436,6 +437,8 @@ class AdminCatalogProductsController extends BaseController {
 
         $input = Input::all();
 
+        #Helper::tad($input['gallery_id']);
+
         /**
          * Проверяем системное имя
          */
@@ -469,6 +472,20 @@ class AdminCatalogProductsController extends BaseController {
          */
         $input['active'] = @$input['active'] ? 1 : NULL;
 
+        $form_values = array();
+        /**
+         * Обработчик галереи
+         */
+        $tmp = ExtForm::process('gallery', array(
+            'module' => 'Catalog',
+            'unit_id' => $element->id,
+            'gallery' => $input['gallery_id'],
+            'single' => 1,
+        ));
+        if (!@$input['gallery_id']['gallery_id'])
+            $form_values['#gallery_id_gallery_id'] = $tmp;
+        $input['gallery_id'] = $tmp;
+
         #Helper::dd($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
@@ -482,6 +499,7 @@ class AdminCatalogProductsController extends BaseController {
 
             if ($element->id > 0) {
 
+                #Helper::tad($input);
                 $element->update($input);
                 $redirect = false;
                 $product_id = $element->id;
@@ -631,6 +649,7 @@ class AdminCatalogProductsController extends BaseController {
             }
 
             $json_request['responseText'] = 'Сохранено';
+            $json_request['form_values'] = $form_values;
             if ($redirect)
                 $json_request['redirect'] = $redirect;
 			$json_request['status'] = TRUE;

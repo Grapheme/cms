@@ -81,7 +81,7 @@ class AdminCatalogCategoriesController extends BaseController {
          */
         $elements = $elements
             ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
-            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_category . '.created_at', 'DESC')
             ->orderBy($tbl_cat_category . '.id', 'DESC')
             ->with('meta', 'products', 'attributes_groups.attributes')
         ;
@@ -106,8 +106,10 @@ class AdminCatalogCategoriesController extends BaseController {
          * Получаем все категории из БД
          */
         $elements = $elements->get();
-        $elements = DicVal::extracts($elements, 1);
-        $elements = Dic::modifyKeys($elements, 'id');
+        $elements = DicLib::extracts($elements, null, true, true);
+        #Helper::tad($elements);
+        #$elements = DicLib::modifyKeys($elements, 'id');
+        #Helper::tad($elements);
 
         /**
          * Строим иерархию

@@ -10,6 +10,49 @@ class DicLib extends BaseController {
 		##
 	}
 
+    /**
+     * Экстрактит все записи коллекции
+     *
+     * $collection = DicLib::extracts($collection, null, true, true);
+     *
+     * @param $elements
+     * @param string $field
+     * @param bool $unset
+     * @param bool $extract_ids
+     * @return Collection
+     */
+    public static function extracts($elements, $field = null, $unset = false, $extract_ids = true) {
+
+        $return = new Collection;
+        #Helper::dd($return);
+        foreach ($elements as $e => $element) {
+
+            #Helper::ta($e);
+            #Helper::ta($element);
+            #dd($element);
+
+            if (isset($field) && $field != '') {
+
+                $el = is_object($element) ? @$element->$field : @$element[$field];
+
+                if (is_object($el)) {
+                    $el->extract($unset);
+                }
+                if (is_object($element)) {
+                    $element->$field = $el;
+                } else {
+                    $element[$field] = $el;
+                }
+
+            } else {
+
+                $element->extract($unset);
+            }
+
+            $return[($extract_ids ? $element->id : $e)] = $element;
+        }
+        return $return;
+    }
 
     /**
      * В функцию передается коллекция объектов, полученная из Eloguent методом ->get(),

@@ -64,4 +64,35 @@ class CatalogAttribute extends BaseModel {
             ;
     }
 
+    public function extract($unset = false) {
+
+        ## Extract metas
+        if (isset($this->metas)) {
+            foreach ($this->metas as $m => $meta) {
+                $this->metas[$meta->language] = $meta;
+                if ($m != $meta->language || $m === 0)
+                    unset($this->metas[$m]);
+            }
+        }
+
+        ## Extract meta
+        if (isset($this->meta)) {
+
+            if (
+                is_object($this->meta)
+                && ($this->meta->language == Config::get('app.locale') || $this->meta->language == NULL)
+            ) {
+                if ($this->meta->name != '')
+                    $this->name = $this->meta->name;
+
+            }
+
+            if ($unset)
+                unset($this->relations['meta']);
+        }
+
+
+        return $this;
+    }
+
 }

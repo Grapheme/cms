@@ -13,6 +13,8 @@ function write_level($hierarchy, $elements, $module, $sortable) {
             #if (!isset($h['id']))
             #    continue;
             $element = $elements[$h['id']];
+            #$element->extract();
+            #Helper::ta($element); #continue;
             $line = $element->name;
             $line = preg_replace("~<br[/ ]*?".">~is", ' ', $line);
             $line2 = $element->slug;

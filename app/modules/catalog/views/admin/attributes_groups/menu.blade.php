@@ -45,7 +45,7 @@
         $menus[] = array(
             #'link' => URL::route('catalog.category.create', $current_link_attributes),
             'link' => URL::route('catalog.attributes_groups.create', $array),
-            'title' => 'Добавить',
+            'title' => 'Добавить группу',
             'class' => 'btn btn-primary'
         );
     }

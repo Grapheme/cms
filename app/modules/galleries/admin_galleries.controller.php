@@ -61,18 +61,27 @@ class AdminGalleriesController extends BaseController {
                 #Helper::dd($value);
                 #Helper::dd($params);
 
-                if (is_numeric($value)) {
-                    $value = Gallery::find($value);
+                if (!is_object($value))
+                    $gallery = NULL;
+
+                if ( $value === false || $value === null ) {
+                    $val = Form::text($name);
+                    preg_match("~value=['\"]([^'\"]+?)['\"]~is", $val, $matches);
+                    #Helper::d($matches);
+                    $val = (int)@$matches[1];
+                    #Helper::tad($val);
+                    if ( $val > 0 ) {
+                        $gallery = Gallery::where('id', $val)->with('photos')->first();
+                        #Helper::tad($gallery);
+                    }
+                } elseif (is_numeric($value)) {
+                    $gallery = Gallery::where('id', $value)->with('photos')->first();
                 }
-
-                #Helper::tad($value);
-
-                $gallery = $value;
 
                 #Helper::tad($gallery);
 
                 ## return view with form element
-                return View::make($mod_tpl.$tpl, compact('name', 'gallery', 'params'))->render();
+                return View::make($mod_tpl.$tpl, compact('name', 'value', 'gallery', 'params'))->render();
     	    },
             ## Processing results closure
             function($params) use ($mod_tpl, $class) {
@@ -134,26 +143,32 @@ class AdminGalleriesController extends BaseController {
                     unset($params['tpl']);
                 }
 
-                #Helper::dd($value);
+                #dd($value);
                 #Helper::dd($params);
+
+                if (!is_object($value))
+                    $photo = NULL;
 
                 if ( $value === false || $value === null ) {
                     $val = Form::text($name);
                     preg_match("~value=['\"]([^'\"]+?)['\"]~is", $val, $matches);
                     #Helper::d($matches);
                     $val = (int)@$matches[1];
+                    #Helper::tad($val);
                     if ( $val > 0 ) {
-                        $value = Photo::firstOrNew(array('id' => $val));
+                        #$photo = Photo::firstOrNew(array('id' => $val));
+                        $photo = Photo::find($val);
+                        #Helper::tad($photo);
                     }
                 } elseif (is_numeric($value)) {
-                    $value = Photo::find($value);
+                    $photo = Photo::find($value);
                 }
 
                 #Helper::tad($value);
+                #Helper::tad($photo);
 
-                $photo = $value;
                 ## return view with form element
-                return View::make($mod_tpl.$tpl, compact('name', 'photo', 'params'));                
+                return View::make($mod_tpl.$tpl, compact('name', 'value', 'photo', 'params'));
     	    },
             ## Processing results closure
             function($params) use ($mod_tpl, $class) {
@@ -461,11 +476,15 @@ class AdminGalleriesController extends BaseController {
 
 	public function postPhotodelete() {
 
+        $model = NULL;
 		$id = (int)Input::get('id');
         if ($id)
             $model = Photo::find($id);
-        if (!is_null($model))
-		    $db_delete = $model->delete();
+
+        if (!$id || is_null($model) || !$model)
+            return 'false';
+
+        $db_delete = $model->delete();
 
 		if(@$db_delete) {
 			$file_delete = File::delete(Config::get('site.galleries_photo_dir').'/'.$model->name);
@@ -474,7 +493,8 @@ class AdminGalleriesController extends BaseController {
 
 		#if(@$db_delete && @$file_delete && @$thumb_delete) {
 		#if(@$db_delete) {
-			return Response::json('success', 200);
+			#return Response::json('success', 200);
+			return 'success';
 		#} else {
 		#	return Response::json('error', 400);
 		#}

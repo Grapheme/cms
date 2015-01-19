@@ -12,6 +12,8 @@ class CatalogProduct extends BaseModel {
         'category_id',
         'article',
         'amount',
+        'image_id',
+        'gallery_id',
         'settings',
         'lft',
         'rgt',

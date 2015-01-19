@@ -97,7 +97,7 @@ class AdminCatalogAttributesController extends BaseController {
             #Helper::tad($root_category);
 
             if (is_object($root_category))
-                $root_category = $root_category->extract(1);
+                $root_category = $root_category->extract(true);
         }
 
         #Helper::tad($root_category);
@@ -123,7 +123,7 @@ class AdminCatalogAttributesController extends BaseController {
             #Helper::tad($root_category);
 
             if (is_object($root_category))
-                $root_category = $root_category->extract(1);
+                $root_category = $root_category->extract(true);
         }
 
         #Helper::ta($root_category);
@@ -156,6 +156,11 @@ class AdminCatalogAttributesController extends BaseController {
             ->first()
         ;
 
+        if (!is_object($element))
+            App::abort(404);
+
+        $element->extract(false);
+
         #Helper::tad($element);
 
         $root_category = null;
@@ -174,7 +179,7 @@ class AdminCatalogAttributesController extends BaseController {
                 ;
 
                 if (is_object($root_category))
-                    $root_category = $root_category->extract(1);
+                    $root_category = $root_category->extract(true);
             }
         }
 

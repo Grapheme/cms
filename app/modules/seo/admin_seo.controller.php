@@ -76,6 +76,12 @@ class AdminSeoController extends BaseController {
                 #$data['unit_id'] = $unit_id;
                 #Helper::dd($data);
 
+                foreach ($data as $d => $dat) {
+                    if (!is_string($dat))
+                        continue;
+                    $data[$d] = trim($dat);
+                }
+
                 $seo = Seo::firstOrCreate(array('module' => $module, 'unit_id' => $unit_id, 'language' => $locale));
                 $seo->update($data);
 

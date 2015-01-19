@@ -53,7 +53,14 @@
                         </label>
                     </section>
 
-                    @if (count($locales) > 1)
+                    <section>
+                        <label class="label">Изображение</label>
+                        <label class="input">
+                            {{ ExtForm::image('image_id', null) }}
+                        </label>
+                    </section>
+
+                @if (count($locales) > 1)
                     <ul id="myTab2" class="nav nav-tabs bordered">
                         <? $i = 0; ?>
                         @foreach ($locales as $locale_sign => $locale_name)

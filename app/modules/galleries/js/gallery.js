@@ -54,10 +54,10 @@ var dropzone_translate = {
         $(dz_selector).each(function(index, el) {
             //console.log( index + ": " + $( this ).text() );
 
-            var el_name = $(el).data("name");
-			var gallery_id = $(el).data('gallery_id');
+            var el_name       = $(el).data("name");
+			var gallery_id    = $('#' + el_name + '_gallery_id').val();
             var max_file_size = $(el).data("maxfilesize");
-            var max_files = $(el).data("maxfiles");
+            var max_files     = $(el).data("maxfiles");
             var acceptedFiles = $(el).data("acceptedfiles");
 
             var dropzone_settings = {

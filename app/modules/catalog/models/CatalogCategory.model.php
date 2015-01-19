@@ -9,6 +9,7 @@ class CatalogCategory extends BaseModel {
     protected $fillable = array(
         'active',
         'slug',
+        'image_id',
         'settings',
         'lft',
         'rgt',
@@ -108,8 +109,10 @@ class CatalogCategory extends BaseModel {
 
             }
 
-            if ($unset)
-                unset($this->meta);
+            #Helper::dd($this);
+            if ($unset) {
+                unset($this->relations['meta']);
+            }
         }
 
         ## Extract SEOs
@@ -150,6 +153,8 @@ class CatalogCategory extends BaseModel {
 
                     $attributes = new Collection();
                     foreach ($temp->relations['attributes'] as $ra => $attribute) {
+
+                        #Helper::ta($attribute);
 
                         $attribute = $attribute->extract($unset);
 
