@@ -1,11 +1,18 @@
 /vendor
 /bootstrap/compiled.php
 node_modules
+.tmp
+.sass-cache
+bower_components
+test/bower_components
+*.komodoproject
 less
 
 .idea
 *.clpprj
 Thumbs.db
+composer.lock
+_ide_helper.php
 
 /app/config/database.php
 /app/lang/*
