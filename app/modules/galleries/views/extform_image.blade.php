@@ -3,7 +3,7 @@
     <!-- loadScript("/js/modules/gallery.js"); -->
 
     <?
-    $photo_exists = isset($photo) && is_object($photo) && $photo->id;
+    $photo_exists = isset($photo) && is_object($photo) && $photo->id && file_exists($photo->fullpath());
     #Helper::dd($photo_exists);
     ?>
     @if ($photo_exists)

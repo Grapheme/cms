@@ -16,3 +16,6 @@
 
     {{ HTML::script("js/vendor/jquery.validate.min.js") }}
     {{ HTML::script("js/vendor/jquery-form.min.js") }}
+
+    {{ HTML::scriptmod(Config::get('site.theme_path').'/scripts/vendor.js') }}
+    {{ HTML::scriptmod(Config::get('site.theme_path').'/scripts/main.js') }}

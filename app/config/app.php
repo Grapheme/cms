@@ -61,6 +61,7 @@ return array(
         'Barryvdh\Debugbar\ServiceProvider',
         'Illuminate\Custom\CustomUrlServiceProvider',
         'Flynsarmy\DbBladeCompiler\DbBladeCompilerServiceProvider',
+        'Scalia\SphinxSearch\SphinxSearchServiceProvider',
         'sngrl\StringBladeCompiler\StringBladeCompilerServiceProvider',
     ),
 	'aliases' => array(

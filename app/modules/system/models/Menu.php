@@ -28,7 +28,7 @@ class Menu extends Storage {
 
         $menu = Storage::where('module', 'menu')->where('name', $slug)->first();
         $value = json_decode($menu->value, 1);
-        Helper::dd($value);
+        #Helper::dd($value);
         #$menu = self::get_menu_level($value->items, $options);
     }
 

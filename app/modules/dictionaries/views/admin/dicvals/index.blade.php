@@ -4,6 +4,7 @@
 
 <?
 function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $module, $sortable) {
+    global $total_elements;
 ?>
 	@if($count = @count($elements))
         <ol class="dd-list">

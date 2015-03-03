@@ -128,10 +128,12 @@ class Helper {
         if (intval($time) == 0) {
             $time = time();
         }
+        $MonthNamesIm = array("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь");
         $MonthNames = array("Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря");
         if (strpos($param, 'M') === false) {
             return date($param, $time);
         } else {
+            $MonthNames = $im ? $MonthNamesIm : $MonthNames;
             $month = $MonthNames[date('n', $time) - 1];
             if ($lower) {
                 $month = mb_strtolower($month);
@@ -1222,6 +1224,27 @@ HTML;
             }
         }
         return $enc;
+    }
+
+    /**
+     * https://php.net/manual/ru/function.array-chunk.php
+     *
+     * @param $list
+     * @param $p
+     * @return array
+     */
+    public static function partition($list, $p) {
+        $listlen = count( $list );
+        $partlen = floor( $listlen / $p );
+        $partrem = $listlen % $p;
+        $partition = array();
+        $mark = 0;
+        for ($px = 0; $px < $p; $px++) {
+            $incr = ($px < $partrem) ? $partlen + 1 : $partlen;
+            $partition[$px] = array_slice( $list, $mark, $incr );
+            $mark += $incr;
+        }
+        return $partition;
     }
 }
 

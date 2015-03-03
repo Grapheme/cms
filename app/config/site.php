@@ -2,7 +2,7 @@
 
 return array(
 
-    'theme_path' => 'theme',
+    'theme_path' => 'dist',
 
     'paginate_limit' => 30,
 
@@ -29,5 +29,12 @@ return array(
     'galleries_cache_public_dir' => '/uploads/galleries/cache',
     'galleries_cache_allowed_sizes' => [
         '200x200'
+    ],
+
+
+    'seo' => [
+        'default_title'       => 'default title',
+        'default_description' => '',
+        'default_keywords'    => '',
     ],
 );

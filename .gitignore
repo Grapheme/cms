@@ -1,5 +1,7 @@
 /vendor
 /bootstrap/compiled.php
+.htaccess
+
 node_modules
 .tmp
 .sass-cache
@@ -34,3 +36,4 @@ _ide_helper.php
 /psd
 /!files
 /!info
+app/config/packages/scalia/sphinxsearch/config.php

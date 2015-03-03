@@ -107,6 +107,7 @@ class AdminPagesPageController extends BaseController {
         $locales = $this->locales;
         #Helper::dd($locales);
 
+        $templates = array();
 
         $template_exists = false;
 
@@ -491,6 +492,7 @@ class AdminPagesPageController extends BaseController {
 
         #Helper::dd($this->templates(__DIR__, '/views/tpl_block'));
 
+        $templates = array();
         foreach ($this->templates(__DIR__, '/views/tpl_block') as $template)
             @$templates[$template] = $template;
 

@@ -158,7 +158,7 @@ if (len > 0) {
                 ),
                 'handler' => function($array, $element) {
                     return ExtForm::process('gallery', array(
-                        'module'  => 'dicval_meta',
+                        'module'  => 'DicVal_meta',
                         'unit_id' => $element->id,
                         'gallery' => $array,
                         'single'  => true,
@@ -173,7 +173,7 @@ if (len > 0) {
                 'label_class' => 'input-file',
                 'handler' => function($value, $element = false) {
                     if (@is_object($element) && @is_array($value)) {
-                        $value['module'] = 'dicval';
+                        $value['module'] = 'DicVal';
                         $value['unit_id'] = $element->id;
                     }
                     return ExtForm::process('upload', $value);
@@ -185,7 +185,7 @@ if (len > 0) {
                 'type' => 'video',
                 'handler' => function($value, $element = false) {
                     if (@is_object($element) && @is_array($value)) {
-                        $value['module'] = 'dicval';
+                        $value['module'] = 'DicVal';
                         $value['unit_id'] = $element->id;
                     }
                     return ExtForm::process('video', $value);

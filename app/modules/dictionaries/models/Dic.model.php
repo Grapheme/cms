@@ -1,6 +1,6 @@
 <?php
 
-class Dictionary extends BaseModel {
+class Dic extends BaseModel {
 
 	protected $guarded = array();
 
@@ -28,6 +28,8 @@ class Dictionary extends BaseModel {
 	public static $rules = array(
 		'name' => 'required',
 	);
+
+    #public $all_dicval_relations = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
 
 
     /**
@@ -153,6 +155,9 @@ class Dictionary extends BaseModel {
         #$lists = new Collection;
         $lists = array();
 
+        if (!isset($collection) || (!is_array($collection) && !is_object($collection)))
+            return $lists;
+
         foreach ($collection as $c => $col) {
 
             if (!$listed_key) {
@@ -266,35 +271,86 @@ class Dictionary extends BaseModel {
     }
 
 
+
+
+
     /**
-     * Возвращает все записи в словаре, по его системному имени.
-     * Вторым параметром передается функция-замыкание с доп. условиями выборки,
-     * аналогичная по синтаксису доп. условия при вызове связи.
+     * Возвращает записи в словаре по его системному имени, имеет множество настроек.
+     * Вторым параметром передается функция-замыкание с доп. условиями выборки, аналогичная по синтаксису доп. условия при вызове связи.
      *
      * @param $slug
      * @param callable $conditions
-     * @return mixed
+     * @param string $with - array with relations which will be loaded
+     * @param bool $extract - extract or not extract?
+     * @param bool $unset - unset old data of the extracted fields
+     * @param bool $paginate - false / (int)10
+     * @return $this|Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Pagination\Paginator|static|static[]
      */
-    public static function valuesBySlug($slug, Closure $conditions = NULL) {
+    public static function valuesBySlug($slug, Closure $conditions = NULL, $with = 'all', $extract = true, $unset = true, $extract_ids = false, $paginate = false) {
 
-        #Helper::dd($slug);
-        $return = Dic::where('slug', $slug);
-        #dd($conditions);
+        $return = new Collection();
+
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic))
+            return $return;
+
+        $values = (new DicVal);
+        $tbl_dicval = $values->getTable();
+        $values = $values
+            ->where('dic_id', $dic->id)
+            ->where('version_of', NULL)
+            ->select($tbl_dicval.'.*')
+        ;
+
+        /**
+         * Дополнительные условия в функции-замыкании
+         */
         if (is_callable($conditions))
-            $return = $return->with(array('values_no_conditions' => $conditions));
+            call_user_func($conditions, $values);
+
+        if ($with == 'all')
+            $with = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
         else
-            $return = $return->with('values');
+            $with = (array)$with;
 
-        $return = $return->first();
+        if (count($with))
+            $values = $values->with($with);
 
-        #Helper::tad($return);
+        $values = $paginate ? $values->paginate((int)$paginate) : $values->get();
 
-        if (is_object($return))
-            $return = isset($return->values_no_conditions) ? $return->values_no_conditions : $return->values;
-        else
-            $return = Dic::firstOrNew(array('slug' => $slug))->with('values')->first()->values;
-        #return self::firstOrNew(array('slug' => $slug))->values;
-        return $return;
+        if (count($values) && $extract)
+            $values = DicLib::extracts($values, null, $unset, $extract_ids);
+
+        return $values;
+    }
+
+
+    /**
+     * Возвращает количество записей в словаре
+     *
+     * @param $slug
+     * @param callable $conditions
+     * @return bool|int
+     */
+    public static function valuesBySlugCount($slug, Closure $conditions = NULL) {
+
+        /**
+         * Словарь
+         */
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic))
+            return false;
+
+        $values = DicVal::where('dic_id', $dic->id)->where('version_of', NULL);
+
+        /**
+         * Дополнительные условия в функции-замыкании
+         */
+        if (is_callable($conditions))
+            call_user_func($conditions, $values);
+
+        $count = $values->count();
+        return $count;
     }
 
 
@@ -302,32 +358,90 @@ class Dictionary extends BaseModel {
      * Возвращает значение записи из словаря по системному имени словаря и системному имени записи.
      * Третьим параметром можно передать метку, указывающую на необходимость сделать экстракт записи.
      *
-     * @param $dic_slug
+     * @param $slug
      * @param $val_slug
+     * @param string $with
      * @param bool $extract
-     * @return mixed|static
+     * @param bool $unset
+     * @return $this|Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|static
      */
-    public static function valueBySlugs($dic_slug, $val_slug, $extract = false) {
+    public static function valueBySlugs($slug, $val_slug, $with = 'all', $extract = true, $unset = true) {
 
-        #Helper::d("$dic_slug, $val_slug");
+        $return = new Collection();
 
-        $data = self::where('slug', $dic_slug)->with(array('value' => function($query) use ($val_slug){
-                $query->where('version_of', NULL);
-                $query->where('slug', $val_slug);
-                $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
-            }))->first();
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic))
+            return $return;
 
-        if (is_object($data)) {
-            $data = $data->value;
+        $value = DicVal::where('dic_id', $dic->id)
+            ->where('version_of', NULL)
+            ->where('slug', $val_slug)
+        ;
 
-            if ($extract) {
-                $data->extract(0);
+        if ($with == 'all')
+            $with = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
+        else
+            $with = (array)$with;
+
+        if (count($with))
+            $value = $value->with($with);
+
+        $value = $value->first();
+
+        if ($extract && is_object($value))
+            $value->extract($unset);
+
+        return $value;
+    }
+
+
+    /**
+     * Возвращает значения записей из словаря по системному имени словаря и списку системных имен записей.
+     *
+     * @param $slug
+     * @param $val_slugs
+     * @param string $with
+     * @param bool $extract
+     * @param bool $unset
+     * @return $this|Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|static
+     */
+    public static function valuesBySlugs($slug, $val_slugs, $with = 'all', $extract = true, $unset = true) {
+
+        $return = new Collection();
+
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic))
+            return $return;
+
+        $values = DicVal::where('dic_id', $dic->id)
+            ->where('version_of', NULL)
+            ->whereIn('slug', $val_slugs)
+        ;
+
+        if ($with == 'all')
+            $with = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
+        else
+            $with = (array)$with;
+
+        if (count($with))
+            $values = $values->with($with);
+
+        $values = $values->get();
+
+        if (is_object($values) && $values->count()) {
+
+            if ($extract)
+                $values = DicLib::extracts($values, null, $unset, false);
+
+            foreach ($values as $v => $value) {
+                $values[$value->slug] = $value;
+                unset($values[$v]);
             }
         }
 
-        #Helper::tad($data);
+        #Helper::tad($values);
 
-        return is_object($data) ? $data : self::firstOrNew(array('id' => 0));
+        return $values;
     }
 
 
@@ -335,62 +449,86 @@ class Dictionary extends BaseModel {
      * Возвращает значение записи из словаря по системному имени словаря и ID записи.
      * Третьим параметром можно передать метку, указывающую на необходимость сделать экстракт записи.
      *
-     * @param $dic_slug
+     * @param $slug
      * @param $val_id
+     * @param string $with
      * @param bool $extract
-     * @return mixed|static
+     * @param bool $unset
+     * @return $this|Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|static
      */
-    public static function valueBySlugAndId($dic_slug, $val_id, $extract = false) {
+    public static function valueBySlugAndId($slug, $val_id, $with = 'all', $extract = true, $unset = true) {
 
-        $data = self::where('slug', $dic_slug)->with(array('value' => function($query) use ($val_id){
-            $query->where('version_of', NULL);
-            $query->where('id', $val_id);
-            $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
-        }))
-            ->first()
+        $return = new Collection();
+
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic))
+            return $return;
+
+        $value = DicVal::where('dic_id', $dic->id)
+            ->where('version_of', NULL)
+            ->where('id', $val_id)
         ;
 
-        if (is_object($data)) {
+        if ($with == 'all')
+            $with = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
+        else
+            $with = (array)$with;
 
-            $data = $data->value;
-            #Helper::tad($data);
-            if ($extract)
-                $data->extract(0);
-            #Helper::tad($data);
-        }
+        if (count($with))
+            $value = $value->with($with);
 
-        return is_object($data) ? $data : self::firstOrNew(array('id' => 0));
+        $value = $value->first();
+
+        if ($extract && is_object($value))
+            $value->extract($unset);
+
+        return $value;
     }
+
 
     /**
      * Возвращает записи из словаря по системному имени словаря и набору IDs нужных записей.
      * Третьим параметром можно передать метку, указывающую на необходимость сделать экстракт каждой записи.
      *
-     * @param $dic_slug
+     * @param $slug
      * @param $val_ids
+     * @param string $with
      * @param bool $extract
-     * @return mixed|static
+     * @param bool $unset
+     * @return $this|Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|static
      */
-    public static function valuesBySlugAndIds($dic_slug, $val_ids, $extract = false) {
+    public static function valuesBySlugAndIds($slug, $val_ids, $with = 'all', $extract = true, $unset = true, $extract_ids = false) {
 
-        $data = self::where('slug', $dic_slug)->with(array('values_no_conditions' => function($query) use ($val_ids){
-                $query->where('version_of', NULL);
-                $query->whereIn('id', $val_ids);
-                $query->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals');
-            }))
-            ->first()
-            ->values_no_conditions
+        $return = new Collection();
+
+        $dic = Dic::where('slug', $slug)->first();
+        if (!is_object($dic) || !is_array($val_ids) || !count($val_ids))
+            return $return;
+
+        $values = DicVal::where('dic_id', $dic->id)
+            ->where('version_of', NULL)
+            ->whereIn('id', $val_ids)
         ;
-        #Helper::tad($data);
 
-        ## Need to test
+        if ($with == 'all')
+            $with = ['meta', 'fields', 'textfields', 'seo', 'related_dicvals'];
+        else
+            $with = (array)$with;
+
+        if (count($with))
+            $values = $values->with($with);
+
+        $values = $values->get();
+
+        #Helper::tad($values);
+
         if ($extract)
-            $data = DicVal::extracts($data);
-        #Helper::tad($data);
+            $values = DicLib::extracts($values, null, $unset, $extract_ids);
 
-        return is_object($data) ? $data : self::firstOrNew(array('id' => 0));
+        #Helper::tad($values);
+
+        return $values;
     }
-
 
 
 
@@ -405,6 +543,6 @@ class Dictionary extends BaseModel {
 
 }
 
-class Dic extends Dictionary {
+class Dictionary extends Dic {
     ## Alias
 }

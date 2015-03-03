@@ -5,13 +5,14 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.2.*",
-		"way/generators": "*",
+		"way/generators": "2.6.*",
 		"intervention/image": "dev-master",
 		"barryvdh/laravel-ide-helper": "1.*",
-		"barryvdh/laravel-debugbar": "dev-master",
+		"barryvdh/laravel-debugbar": "1.8.*",
 		"scalia/sphinxsearch": "*",
 		"flynsarmy/db-blade-compiler": "1.*",
-        "sngrl/string-blade-compiler": "dev-master"
+        "sngrl/string-blade-compiler": "dev-master",
+		"sleeping-owl/with-join": "1.*"
 	},
 	"autoload": {
 		"classmap": [
