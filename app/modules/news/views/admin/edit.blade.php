@@ -2,7 +2,6 @@
 
 
 @section('style')
-<link rel="stylesheet" href="{{ link::path('css/redactor.css') }}" />
 @stop
 
 

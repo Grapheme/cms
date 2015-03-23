@@ -333,13 +333,28 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function scopeOrder_by_field($query, $key, $order_method = 'ASC') {
+
         $tbl_dicval = (new DicVal())->getTable();
         $tbl_dic_field_val = (new DicFieldVal())->getTable();
         $rand_tbl_alias = md5(time() . rand(999999, 9999999));
-        $query->join($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
+
+        /*
+        $query->leftJoin($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
             ->where($rand_tbl_alias . '.key', '=', $key)
             ->orderBy($rand_tbl_alias . '.value', $order_method)
         ;
+        */
+
+        $query
+            ->leftJoin($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, function ($join) use ($rand_tbl_alias, $tbl_dicval, $key) {
+                $join
+                    ->on($rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
+                    ->where($rand_tbl_alias . '.key', '=', DB::raw("'" . $key . "'"))
+                ;
+            })
+            ->orderBy($rand_tbl_alias . '.value', $order_method)
+        ;
+
         return $query;
     }
 

@@ -2,7 +2,6 @@
 
 
 @section('style')
-    {{ HTML::style('css/redactor.css') }}
 @stop
 
 

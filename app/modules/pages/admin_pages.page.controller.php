@@ -155,9 +155,9 @@ class AdminPagesPageController extends BaseController {
 
         $element = $this->essence->where('id', $id)
             #->with('metas.seo')
-            ->with('metas', 'seos')
+            ->with(['metas', 'seos'])
             ->with('blocks')
-            ->with('versions', 'original_version.versions')
+            ->with(['versions', 'original_version.versions'])
             ->first();
 
         if (!isset($element) || !is_object($element) || !$element->id) {
@@ -583,7 +583,7 @@ class AdminPagesPageController extends BaseController {
          * Находим запись резервной копии для восстановления
          */
         $version = $this->essence->where('id', $id)
-            ->with('metas', 'blocks.metas', 'seos')
+            ->with(['metas', 'blocks.metas', 'seos'])
             ->first();
 
         if (!isset($version) || !is_object($version) || $version->version_of == NULL)
@@ -595,7 +595,7 @@ class AdminPagesPageController extends BaseController {
          * Находим запись оригинала
          */
         $element = $this->essence->where('id', $version->version_of)
-            ->with('metas', 'blocks.metas', 'seos', 'versions')
+            ->with(['metas', 'blocks.metas', 'seos', 'versions'])
             ->first();
 
         if (!isset($element) || !is_object($element) || $element->version_of != NULL)
@@ -663,7 +663,7 @@ class AdminPagesPageController extends BaseController {
          * Запись должна быть оригиналом, т.е. иметь version_of = NULL
          */
         $element = $this->essence->where('id', $page_id)
-            ->with('metas', 'blocks.metas', 'seos', 'versions')
+            ->with(['metas', 'blocks.metas', 'seos', 'versions'])
             ->first();
         if (!isset($element) || !is_object($element) || $element->version_of != NULL)
             return false;
@@ -779,7 +779,7 @@ class AdminPagesPageController extends BaseController {
          * Она должна быть резервной копией, т.е. иметь version_of != NULL
          */
         $version = $this->essence->where('id', $page_id)
-            ->with('metas', 'blocks.meta', 'seos')
+            ->with(['metas', 'blocks.meta', 'seos'])
             ->first();
         if (!isset($version) || !is_object($version)) {
             return false;
@@ -790,7 +790,7 @@ class AdminPagesPageController extends BaseController {
          * Находим запись оригинала
          */
         $element = $this->essence->where('id', $version->version_of)
-            ->with('metas', 'blocks.meta', 'seos')
+            ->with(['metas', 'blocks.meta', 'seos'])
             ->first();
         if (!isset($element) || !is_object($element)) {
             return false;
@@ -892,7 +892,7 @@ class AdminPagesPageController extends BaseController {
          * Находим запись для удаления ее бэкапов
          * Запись должна быть оригиналом, т.е. иметь version_of = NULL
          */
-        $element = $this->essence->where('id', $page_id)->with('metas', 'blocks.metas', 'seos', 'versions')->first();
+        $element = $this->essence->where('id', $page_id)->with(['metas', 'blocks.metas', 'seos', 'versions'])->first();
         if (!isset($element) || !is_object($element) || $element->version_of != NULL)
             return false;
 

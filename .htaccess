@@ -12,9 +12,6 @@ Options -Indexes
 	RewriteCond %{HTTP_HOST} !^dev.grapheme$
 	RewriteRule (.*) /public/$1 [L]
 
-	# dev.grapheme.ru/project/
-    #RewriteRule (.*) ./public/$1 [L]
-
 </IfModule>
 
 php_value upload_max_filesize 10M

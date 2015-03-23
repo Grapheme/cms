@@ -211,6 +211,8 @@
                                         newslist<br/>sort_by=title<br/>sort_type=asc
                                     </label>
 
+                                    <div class="clear"></div>
+
                                     <label class="margin-top-10">
                                         <a href="#" class="btn btn-default add_to_menu add_to_menu_route">
                                             <i class="fa fa-angle-left"></i>
@@ -243,6 +245,8 @@
                                     <label class="note">
                                         Функции-обработчики определяются в конфигурационном файле меню (menu.functions)
                                     </label>
+
+                                    <div class="clear"></div>
 
                                     @if (count($functions))
                                     <label class="margin-top-10">
@@ -373,8 +377,8 @@
             <label class="label">
                 Текст ссылки
             </label>
-            <label class="input margin-bottom-10">
-                {{ Form::text('items[%N%][text]', '%text%', array('class' => 'text_for_title')) }}
+            <label class="textarea margin-bottom-10">
+                {{ Form::textarea('items[%N%][text]', '%text%', array('class' => 'text_for_title', 'rows' => 1)) }}
             </label>
 
             <label class="label">
@@ -409,8 +413,8 @@
             <label class="label">
                 Текст ссылки
             </label>
-            <label class="input margin-bottom-10">
-                {{ Form::text('items[%N%][text]', '%text%', array('class' => 'text_for_title')) }}
+            <label class="textarea margin-bottom-10">
+                {{ Form::textarea('items[%N%][text]', '%text%', array('class' => 'text_for_title', 'rows' => 1)) }}
             </label>
 
             <label class="label">
@@ -444,8 +448,8 @@
             <label class="label">
                 Текст ссылки
             </label>
-            <label class="input margin-bottom-10">
-                {{ Form::text('items[%N%][text]', '%text%', array('class' => 'text_for_title')) }}
+            <label class="textarea margin-bottom-10">
+                {{ Form::textarea('items[%N%][text]', '%text%', array('class' => 'text_for_title', 'rows' => 1)) }}
             </label>
 
             <label class="label">

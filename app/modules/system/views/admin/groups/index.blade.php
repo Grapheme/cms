@@ -75,4 +75,5 @@
 
 
 @section('scripts')
+    {{ HTML::script('private/js/modules/groups.js') }}
 @stop

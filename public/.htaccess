@@ -16,11 +16,4 @@
 	RewriteCond %{HTTP_HOST} !^dev.grapheme$
     RewriteRule ^ /index.php [L]
 
-    # dev.grapheme.ru/project/
-    RewriteCond %{REQUEST_URI} ^/[^/]+?/public/ [OR]
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_URI} ^/?([^/]+)
-    RewriteRule ^ ./index.php [L,E=SCRIPT_NAME:/%1/index.php]
-
 </IfModule>

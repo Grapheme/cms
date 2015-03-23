@@ -17,12 +17,15 @@
     $temp = array();
     $def_arr = array(
         'link' => mb_substr(action($module['class'] . '@getIndex'), 0, -6),
-        'title' => 'Все пользователи (' . User::count() . ')',
+        'title' => 'Все пользователи (' . (Allow::superuser() ? User::count() : User::where('group_id', '!=', 1)->count()) . ')',
     );
     $temp[] = $def_arr;
 
     if(isset($groups) && $groups->count()) {
         foreach ($groups as $grp) {
+            if ($grp->id == 1 && !Allow::superuser())
+                continue;
+
             $arr = array(
                 'link' => mb_substr(action($module['class'] . '@getIndex'), 0, -6) . "?group_id=" . $grp->id,
                 'title' => $grp->desc . ' (' . $grp->count_users() . ')',

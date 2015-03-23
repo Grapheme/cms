@@ -22,4 +22,4 @@
 	{{ HTML::script('private/js/system/main.js') }}
 	{{ HTML::script('private/js/system/app.js') }}
 
-    {{ HTML::script(URL::route('collector-js')) }}
+    {{ HTML::scriptmod(URL::route('collector-js')) }}

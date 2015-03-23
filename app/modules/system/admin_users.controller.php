@@ -60,13 +60,22 @@ class AdminUsersController extends BaseController {
         $group_id = Input::get('group_id');
         $group_name = Input::get('group');
 
+        $users = (new User());
+
         ## Обрабатываем условия фильтра
         if ($group_id != '' && !is_null($group = Group::where('id', $group_id)->first()))
-		    $users = User::where('group_id', $group->id)->get();
+		    $users = $users->where('group_id', $group->id);
         elseif ($group_name != '' && !is_null($group = Group::where('name', $group_name)->first()))
-		    $users = User::where('group_id', $group->id)->get();
-        else
-            $users = User::all();
+		    $users = $users->where('group_id', $group->id);
+        #else
+        #    $users = User::all();
+
+        if (!Allow::superuser())
+            $users = $users->where('group_id', '!=', 1);
+
+        $users = $users->get();
+
+        #Helper::tad($users);
 
         if (@!is_object($group))
             $group = Group::firstOrNew(array('id' => 0));

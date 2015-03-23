@@ -500,6 +500,28 @@ class AdminGalleriesController extends BaseController {
 		#}
 	}
 
+	public function postPhotoupdate() {
+
+        //App::abort(404);
+
+        $model = NULL;
+		$id = (int)Input::get('id');
+		$title = (string)Input::get('title');
+        if ($id)
+            $model = Photo::find($id);
+
+        if (!$id || is_null($model) || !$model)
+            return 'false';
+
+        $title = str_replace(["\r", "\n"], ' ', $title);
+        $title = str_replace('  ', ' ', $title);
+        $model->update([
+            'title' => $title,
+        ]);
+
+        return 'true';
+	}
+
     /****************************************************************************/
 
     ##

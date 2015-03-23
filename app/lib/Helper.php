@@ -484,7 +484,7 @@ HTML;
             return $array['content'];
         }
 
-        #Helper::d($array);
+        #Helper::d($array); return;
 
         $return = '';
         #$name = $array['name'];
@@ -493,7 +493,7 @@ HTML;
 
         #var_dump($value);
 
-        $value = (isset($value) && $value !== NULL) ? $value : @$array['default'];
+        $value = (isset($value)) ? $value : @$array['default'];
 
         #echo (int)(isset($value) && $value !== NULL);
         #var_dump($value);
@@ -527,6 +527,7 @@ HTML;
         $others = ' ' . implode(' ', $others);
         #$others_string = self::arrayToAttributes($others_array);
         #Helper::dd($others_array);
+
         switch (@$array['type']) {
             case 'text':
                 $return = Form::text($name, $value, $others_array);
@@ -569,10 +570,18 @@ HTML;
                 $return = Form::select($name . '[]', $values, $value, $others_array);
                 break;
             case 'checkbox':
+
+                #Helper::d($name);
+                #Helper::d($others_array);
+                #Helper::d($array['title']);
+                #Helper::d($array);
+                #var_dump($value);
+                #return;
+
                 #Helper::d($array);
                 #Helper::ta($element);
                 return '<label class="checkbox">'
-                . Form::checkbox($name, 1, @$element->$array['_name'], $others_array)
+                . Form::checkbox($name, 1, $value, $others_array)
                 . '<i></i>'
                 . '<span>' . $array['title'] . '</span>'
                 . '</label>';
@@ -601,10 +610,17 @@ HTML;
             case 'hidden':
                 $return = Form::hidden($name, $value, $others_array);
                 break;
+            case 'textline':
+                if (!$value)
+                    $return = Form::text($name, NULL, $others_array);
+                else
+                    $return = isset($array['view_text']) ? $array['view_text'] : $value;
+                break;
             case 'custom':
                 $return = @$array['content'];
                 break;
         }
+
         return $return;
     }
 

@@ -11,12 +11,35 @@
         @if (@is_object($gallery))
             <? $gallery_photos = $gallery->photos()->get(); ?>
             @if ($gallery_photos)
-                <div class="photo-previews sortable">
+                <div class="sortable photo-previews">
                     @foreach ($gallery_photos as $photo)
-                    <div class="photo-preview sortable_item" data-id="{{ $photo->id }}" style="background-image:url({{ URL::to($photo->thumb()) }});">
-                        <a href="{{ URL::to($photo->path()) }}" target="_blank" title="Полноразмерное изображение" style="display:block; height:100%; color:#090; background:transparent"></a>
-                        <a href="#" class="photo-delete" data-photo-id="{{ $photo->id }}" style="">Удалить</a>
-                    </div>
+
+                        <div id="image-{{ $photo->id }}" class="modal fade not-sortable" tabindex="-1" role="dialog" aria-labelledby="image-{{ $photo->id }}Label" aria-hidden="true">
+                            <div class="modal-dialog block-center text-center">
+                                    <img src={{ URL::to($photo->path()) }}>
+                            </div>
+                        </div>
+                        <a href="javascript:void(0);" class="display-inline-block image-data-popover" rel="popover" data-placement="top" data-original-title="<i class='fa fa-fw fa-pencil'></i> Изображение" data-content="
+<div class='image-data' style='min-width:230px'>
+    <div class='textarea'><textarea class='image-data-field' data-name='title' placeholder='Описание изображения...'></textarea></div>
+    <div class='note color-red image-save-data-error'></div>
+    <div class='form-actions text-center'>
+        <a href='#' data-toggle='modal' data-target='#image-{{ $photo->id }}' target='_blank' title='Полноразмерное изображение' class='btn btn-default btn-sm image-data-preview-link'>Просмотр</a>
+        &nbsp;
+        <span class='btn btn-primary btn-sm save-image-data' data-photo-id='{{ $photo->id }}'>Сохранить</span>
+    </div>
+</div>" data-image-title="{{ $photo->title }}" data-html="true">
+
+                            <span class="photo-preview sortable_item" data-id="{{ $photo->id }}" style="background-image:url({{ URL::to($photo->thumb()) }});">
+
+                                {{--<a href="{{ URL::to($photo->path()) }}" target="_blank" title="Полноразмерное изображение" style="display:block; height:100%; color:#090; background:transparent; display:none"></a>--}}
+
+                                <span href="#" class="photo-delete" data-photo-id="{{ $photo->id }}" style="">Удалить</span>
+                            </span>
+
+                        </a>
+
+
                     @endforeach
                 </div>
             @endif

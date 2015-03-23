@@ -499,7 +499,7 @@ class AdminDicvalsController extends BaseController {
              */
             $element_fields = Config::get('dic/' . $dic->slug . '.fields');
             if (isset($element_fields) && is_callable($element_fields))
-                $element_fields = $element_fields();
+                $element_fields = $element_fields($element);
 
             #Helper::dd($element_fields);
 
@@ -516,6 +516,7 @@ class AdminDicvalsController extends BaseController {
 
                     $value = @$fields[$key];
 
+                    #Helper::d($key);
                     #Helper::d($value);
                     #continue;
 
@@ -548,7 +549,7 @@ class AdminDicvalsController extends BaseController {
              */
             $element_fields_i18n = Config::get('dic/' . $dic->slug . '.fields_i18n');
             if (isset($element_fields_i18n) && is_callable($element_fields_i18n))
-                $element_fields_i18n = $element_fields_i18n();
+                $element_fields_i18n = $element_fields_i18n($element);
             #Helper::d($element_fields_i18n);
             #Helper::dd($fields_i18n);
 
@@ -652,6 +653,7 @@ class AdminDicvalsController extends BaseController {
             $element->load('metas', 'allfields', 'seos');
             $element = $element->extract(1);
 
+            $this->callHook('after_store_update', $dic, $element);
             if ($mode == 'update')
                 $this->callHook('after_update', $dic, $element);
             elseif ($mode == 'store')

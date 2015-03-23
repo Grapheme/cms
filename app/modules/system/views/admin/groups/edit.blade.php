@@ -140,6 +140,8 @@
 
 
 @section('scripts')
+    {{ HTML::script('private/js/modules/groups.js') }}
+
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runFormValidation === 'function') {

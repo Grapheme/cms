@@ -2,7 +2,7 @@
 
 return array(
 
-    'theme_path' => 'dist',
+    'theme_path' => URL::to('/dist'),
 
     'paginate_limit' => 30,
 

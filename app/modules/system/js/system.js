@@ -52,7 +52,7 @@ $.extend($.validator.messages, {
                             });
                         }
                     },
-                    cancel: ".not-sortable",
+                    cancel: ".not-sortable,.popover,.popover textarea",
                     distance: 5,
                     connectWith: connect_with
                 });

@@ -400,13 +400,14 @@ margin-left: 0;
     margin: 0 5px !important;
 }
 
-.photo-preview a.photo-delete, .photo-preview a.photo-delete-single {
+.photo-preview .photo-delete, .photo-preview .photo-delete-single {
     position:absolute; left:0; bottom:0; text-align:center; width:100%; color:#f00; background:#000;
     display:none;
 }
 
-.photo-preview:hover a.photo-delete, .photo-preview:hover a.photo-delete-single {
+.photo-preview:hover .photo-delete, .photo-preview:hover .photo-delete-single {
     display:inline-block;
+    cursor: pointer;
 }
 
 .photo-preview-single {
@@ -970,4 +971,79 @@ nav > ul > li > a b {
 }
 .smart-accordion-default .panel-title > .panel-title-link.collapsed > :first-child {
     display: inline-block;
+}
+
+
+
+.popover.fade.top {
+    z-index: 1 !important;
+}
+.popover.fade.top.in {
+    z-index: 1010 !important;
+}
+
+.popover {
+    background-color: #fff !important;
+}
+.popover-title {
+    margin: 0 !important;
+    padding: 8px 14px !important;
+}
+.popover-content {
+    padding: 14px 14px !important;
+}
+.popover-content .form-actions {
+    padding: 9px 14px !important;
+    margin: 13px -13px -13px -13px !important;
+    background-color: rgba(249, 249, 249, 0.901961) !important;
+}
+.save-image-data {
+    position: relative;
+    -webkit-transition: all .2s ease !important;
+    transition: all .2s ease !important;
+}
+.save-image-data:after {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+
+    content: "\f021";
+
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+
+    position: absolute;
+    right: 1em;
+    top: .7em;
+    opacity: 0;
+    -webkit-transition: all .2s ease !important;
+    transition: all .2s ease !important;
+}
+
+.save-image-data.loading {
+    padding-right: 30px;
+}
+
+.save-image-data.loading:after {
+    opacity: 1;
+}
+
+.color-red {
+    color: #f00 !important;
+}
+
+.block-center {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 1) !important;
+}
+.modal-dialog {
+    z-index: 1050;
 }

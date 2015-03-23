@@ -13,6 +13,7 @@ class CreatePhotosTable extends Migration {
     			$table->increments('id');
     			$table->string('name');
     			$table->string('gallery_id')->index();
+    			$table->text('title');
     			$table->integer('order')->unsigned()->default(999)->index();
     			$table->timestamps();
     		});

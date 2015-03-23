@@ -16,6 +16,7 @@ class Page extends BaseModel {
     protected $fillable = array(
         'version_of',
         'name',
+        'sysname',
         'slug',
         'template',
         'type_id',
@@ -66,6 +67,7 @@ class Page extends BaseModel {
      *
      * @return $this
      */
+    /*
     public function blocksBySlug() {
         #$return = $this;
         if (@count($this->blocks)) {
@@ -77,6 +79,7 @@ class Page extends BaseModel {
         }
         return $this;
     }
+    */
 
     public function block($slug = false, $field = 'content', $variables = array(), $force_compile = true) {
 

@@ -222,8 +222,8 @@ class MenuConstructor {
                     #Helper::d($res);
 
                     if (!@$data['use_function_data']) {
-                        $res['text'] = @$data['text'];
-                        $res['title'] = @$data['title'];
+                        $res['text'] = @StringView::force($data['text']);
+                        $res['title'] = @StringView::force($data['title']);
                     }
 
                     #@$return .=
@@ -288,7 +288,7 @@ class MenuConstructor {
          */
         $attr = array();
         if (isset($data['title']) && $data['title'] != '')
-            $attr['title'] = $data['title'];
+            $attr['title'] = StringView::force($data['title']);
         if (isset($data['target']))
             $attr['target'] = $data['target'];
 
@@ -311,7 +311,7 @@ class MenuConstructor {
             array(
                 '%url%' => $url,
                 '%attr%' => ' ' . trim(Helper::arrayToAttributes($attr)),
-                '%text%' => @$data['text'],
+                '%text%' => @StringView::force($data['text']),
             )
         );
         $return = preg_replace("~\%[^\%]+?\%~is", '', $return);

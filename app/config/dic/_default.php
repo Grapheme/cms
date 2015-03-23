@@ -44,15 +44,14 @@
  * - checkbox
  * - checkboxes (замена select-multiple)
  * - hidden
+ * - textline (если нет значения - текстовая строка для ввода (обычно ID), если есть - значение из view_text)
  * - custom
- * - textview (если нет значения - текстовая строка, если есть - значение из view_text)
+ * - [map] - с помощью custom помогает сделать карту для геокодинга (связывает адреса и координаты)
  *
  * Типы полей, запланированных к разработке:
  * - radio
  * - upload-group
  * - video-group
- *
- * Также в планах - возможность активировать SEO-модуль для каждого словаря по отдельности (ключ массива seo) и обрабатывать его.
  *
  * [!] Для визуального разделения можно использовать следующий элемент массива: array('content' => '<hr/>'),
  *
@@ -158,7 +157,7 @@ if (len > 0) {
                 ),
                 'handler' => function($array, $element) {
                     return ExtForm::process('gallery', array(
-                        'module'  => 'DicVal_meta',
+                        'module'  => 'DicValMeta',
                         'unit_id' => $element->id,
                         'gallery' => $array,
                         'single'  => true,
@@ -253,6 +252,32 @@ if (len > 0) {
                 'title' => 'Обещание',
                 'type' => 'textline',
                 'view_text' => @$lists['promises'][$dicval->promise_id], ## Используется предзагруженный словарь
+            ),
+
+            ## КАРТА ДЛЯ ГЕОКОДИНГА
+            'map' => array(
+                'type' => 'custom',
+                'content' => View::make('system.views.map_google_block', [
+                    'element' => $dicval,
+
+                    #'map_id' => 'map',
+                    #'map_style' => 'height:300px;',
+                ])->render(),
+                'scripts' => View::make('system.views.map_google_script', [
+                    'element' => $dicval,
+
+                    #'map_id' => 'map',
+                    #'map_type' => 'google.maps.MapTypeId.ROADMAP',
+                    #'field_address' => 'address',
+                    #'field_lat' => 'lat',
+                    #'field_lng' => 'lng',
+                    #'keyup_timer' => 1200,
+
+                    'geo_prefix' => 'Россия, Ростов-на-Дону, ',
+                    'default_lat' => '47.25221300',
+                    'default_lng' => '39.69359700',
+                    'default_zoom' => '11',
+                ])->render(),
             ),
 
         );
@@ -420,6 +445,12 @@ if (len > 0) {
          * Вызывается в метода postStore, после обновления записи
          */
         'after_update' => function ($dic, $dicval) {
+        },
+
+        /**
+         * Вызывается в методе postStore, после создания или обновления записи
+         */
+        'after_store_update' => function ($dic, $dicval) {
         },
 
         /**

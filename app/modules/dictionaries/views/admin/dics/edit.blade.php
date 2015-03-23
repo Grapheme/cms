@@ -76,9 +76,9 @@
                     </section>
 
                     <section>
-                        <label class="label">Класс иконки <a href="http://fontawesome.io/icons/" target="_blank">FontAwesome</a></label>
+                        <label class="label">Класс иконки <a href="http://fontawesome.io/icons/" target="_blank">FontAwesome</a>:</label>
                         <label class="input">
-                            {{ Form::text('icon_class', null, array('placeholder' => 'Например: fa-circle-o')) }}
+                            {{ Form::text('icon_class', $element->icon_class ?: 'fa-circle-o', array('placeholder' => 'Например: fa-circle-o')) }}
                         </label>
                     </section>
 
