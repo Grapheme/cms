@@ -11,7 +11,9 @@ class PublicPagesController extends BaseController {
      * @todo Возможно, в будущем здесь нужно будет добавить проверку параметра, использовать ли вообще мультиязычность по сегментам урла, или нет. Например, удобно будет отключить мультиязычность по сегментам при использовании разных доменных имен для каждой языковой версии.
      */
     public static function returnRoutes($prefix = null) {
-        
+
+        #Page::load_all();
+
         #Helper::dd(I18nPage::count());
 
         $class = __CLASS__;

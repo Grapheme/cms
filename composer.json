@@ -6,7 +6,7 @@
 	"require": {
 		"laravel/framework": "4.2.*",
 		"way/generators": "2.6.*",
-		"intervention/image": "dev-master",
+		"intervention/image": "2.1.*",
 		"barryvdh/laravel-ide-helper": "1.*",
 		"barryvdh/laravel-debugbar": "1.8.*",
 		"scalia/sphinxsearch": "*",

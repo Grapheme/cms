@@ -188,4 +188,12 @@ class Page extends BaseModel {
         return $this;
     }
 
+
+
+    public static function load_all() {
+
+        $pages = Page::all();
+        Helper::tad($pages);
+    }
+
 }
