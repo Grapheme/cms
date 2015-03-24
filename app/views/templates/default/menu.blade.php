@@ -1,3 +1,8 @@
+<?
+/**
+ * TEMPLATE_IS_NOT_SETTABLE
+ */
+?>
 @if(!empty($menu))
 <ul class="nav-list list-unstyled max-width-class text-center">
 	@foreach($menu as $url => $name)

@@ -1,7 +1,7 @@
 <?php
 /**
  * An helper file for Laravel 4, to provide autocomplete information to your IDE
- * Generated for Laravel 4.2.9 on 2014-10-07.
+ * Generated for Laravel 4.2.17 on 2015-03-24.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -366,7 +366,7 @@ namespace {
         }
         
         /**
-         * Terminate the request and send the response to the browser.
+         * Call the "finish" and "shutdown" callbacks assigned to the application.
          *
          * @param \Symfony\Component\HttpFoundation\Request $request
          * @param \Symfony\Component\HttpFoundation\Response $response
@@ -1095,7 +1095,7 @@ namespace {
         }
         
         /**
-         * Set an input definition set to be used with this application
+         * Set an input definition set to be used with this application.
          *
          * @param \Symfony\Component\Console\InputDefinition $definition The input definition
          * @api 
@@ -1351,7 +1351,7 @@ namespace {
         }
         
         /**
-         * Tries to figure out the terminal dimensions based on the current environment
+         * Tries to figure out the terminal dimensions based on the current environment.
          *
          * @return array Array containing width and height
          * @static 
@@ -2340,6 +2340,11 @@ namespace {
     }
 
 
+    class Carbon extends \Carbon\Carbon{
+        
+    }
+
+
     class ClassLoader extends \Illuminate\Support\ClassLoader{
         
     }
@@ -2747,206 +2752,6 @@ namespace {
     }
 
 
-    class DbView extends \Flynsarmy\DbBladeCompiler\Facades\DbView{
-        
-        /**
-         * Get a evaluated view contents for the given view.
-         *
-         * @param \Flynsarmy\DbBladeCompiler\Illuminate\Database\Eloquent\Model $view
-         * @param array $data
-         * @param array $mergeData
-         * @param string $content_field
-         * @return \Illuminate\View\View 
-         * @static 
-         */
-        public static function make($view, $data = array(), $mergeData = array(), $content_field = null){
-            return \Flynsarmy\DbBladeCompiler\DbView::make($view, $data, $mergeData, $content_field);
-        }
-        
-        /**
-         * 
-         *
-         * @static 
-         */
-        public static function field($content_field){
-            return \Flynsarmy\DbBladeCompiler\DbView::field($content_field);
-        }
-        
-        /**
-         * Get the string contents of the view.
-         *
-         * @param \Closure $callback
-         * @return string 
-         * @static 
-         */
-        public static function render($callback = null){
-            return \Flynsarmy\DbBladeCompiler\DbView::render($callback);
-        }
-        
-        /**
-         * Add a view instance to the view data.
-         *
-         * @param string $key
-         * @param string $view
-         * @param array $data
-         * @return \Illuminate\View\View 
-         * @static 
-         */
-        public static function nest($key, $view, $data = array()){
-            return \Flynsarmy\DbBladeCompiler\DbView::nest($key, $view, $data);
-        }
-        
-        /**
-         * Determine if a piece of data is bound.
-         *
-         * @param string $key
-         * @return bool 
-         * @static 
-         */
-        public static function offsetExists($key){
-            return \Flynsarmy\DbBladeCompiler\DbView::offsetExists($key);
-        }
-        
-        /**
-         * Get a piece of bound data to the view.
-         *
-         * @param string $key
-         * @return mixed 
-         * @static 
-         */
-        public static function offsetGet($key){
-            return \Flynsarmy\DbBladeCompiler\DbView::offsetGet($key);
-        }
-        
-        /**
-         * Set a piece of data on the view.
-         *
-         * @param string $key
-         * @param mixed $value
-         * @return void 
-         * @static 
-         */
-        public static function offsetSet($key, $value){
-            \Flynsarmy\DbBladeCompiler\DbView::offsetSet($key, $value);
-        }
-        
-        /**
-         * Unset a piece of data from the view.
-         *
-         * @param string $key
-         * @return void 
-         * @static 
-         */
-        public static function offsetUnset($key){
-            \Flynsarmy\DbBladeCompiler\DbView::offsetUnset($key);
-        }
-        
-        /**
-         * Get the sections of the rendered view.
-         *
-         * @return array 
-         * @static 
-         */
-        public static function renderSections(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::renderSections();
-        }
-        
-        /**
-         * Add a piece of data to the view.
-         *
-         * @param string|array $key
-         * @param mixed $value
-         * @return $this 
-         * @static 
-         */
-        public static function with($key, $value = null){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::with($key, $value);
-        }
-        
-        /**
-         * Add validation errors to the view.
-         *
-         * @param \Illuminate\Support\Contracts\MessageProviderInterface|array $provider
-         * @return $this 
-         * @static 
-         */
-        public static function withErrors($provider){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::withErrors($provider);
-        }
-        
-        /**
-         * Get the view factory instance.
-         *
-         * @return \Illuminate\View\Factory 
-         * @static 
-         */
-        public static function getFactory(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::getFactory();
-        }
-        
-        /**
-         * Get the view's rendering engine.
-         *
-         * @return \Illuminate\View\Engines\EngineInterface 
-         * @static 
-         */
-        public static function getEngine(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::getEngine();
-        }
-        
-        /**
-         * Get the name of the view.
-         *
-         * @return string 
-         * @static 
-         */
-        public static function getName(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::getName();
-        }
-        
-        /**
-         * Get the array of view data.
-         *
-         * @return array 
-         * @static 
-         */
-        public static function getData(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::getData();
-        }
-        
-        /**
-         * Get the path to the view file.
-         *
-         * @return string 
-         * @static 
-         */
-        public static function getPath(){
-            //Method inherited from \Illuminate\View\View            
-            return \Flynsarmy\DbBladeCompiler\DbView::getPath();
-        }
-        
-        /**
-         * Set the path to the view.
-         *
-         * @param string $path
-         * @return void 
-         * @static 
-         */
-        public static function setPath($path){
-            //Method inherited from \Illuminate\View\View            
-            \Flynsarmy\DbBladeCompiler\DbView::setPath($path);
-        }
-        
-    }
-
-
     class DB extends \Illuminate\Support\Facades\DB{
         
         /**
@@ -3306,7 +3111,7 @@ namespace {
          *
          * @param string $query
          * @param array $bindings
-         * @param $time
+         * @param float|null $time
          * @return void 
          * @static 
          */
@@ -3742,6 +3547,206 @@ namespace {
     }
 
 
+    class DbView extends \Flynsarmy\DbBladeCompiler\Facades\DbView{
+        
+        /**
+         * Get a evaluated view contents for the given view.
+         *
+         * @param \Flynsarmy\DbBladeCompiler\Illuminate\Database\Eloquent\Model $view
+         * @param array $data
+         * @param array $mergeData
+         * @param string $content_field
+         * @return \Illuminate\View\View 
+         * @static 
+         */
+        public static function make($view, $data = array(), $mergeData = array(), $content_field = null){
+            return \Flynsarmy\DbBladeCompiler\DbView::make($view, $data, $mergeData, $content_field);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function field($content_field){
+            return \Flynsarmy\DbBladeCompiler\DbView::field($content_field);
+        }
+        
+        /**
+         * Get the string contents of the view.
+         *
+         * @param \Closure $callback
+         * @return string 
+         * @static 
+         */
+        public static function render($callback = null){
+            return \Flynsarmy\DbBladeCompiler\DbView::render($callback);
+        }
+        
+        /**
+         * Add a view instance to the view data.
+         *
+         * @param string $key
+         * @param string $view
+         * @param array $data
+         * @return \Illuminate\View\View 
+         * @static 
+         */
+        public static function nest($key, $view, $data = array()){
+            return \Flynsarmy\DbBladeCompiler\DbView::nest($key, $view, $data);
+        }
+        
+        /**
+         * Determine if a piece of data is bound.
+         *
+         * @param string $key
+         * @return bool 
+         * @static 
+         */
+        public static function offsetExists($key){
+            return \Flynsarmy\DbBladeCompiler\DbView::offsetExists($key);
+        }
+        
+        /**
+         * Get a piece of bound data to the view.
+         *
+         * @param string $key
+         * @return mixed 
+         * @static 
+         */
+        public static function offsetGet($key){
+            return \Flynsarmy\DbBladeCompiler\DbView::offsetGet($key);
+        }
+        
+        /**
+         * Set a piece of data on the view.
+         *
+         * @param string $key
+         * @param mixed $value
+         * @return void 
+         * @static 
+         */
+        public static function offsetSet($key, $value){
+            \Flynsarmy\DbBladeCompiler\DbView::offsetSet($key, $value);
+        }
+        
+        /**
+         * Unset a piece of data from the view.
+         *
+         * @param string $key
+         * @return void 
+         * @static 
+         */
+        public static function offsetUnset($key){
+            \Flynsarmy\DbBladeCompiler\DbView::offsetUnset($key);
+        }
+        
+        /**
+         * Get the sections of the rendered view.
+         *
+         * @return array 
+         * @static 
+         */
+        public static function renderSections(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::renderSections();
+        }
+        
+        /**
+         * Add a piece of data to the view.
+         *
+         * @param string|array $key
+         * @param mixed $value
+         * @return $this 
+         * @static 
+         */
+        public static function with($key, $value = null){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::with($key, $value);
+        }
+        
+        /**
+         * Add validation errors to the view.
+         *
+         * @param \Illuminate\Support\Contracts\MessageProviderInterface|array $provider
+         * @return $this 
+         * @static 
+         */
+        public static function withErrors($provider){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::withErrors($provider);
+        }
+        
+        /**
+         * Get the view factory instance.
+         *
+         * @return \Illuminate\View\Factory 
+         * @static 
+         */
+        public static function getFactory(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::getFactory();
+        }
+        
+        /**
+         * Get the view's rendering engine.
+         *
+         * @return \Illuminate\View\Engines\EngineInterface 
+         * @static 
+         */
+        public static function getEngine(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::getEngine();
+        }
+        
+        /**
+         * Get the name of the view.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getName(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::getName();
+        }
+        
+        /**
+         * Get the array of view data.
+         *
+         * @return array 
+         * @static 
+         */
+        public static function getData(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::getData();
+        }
+        
+        /**
+         * Get the path to the view file.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getPath(){
+            //Method inherited from \Illuminate\View\View            
+            return \Flynsarmy\DbBladeCompiler\DbView::getPath();
+        }
+        
+        /**
+         * Set the path to the view.
+         *
+         * @param string $path
+         * @return void 
+         * @static 
+         */
+        public static function setPath($path){
+            //Method inherited from \Illuminate\View\View            
+            \Flynsarmy\DbBladeCompiler\DbView::setPath($path);
+        }
+        
+    }
+
+
     class Eloquent extends \Illuminate\Database\Eloquent\Model{
         
         /**
@@ -3849,16 +3854,6 @@ namespace {
          */
         public static function simplePaginate($perPage = null, $columns = array()){
             return \Illuminate\Database\Eloquent\Builder::simplePaginate($perPage, $columns);
-        }
-        
-        /**
-         * Run the default delete function on the builder.
-         *
-         * @return mixed 
-         * @static 
-         */
-        public static function forceDelete(){
-            return \Illuminate\Database\Eloquent\Builder::forceDelete();
         }
         
         /**
@@ -4451,6 +4446,20 @@ namespace {
         }
         
         /**
+         * Add a "where date" statement to the query.
+         *
+         * @param string $column
+         * @param string $operator
+         * @param int $value
+         * @param string $boolean
+         * @return \Illuminate\Database\Query\Builder|static 
+         * @static 
+         */
+        public static function whereDate($column, $operator, $value, $boolean = 'and'){
+            return \Illuminate\Database\Query\Builder::whereDate($column, $operator, $value, $boolean);
+        }
+        
+        /**
          * Add a "where day" statement to the query.
          *
          * @param string $column
@@ -4507,6 +4516,7 @@ namespace {
         /**
          * Add a "group by" clause to the query.
          *
+         * @param array|string $column,...
          * @return $this 
          * @static 
          */
@@ -5064,6 +5074,16 @@ namespace {
             return \Illuminate\Database\Query\Builder::getGrammar();
         }
         
+        /**
+         * Use the write pdo for query.
+         *
+         * @return $this 
+         * @static 
+         */
+        public static function useWritePdo(){
+            return \Illuminate\Database\Query\Builder::useWritePdo();
+        }
+        
     }
 
 
@@ -5206,6 +5226,16 @@ namespace {
             \Illuminate\Events\Dispatcher::forget($event);
         }
         
+        /**
+         * Forget all of the queued listeners.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function forgetQueued(){
+            \Illuminate\Events\Dispatcher::forgetQueued();
+        }
+        
     }
 
 
@@ -5262,11 +5292,12 @@ namespace {
          *
          * @param string $path
          * @param string $contents
+         * @param bool $lock
          * @return int 
          * @static 
          */
-        public static function put($path, $contents){
-            return \Illuminate\Filesystem\Filesystem::put($path, $contents);
+        public static function put($path, $contents, $lock = false){
+            return \Illuminate\Filesystem\Filesystem::put($path, $contents, $lock);
         }
         
         /**
@@ -5326,6 +5357,17 @@ namespace {
          */
         public static function copy($path, $target){
             return \Illuminate\Filesystem\Filesystem::copy($path, $target);
+        }
+        
+        /**
+         * Extract the file name from a file path.
+         *
+         * @param string $path
+         * @return string 
+         * @static 
+         */
+        public static function name($path){
+            return \Illuminate\Filesystem\Filesystem::name($path);
         }
         
         /**
@@ -5681,6 +5723,7 @@ namespace {
          * Create a number input field.
          *
          * @param string $name
+         * @param string|null $value
          * @param array $options
          * @return string 
          * @static 
@@ -5967,6 +6010,17 @@ namespace {
          */
         public static function needsRehash($hashedValue, $options = array()){
             return \Illuminate\Hashing\BcryptHasher::needsRehash($hashedValue, $options);
+        }
+        
+        /**
+         * Set the default crypt cost factor.
+         *
+         * @param int $rounds
+         * @return void 
+         * @static 
+         */
+        public static function setRounds($rounds){
+            \Illuminate\Hashing\BcryptHasher::setRounds($rounds);
         }
         
     }
@@ -6741,7 +6795,7 @@ namespace {
          * Overrides the PHP global variables according to this request instance.
          * 
          * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
-         * $_FILES is never override, see rfc1867
+         * $_FILES is never overridden, see rfc1867
          *
          * @api 
          * @static 
@@ -6855,6 +6909,9 @@ namespace {
          * 
          * Be warned that enabling this feature might lead to CSRF issues in your code.
          * Check that you are using CSRF tokens when required.
+         * If the HTTP method parameter override is enabled, an html-form with method "POST" can be altered
+         * and used to send a "PUT" or "DELETE" request via the _method request parameter.
+         * If these methods are not protected against CSRF, this presents a possible vulnerability.
          * 
          * The HTTP method can only be overridden when the real HTTP method is POST.
          *
@@ -7279,7 +7336,7 @@ namespace {
          *
          * @return string The request method
          * @api 
-         * @see getRealMethod
+         * @see getRealMethod()
          * @static 
          */
         public static function getMethod(){
@@ -7291,7 +7348,7 @@ namespace {
          * Gets the "real" request method.
          *
          * @return string The request method
-         * @see getMethod
+         * @see getMethod()
          * @static 
          */
         public static function getRealMethod(){
@@ -7535,7 +7592,7 @@ namespace {
         }
         
         /**
-         * Gets a list of content types acceptable by the client browser
+         * Gets a list of content types acceptable by the client browser.
          *
          * @return array List of content types in preferable order
          * @api 
@@ -7549,7 +7606,7 @@ namespace {
         /**
          * Returns true if the request is a XMLHttpRequest.
          * 
-         * It works if your JavaScript library set an X-Requested-With HTTP header.
+         * It works if your JavaScript library sets an X-Requested-With HTTP header.
          * It is known to work with common JavaScript frameworks:
          *
          * @link http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
@@ -7897,7 +7954,7 @@ namespace {
          * Register an error_log handler.
          *
          * @param string $level
-         * @param integer $messageType
+         * @param int $messageType
          * @return void 
          * @static 
          */
@@ -8610,7 +8667,7 @@ namespace {
         }
         
         /**
-         * Push a new an array of jobs onto the queue.
+         * Push an array of jobs onto the queue.
          *
          * @param array $jobs
          * @param mixed $data
@@ -9373,7 +9430,7 @@ namespace {
          * Overrides the PHP global variables according to this request instance.
          * 
          * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
-         * $_FILES is never override, see rfc1867
+         * $_FILES is never overridden, see rfc1867
          *
          * @api 
          * @static 
@@ -9487,6 +9544,9 @@ namespace {
          * 
          * Be warned that enabling this feature might lead to CSRF issues in your code.
          * Check that you are using CSRF tokens when required.
+         * If the HTTP method parameter override is enabled, an html-form with method "POST" can be altered
+         * and used to send a "PUT" or "DELETE" request via the _method request parameter.
+         * If these methods are not protected against CSRF, this presents a possible vulnerability.
          * 
          * The HTTP method can only be overridden when the real HTTP method is POST.
          *
@@ -9911,7 +9971,7 @@ namespace {
          *
          * @return string The request method
          * @api 
-         * @see getRealMethod
+         * @see getRealMethod()
          * @static 
          */
         public static function getMethod(){
@@ -9923,7 +9983,7 @@ namespace {
          * Gets the "real" request method.
          *
          * @return string The request method
-         * @see getMethod
+         * @see getMethod()
          * @static 
          */
         public static function getRealMethod(){
@@ -10167,7 +10227,7 @@ namespace {
         }
         
         /**
-         * Gets a list of content types acceptable by the client browser
+         * Gets a list of content types acceptable by the client browser.
          *
          * @return array List of content types in preferable order
          * @api 
@@ -10181,7 +10241,7 @@ namespace {
         /**
          * Returns true if the request is a XMLHttpRequest.
          * 
-         * It works if your JavaScript library set an X-Requested-With HTTP header.
+         * It works if your JavaScript library sets an X-Requested-With HTTP header.
          * It is known to work with common JavaScript frameworks:
          *
          * @link http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
@@ -11050,7 +11110,7 @@ namespace {
         }
         
         /**
-         * Sets the session ID
+         * Sets the session ID.
          *
          * @param string $id
          * @api 
@@ -11100,9 +11160,9 @@ namespace {
          * session and deletes the old session from persistence.
          *
          * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
-         *                          will leave the system settings unchanged, 0 sets the cookie
-         *                          to expire with browser session. Time is in seconds, and is
-         *                          not a Unix timestamp.
+         *                      will leave the system settings unchanged, 0 sets the cookie
+         *                      to expire with browser session. Time is in seconds, and is
+         *                      not a Unix timestamp.
          * @return bool True if session invalidated, false if error.
          * @api 
          * @static 
@@ -11117,9 +11177,9 @@ namespace {
          *
          * @param bool $destroy Whether to delete the old session or leave it to garbage collection.
          * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
-         *                          will leave the system settings unchanged, 0 sets the cookie
-         *                          to expire with browser session. Time is in seconds, and is
-         *                          not a Unix timestamp.
+         *                       will leave the system settings unchanged, 0 sets the cookie
+         *                       to expire with browser session. Time is in seconds, and is
+         *                       not a Unix timestamp.
          * @return bool True if session migrated, false if error.
          * @api 
          * @static 
@@ -11711,11 +11771,6 @@ namespace {
 
 
     class Str extends \Illuminate\Support\Str{
-        
-    }
-
-
-    class StringView extends \sngrl\StringBladeCompiler\StringBladeCompilerServiceProvider{
         
     }
 
@@ -12507,6 +12562,408 @@ namespace {
          */
         public static function cache($callback, $lifetime = null, $returnObj = false){
             return \Intervention\Image\ImageManager::cache($callback, $lifetime, $returnObj);
+        }
+        
+    }
+
+
+    class SphinxSearch extends \Scalia\SphinxSearch\SphinxSearchFacade{
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function search($string, $index_name = null){
+            return \Scalia\SphinxSearch\SphinxSearch::search($string, $index_name);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setFieldWeights($weights){
+            return \Scalia\SphinxSearch\SphinxSearch::setFieldWeights($weights);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setMatchMode($mode){
+            return \Scalia\SphinxSearch\SphinxSearch::setMatchMode($mode);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setRankingMode($mode){
+            return \Scalia\SphinxSearch\SphinxSearch::setRankingMode($mode);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setSortMode($mode, $sortby = null){
+            return \Scalia\SphinxSearch\SphinxSearch::setSortMode($mode, $sortby);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setFilterFloatRange($attribute, $min, $max, $exclude = false){
+            return \Scalia\SphinxSearch\SphinxSearch::setFilterFloatRange($attribute, $min, $max, $exclude);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setGeoAnchor($attrlat, $attrlong, $lat = null, $long = null){
+            return \Scalia\SphinxSearch\SphinxSearch::setGeoAnchor($attrlat, $attrlong, $lat, $long);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setGroupBy($attribute, $func, $groupsort = '@group desc'){
+            return \Scalia\SphinxSearch\SphinxSearch::setGroupBy($attribute, $func, $groupsort);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function setSelect($select){
+            return \Scalia\SphinxSearch\SphinxSearch::setSelect($select);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function limit($limit, $offset = 0, $max_matches = 1000, $cutoff = 1000){
+            return \Scalia\SphinxSearch\SphinxSearch::limit($limit, $offset, $max_matches, $cutoff);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function filter($attribute, $values, $exclude = false){
+            return \Scalia\SphinxSearch\SphinxSearch::filter($attribute, $values, $exclude);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function range($attribute, $min, $max, $exclude = false){
+            return \Scalia\SphinxSearch\SphinxSearch::range($attribute, $min, $max, $exclude);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function query(){
+            return \Scalia\SphinxSearch\SphinxSearch::query();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function excerpt($content, $opts = array()){
+            return \Scalia\SphinxSearch\SphinxSearch::excerpt($content, $opts);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function excerpts($contents, $opts = array()){
+            return \Scalia\SphinxSearch\SphinxSearch::excerpts($contents, $opts);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function get($respect_sort_order = false){
+            return \Scalia\SphinxSearch\SphinxSearch::get($respect_sort_order);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function with(){
+            return \Scalia\SphinxSearch\SphinxSearch::with();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function getTotalCount(){
+            return \Scalia\SphinxSearch\SphinxSearch::getTotalCount();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function getTime(){
+            return \Scalia\SphinxSearch\SphinxSearch::getTime();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function getErrorMessage(){
+            return \Scalia\SphinxSearch\SphinxSearch::getErrorMessage();
+        }
+        
+    }
+
+
+    class Collection extends \Illuminate\Database\Eloquent\Collection{
+        
+    }
+
+
+    class StringView extends \sngrl\StringBladeCompiler\Facades\StringView{
+        
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function force($view, $data = array(), $mergeData = array()){
+            return \sngrl\StringBladeCompiler\StringView::force($view, $data, $mergeData);
+        }
+        
+        /**
+         * Get a evaluated view contents for the given view.
+         *
+         * @param object $view
+         * @param array $data
+         * @param array $mergeData
+         * @return \Illuminate\View\View 
+         * @static 
+         */
+        public static function make($view, $data = array(), $mergeData = array()){
+            return \sngrl\StringBladeCompiler\StringView::make($view, $data, $mergeData);
+        }
+        
+        /**
+         * Get the string contents of the view.
+         *
+         * @param \Closure $callback
+         * @return string 
+         * @static 
+         */
+        public static function render($callback = null){
+            return \sngrl\StringBladeCompiler\StringView::render($callback);
+        }
+        
+        /**
+         * Add a view instance to the view data.
+         *
+         * @param string $key
+         * @param string $view
+         * @param array $data
+         * @return \Illuminate\View\View 
+         * @static 
+         */
+        public static function nest($key, $view, $data = array()){
+            return \sngrl\StringBladeCompiler\StringView::nest($key, $view, $data);
+        }
+        
+        /**
+         * Determine if a piece of data is bound.
+         *
+         * @param string $key
+         * @return bool 
+         * @static 
+         */
+        public static function offsetExists($key){
+            return \sngrl\StringBladeCompiler\StringView::offsetExists($key);
+        }
+        
+        /**
+         * Get a piece of bound data to the view.
+         *
+         * @param string $key
+         * @return mixed 
+         * @static 
+         */
+        public static function offsetGet($key){
+            return \sngrl\StringBladeCompiler\StringView::offsetGet($key);
+        }
+        
+        /**
+         * Set a piece of data on the view.
+         *
+         * @param string $key
+         * @param mixed $value
+         * @return void 
+         * @static 
+         */
+        public static function offsetSet($key, $value){
+            \sngrl\StringBladeCompiler\StringView::offsetSet($key, $value);
+        }
+        
+        /**
+         * Unset a piece of data from the view.
+         *
+         * @param string $key
+         * @return void 
+         * @static 
+         */
+        public static function offsetUnset($key){
+            \sngrl\StringBladeCompiler\StringView::offsetUnset($key);
+        }
+        
+        /**
+         * Checks if a string is a valid timestamp.
+         * 
+         * from https://gist.github.com/sepehr/6351385
+         *
+         * @param string $timestamp Timestamp to validate.
+         * @return bool 
+         * @static 
+         */
+        public static function is_timestamp($timestamp){
+            return \sngrl\StringBladeCompiler\StringView::is_timestamp($timestamp);
+        }
+        
+        /**
+         * Get the sections of the rendered view.
+         *
+         * @return array 
+         * @static 
+         */
+        public static function renderSections(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::renderSections();
+        }
+        
+        /**
+         * Add a piece of data to the view.
+         *
+         * @param string|array $key
+         * @param mixed $value
+         * @return $this 
+         * @static 
+         */
+        public static function with($key, $value = null){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::with($key, $value);
+        }
+        
+        /**
+         * Add validation errors to the view.
+         *
+         * @param \Illuminate\Support\Contracts\MessageProviderInterface|array $provider
+         * @return $this 
+         * @static 
+         */
+        public static function withErrors($provider){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::withErrors($provider);
+        }
+        
+        /**
+         * Get the view factory instance.
+         *
+         * @return \Illuminate\View\Factory 
+         * @static 
+         */
+        public static function getFactory(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::getFactory();
+        }
+        
+        /**
+         * Get the view's rendering engine.
+         *
+         * @return \Illuminate\View\Engines\EngineInterface 
+         * @static 
+         */
+        public static function getEngine(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::getEngine();
+        }
+        
+        /**
+         * Get the name of the view.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getName(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::getName();
+        }
+        
+        /**
+         * Get the array of view data.
+         *
+         * @return array 
+         * @static 
+         */
+        public static function getData(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::getData();
+        }
+        
+        /**
+         * Get the path to the view file.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getPath(){
+            //Method inherited from \Illuminate\View\View            
+            return \sngrl\StringBladeCompiler\StringView::getPath();
+        }
+        
+        /**
+         * Set the path to the view.
+         *
+         * @param string $path
+         * @return void 
+         * @static 
+         */
+        public static function setPath($path){
+            //Method inherited from \Illuminate\View\View            
+            \sngrl\StringBladeCompiler\StringView::setPath($path);
         }
         
     }

@@ -7,7 +7,7 @@ else
 
     <span class="pull-right" style='position:relative; top:8px; left:-2px; z-index:0'>
         <button type="reset" class="btn btn-warning btn-sm pull-left2" id="reset_block_content">
-            <i class="fa fa-warning"></i> Сброс
+            <i class="fa fa-warning"></i> Отменить изменения
         </button>
 
         <a href="#" class='btn btn-default btn-sm pages_block_redactor_toggle'>

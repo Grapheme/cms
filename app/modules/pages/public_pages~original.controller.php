@@ -167,48 +167,154 @@ class PublicPagesController extends BaseController {
 	}
 
     ## Функция для просмотра мультиязычной страницы
-    public function showPage($slug = false){
+    public function showPage($url = false){
 
+        if (!$this->page->count()) {
 
-        ## Если страниц нет в кеше - показываем 404
-        if (!count(Page::all_by_slug()))
-            App::abort(404);
-
-        ##Ищем страницу в кеше
-        $page = Page::by_slug($slug ?: '/');
-
-        #Helper::smartQueries(1); #die;
-        #Helper::ta($page);
-
-        ## Если страница не найдена...
-        if (!isset($page) || !is_object($page)) {
-
-            ## ...пробуем в теме найти шаблон с таким же именем, как запрошенный slug...
-            if (
-                $slug != ''
-                && preg_match("~^[A-Za-z0-9\-\_]+?$~is", $slug)
-                && View::exists(Helper::layout($slug))
-            ) {
-                $page = new Page;
-                return View::make(Helper::layout($slug), compact('slug', 'page'));
-            }
-
-            ## ...иначе показываем 404
+            #return View::make(Config::get('app.welcome_page_tpl'));
             App::abort(404);
         }
 
-        ## 301 редирект в том случае, если страница является главной, но ее запросили по slug.
-        ## В случае в кешированием такого не должно произойти.
-        if ($page->start_page && $slug != '') {
+        if (!$url)
+            $url = Input::get('url');
+
+        /*
+        ## Страница /de упорно не хотела открываться, пытаясь найти страницу со slug = "de", пришлось сделать вот такой хак:
+        if ($url == Config::get('app.locale'))
+            $url = '';
+        */
+
+        #if ( @$this->locales[Request::segment(1)] )
+        #    $url = '';
+
+        #Helper::dd($url);
+        #Helper::dd( Request::segment(1) );
+
+        $page = $this->page
+            ->where('publication', 1)
+            ->where('version_of', NULL)
+        ;
+
+        ## Page by ID
+        if (is_numeric($url)) {
+
+            $slug = false;
+            $page = $page->where('id', $url);
+            $page = $page
+                ->with('meta', 'blocks.meta', 'seo')
+                ->first();
+
+            #Helper::tad($page);
+
+            if (@is_object($page)) {
+
+                $slug = $page->slug;
+                if (@is_object($page->seo) && $page->seo->url != '') {
+                    $slug = $page->seo->url;
+                }
+
+                #$slug = false;
+                #Helper::dd($slug);
+
+                if ($slug) {
+                    $redirect = URL::route('page', array('url' => $slug));
+                    #Helper::dd($slug);
+                    #Helper::dd('from is_numeric check' . $redirect);
+                    return Redirect::to($redirect, 301);
+                }
+            }
+
+        } elseif ($url != '') {
+
+            ## Page by SLUG
+
+            ## Search slug in SEO URL
+            $page_seo = Seo::where('module', 'Page')->where('url', $url)->first();
+            #Helper::tad($page_seo);
+            if (is_object($page_seo) && is_numeric($page_seo->unit_id)) {
+
+                $page = $this->page
+                    ->where('id', $page_seo->unit_id)
+                    ->with('meta', 'blocks.meta', 'seo')
+                    ->first()
+                    #->page
+                ;
+                #Helper::tad($page);
+
+                /*
+                ## Check SEO url & gettin' $url
+                ## and make 301 redirect if need it
+                if (@is_object($page->meta) && @is_object($page->meta->seo) && $page->meta->seo->url != '' && $page->meta->seo->url != $url) {
+                    $redirect = URL::route('page', array('url' => $page->meta->seo->url));
+                    #Helper::dd($redirect);
+                    return Redirect::to($redirect, 301);
+                }
+                */
+
+            } else {
+
+                ## Search page in pages by slug
+                $page = $page
+                    ->where('slug', $url)
+                    ->with('meta', 'blocks.meta', 'seo')
+                    ->first();
+                #Helper::tad($page);
+
+                /*
+                ## Check SEO url & gettin' $url
+                ## and make 301 redirect if need it
+                if (@is_object($page->meta) && @is_object($page->meta->seo) && $page->meta->seo->url != '' && $page->meta->seo->url != $url) {
+                    $redirect = URL::route('page', array('url' => $page->meta->seo->url));
+                    #Helper::dd($redirect);
+                    return Redirect::to($redirect, 301);
+                }
+                */
+            }
+
+            ## Check SEO url & gettin' $url
+            ## and make 301 redirect if need it
+            if (@is_object($page) && @is_object($page->seo) && $page->seo->url != '' && $page->seo->url != $url) {
+                $redirect = URL::route('page', array('url' => $page->seo->url));
+                #Helper::dd($redirect);
+                return Redirect::to($redirect, 301);
+            }
+
+        } else {
+
+            $page = $page
+                ->where('start_page', 1)
+                ->with('meta', 'blocks.meta', 'seo')
+                ->first();
+
+        }
+
+        #Helper::smartQueries(1); #die;
+        #Helper::tad($page);
+
+        ## Page not found... Hmmm... Check template dir...
+        if (!@is_object($page)) {
+
+            if (
+                $url != ''
+                && preg_match("~^[A-Za-z0-9\-\_]+?$~is", $url)
+                && View::exists(Helper::layout($url))
+            ) {
+                $page = new Page;
+                return View::make(Helper::layout($url), compact('url', 'page'));
+            }
+
+            App::abort(404);
+        }
+
+        if ($page->start_page && $url != '') {
             $redirect = URL::route('mainpage');
+            #Helper::dd('to mainpage: ' . $redirect);
             return Redirect::to($redirect, 301);
         }
 
-        ## Если у страницы не задан шаблон - устанавливаем simple-page
         if (!$page->template)
-            $page->template = 'simple-page';
+            $page->template = 'default';
 
-        ## Ищем шаблон
         if(
             empty($page->template)
             || (
@@ -218,20 +324,21 @@ class PublicPagesController extends BaseController {
         )
             throw new Exception('Template [' . $this->module['gtpl'].$page->template . '] not found.');
 
-        $template = NULL;
+        $template = 'default';
         if (View::exists($this->module['gtpl'].$page->template))
             $template = $this->module['gtpl'].$page->template;
         elseif (View::exists(Helper::layout($page->template)))
             $template = Helper::layout($page->template);
 
-        ## Экстрактим страницу
         $page->extract(true);
 
         #Helper::tad($page);
         #Helper::dd($page->blocks['pervyy_blok']->meta->content);
 
         ## Рендерим контент всех блоков - обрабатываем шорткоды
-        if (isset($page->blocks) && is_object($page->blocks) && $page->blocks->count()) {
+        if (is_object($page->blocks) && $page->blocks->count()) {
+
+            #$page = $page->blocksBySlug();
 
             foreach ($page->blocks as $b => $block) {
                 #if (is_object($block) && is_object($block->meta)) {
@@ -248,6 +355,7 @@ class PublicPagesController extends BaseController {
         #Helper::tad($page);
 
         return View::make($template, compact('page'));
+
 	}
     
 

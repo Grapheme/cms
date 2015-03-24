@@ -16,8 +16,8 @@ class Page extends BaseModel {
     protected $fillable = array(
         'version_of',
         'name',
-        'sysname',
         'slug',
+        'sysname',
         'template',
         'type_id',
         'publication',
@@ -189,11 +189,95 @@ class Page extends BaseModel {
     }
 
 
+    /**
+     * Предзагрузка всех страниц и кеширование
+     */
+    public static function preload() {
 
-    public static function load_all() {
+        $cache_key = 'app.pages';
+        $cache_pages_limit = Config::get('pages.preload_pages_limit');
 
-        $pages = Page::all();
-        Helper::tad($pages);
+        if (Cache::has($cache_key) && !Input::get('drop_pages_cache') && 1) {
+
+            ## From cache
+            $pages = Cache::get($cache_key);
+
+        } elseif ($cache_pages_limit === 0 || Page::count() <= $cache_pages_limit) {
+
+            #echo "LOAD PAGES FROM DB!";
+
+            ## From DB
+            $pages = (new Page())->where('publication', 1)->where('version_of', NULL)->with(['metas', 'blocks.metas', 'seos', 'blocks.meta', 'meta', 'seo'])->get();
+
+            if (isset($pages) && is_object($pages) && count($pages)) {
+                $pages_by_slug = new Collection();
+                $pages_by_sysname = new Collection();
+                foreach ($pages as $p => $page) {
+                    $page->extract(1);
+                    $pages_by_slug[$page->start_page ? '/' : $page->slug] = $page;
+                    $pages_by_sysname[$page->sysname] = $page;
+                }
+            }
+            $pages = ['by_slug' => $pages_by_slug, 'by_sysname' => $pages_by_sysname];
+        }
+
+        ## Save cache
+        $cache_lifetime = Config::get('pages.preload_cache_lifetime') ?: NULL;
+        if ($cache_lifetime) {
+            $expiresAt = Carbon::now()->addMinutes($cache_lifetime);
+            Cache::put('app.pages', $pages, $expiresAt);
+        }
+
+        Config::set('app.pages', $pages);
+
+        #Helper::tad($pages);
+    }
+
+
+    public static function drop_cache() {
+        Config::set('app.pages', NULL);
+        Cache::forget('app.pages');
+    }
+
+
+    public static function all_by_slug() {
+        $pages = Config::get('app.pages');
+        $pages = @$pages['by_slug'];
+        return $pages ?: NULL;
+    }
+
+
+    public static function all_by_sysname() {
+        $pages = Config::get('app.pages');
+        $pages = @$pages['by_sysname'];
+        return $pages ?: NULL;
+    }
+
+
+    public static function by_slug($slug) {
+        $pages = Config::get('app.pages');
+        $page = @$pages['by_slug'][$slug];
+        return $page ?: NULL;
+    }
+
+
+    public static function by_sysname($sysname) {
+        $pages = Config::get('app.pages');
+        $page = @$pages['by_sysname'][$sysname];
+        return $page ?: NULL;
+    }
+
+    public static function slug_by_sysname($sysname) {
+        $pages = Config::get('app.pages');
+        $page = @$pages['by_sysname'][$sysname];
+        $slug = NULL;
+        if (isset($page) && is_object($page)) {
+            if ($page->start_page)
+                $slug = '/';
+            elseif ($page->slug)
+                $slug = $page->slug;
+        }
+        return $slug;
     }
 
 }

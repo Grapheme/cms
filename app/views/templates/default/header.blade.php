@@ -1,3 +1,8 @@
+<?
+/**
+ * TEMPLATE_IS_NOT_SETTABLE
+ */
+?>
 <header class="header">
 
     <div style="text-align:center; font-size:24px; background-color:#eee; height:100%;">
@@ -6,11 +11,3 @@
     </div>
 
 </header>
-
-
-{{
-    Helper::ta(
-        Dic::valueBySlugs('room_type', 'first')
-        #->extract()
-    )
-}}

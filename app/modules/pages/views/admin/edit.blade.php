@@ -58,46 +58,59 @@
                 <header>{{ $form_title }}</header>
 
                 <?
-                $_types = Dictionary::whereSlugValues('page_type');
+                $_types = Dic::valuesByslug('page_type');
                 ?>
 
-                <fieldset>
+                <fieldset></fieldset>
 
-                    <section>
+                <div class="col-sm-12 col-md-12 col-lg-12 clearfix">
+
+                    <section class="col col-lg-6 col-sm-12">
                         <label class="label">Название</label>
                         <label class="input">
                             {{ Form::text('name') }}
                         </label>
                     </section>
 
-                </fieldset>
+                    @if (Allow::action('pages', 'advanced', true, false))
+                        <section class="col col-lg-6 col-sm-12">
+                            <label class="label">Системное имя</label>
+                            <label class="input">
+                                {{ Form::text('sysname') }}
+                            </label>
+                        </section>
+                    @endif
+
+                </div>
+
 
                 <div class="clearfix">
 
+
+                <section class="col col-lg-6 col-sm-12">
+                    <label class="label">URL страницы</label>
+                    <label class="input">
+                        {{ Form::text('slug', NULL, array('placeholder' => '')) }}
+                    </label>
+                    <label class="note">
+                        Только символы английского алфавита без пробелов, цифры, знаки _ и -
+                    </label>
+                </section>
+
+                @if ($show_template_select)
                     <section class="col col-lg-6 col-sm-12">
-                        <label class="label">Идентификатор страницы</label>
-                        <label class="input">
-                            {{ Form::text('slug', NULL, array('placeholder' => '')) }}
+                        <label class="label">Шаблон</label>
+                        <label class="input select input-select2">
+                            {{-- Form::select('template', array('Выберите...')+$templates) --}}
+                            {{ Form::select('template', $templates) }}
                         </label>
                         <label class="note">
-                            Только символы английского алфавита без пробелов, цифры, знаки _ и -
+                            При добавлении новой страницы выбирайте шаблон "Простая страница"
                         </label>
                     </section>
-
-                    @if ($show_template_select)
-                        <section class="col col-lg-6 col-sm-12">
-                            <label class="label">Шаблон</label>
-                            <label class="input select input-select2">
-                                {{-- Form::select('template', array('Выберите...')+$templates) --}}
-                                {{ Form::select('template', $templates) }}
-                            </label>
-                            <label class="note">
-                                При добавлении новой страницы выбирайте шаблон "Простая страница"
-                            </label>
-                        </section>
-                    @else
-                        {{ Form::hidden('template') }}
-                    @endif
+                @else
+                    {{ Form::hidden('template') }}
+                @endif
 
                 </div>
 
@@ -114,7 +127,7 @@
                 </div>
                 @endif
 
-                @if (Allow::action('pages', 'advanced'))
+                @if (Allow::action('pages', 'advanced', true, false))
                 <fieldset class="clearfix">
 
                     <section class="col col-lg-6 col-sm-12 col-xs-12">
@@ -560,7 +573,7 @@
         }
 
 
-        @if (!$element->id)
+        @if (!$element->id && FALSE)
         $('.new_block').trigger('click');
         @endif
 
