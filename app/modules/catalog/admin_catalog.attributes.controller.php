@@ -90,7 +90,9 @@ class AdminCatalogAttributesController extends BaseController {
         if (NULL !== ($cat_id = Input::get('category'))) {
 
             $root_category = CatalogCategory::where('id', $cat_id)
-                ->with('meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta')
+                ->with('meta')
+                ->with('attributes_groups.meta')
+                ->with('attributes_groups.attributes.meta')
                 ->first()
             ;
 
@@ -116,7 +118,8 @@ class AdminCatalogAttributesController extends BaseController {
         if (NULL !== ($cat_id = Input::get('category'))) {
 
             $root_category = CatalogCategory::where('id', $cat_id)
-                ->with('meta', 'attributes_groups.meta')
+                ->with('meta')
+                ->with('attributes_groups.meta')
                 ->first()
             ;
 
@@ -152,12 +155,14 @@ class AdminCatalogAttributesController extends BaseController {
         Allow::permission($this->module['group'], 'attributes_edit');
 
 		$element = CatalogAttribute::where('id', $id)
-            ->with('metas', 'meta', 'attributes_group.meta', 'attributes_group.category.meta')
+            ->with(['metas', 'meta', 'attributes_group.meta', 'attributes_group.category.meta'])
             ->first()
         ;
 
         if (!is_object($element))
             App::abort(404);
+
+        #Helper::tad($element);
 
         $element->extract(false);
 
@@ -174,7 +179,7 @@ class AdminCatalogAttributesController extends BaseController {
                 $cat_id = $element->attributes_group->category->id;
 
                 $root_category = CatalogCategory::where('id', $cat_id)
-                    ->with('meta', 'attributes_groups.meta')
+                    ->with(['meta', 'attributes_groups.meta'])
                     ->first()
                 ;
 
@@ -241,6 +246,7 @@ class AdminCatalogAttributesController extends BaseController {
         }
         $input['slug'] = Helper::translit($input['slug']);
 
+        /*
         $slug = $input['slug'];
         $exit = false;
         $i = 1;
@@ -260,6 +266,7 @@ class AdminCatalogAttributesController extends BaseController {
             }
 
         } while (!$exit);
+        */
 
         /**
          * Проверяем флаг активности

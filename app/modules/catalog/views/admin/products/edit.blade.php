@@ -274,7 +274,7 @@
 
     @if(@$element->id)
     @else
-    {{ Form::hidden('redirect', URL::route('catalog.category.index') . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
+    {{ Form::hidden('redirect', URL::route('catalog.products.index') . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
     @endif
 
     {{ Form::close() }}

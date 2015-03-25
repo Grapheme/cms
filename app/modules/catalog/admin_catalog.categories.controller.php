@@ -73,22 +73,24 @@ class AdminCatalogCategoriesController extends BaseController {
 
         Allow::permission($this->module['group'], 'categories_view');
 
-        $elements = new CatalogCategory();
-        $tbl_cat_category = $elements->getTable();
-
         /**
          * Подготавливаем запрос для выборки
          */
+        $elements = new CatalogCategory();
+        $tbl_cat_category = $elements->getTable();
         $elements = $elements
             ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
             ->orderBy($tbl_cat_category . '.created_at', 'DESC')
             ->orderBy($tbl_cat_category . '.id', 'DESC')
-            ->with('meta', 'products', 'attributes_groups.attributes')
+            ->with('meta')
+            ->with('products')
+            ->with('attributes_groups.attributes')
         ;
 
         /**
          * Если задана корневая категория - выбираем только ее содержимое
          */
+        #/*
         $root_category = null;
         if (NULL !== ($root_id = Input::get('root'))) {
             $root_category = CatalogCategory::find($root_id);
@@ -101,14 +103,14 @@ class AdminCatalogCategoriesController extends BaseController {
                     ;
             }
         }
+        #*/
 
         /**
          * Получаем все категории из БД
          */
         $elements = $elements->get();
         $elements = DicLib::extracts($elements, null, true, true);
-        #Helper::tad($elements);
-        #$elements = DicLib::modifyKeys($elements, 'id');
+        #Helper::smartQueries(1);
         #Helper::tad($elements);
 
         /**
@@ -130,7 +132,9 @@ class AdminCatalogCategoriesController extends BaseController {
 
         $sortable = 9;
 
-        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category'));
+        $show_attributes_button = true;
+
+        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category', 'show_attributes_button'));
 	}
 
     /************************************************************************************/
@@ -139,11 +143,68 @@ class AdminCatalogCategoriesController extends BaseController {
 
         Allow::permission($this->module['group'], 'categories_create');
 
+        /**
+         * Новая (пустая) категория
+         */
         $element = new CatalogCategory();
 
+        /**
+         * Существующие категории (для списка родителей)
+         */
+        /**
+         * Подготавливаем запрос для выборки
+         */
+        $elements = new CatalogCategory();
+        $tbl_cat_category = $elements->getTable();
+        $elements = $elements
+            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_category . '.created_at', 'DESC')
+            ->orderBy($tbl_cat_category . '.id', 'DESC')
+            ->with('meta')
+            #->with('products')
+            #->with('attributes_groups.attributes')
+        ;
+
+        /**
+         * Получаем все категории из БД
+         */
+        $elements = $elements->get();
+        $elements = DicLib::extracts($elements, null, true, true);
+        #Helper::smartQueries(1);
+        #Helper::tad($elements);
+
+        /**
+         * Формируем массив с отступами
+         */
+        $attributes_from_category = NestedSetModel::get_array_for_select($elements);
+        $parent_category = ['[нет]'] + $attributes_from_category;
+        $attributes_from_category = ['[не копировать]'] + $attributes_from_category;
+        #Helper::dd($categories_for_select);
+
+
+        /**
+         * Загружаем атрибуты категорий
+         */
+        $category_attributes = (new CatalogCategoryAttribute())
+            ->with('metas')
+            ->with('meta')
+            ->references('meta')
+            ->where('meta.language', Config::get('app.locale'))
+            ->orderBy('meta.name')
+            ->get()
+        ;
+        #Helper::tad($category_attributes);
+        $category_attributes = DicLib::extracts($category_attributes, null, true, true);
+        $category_attributes = Dic::modifyKeys($category_attributes, 'slug');
+        #Helper::tad($category_attributes);
+
+
+        /**
+         * Локали
+         */
         $locales = Config::get('app.locales');
 
-		return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'attributes_from_category', 'parent_category', 'category_attributes'));
 	}
     
 
@@ -152,18 +213,44 @@ class AdminCatalogCategoriesController extends BaseController {
         Allow::permission($this->module['group'], 'categories_edit');
 
 		$element = CatalogCategory::where('id', $id)
-            ->with('seos', 'metas', 'meta')
+            ->with(['seos', 'metas.attributes_values', 'meta', 'category_attributes_values'])
             ->first()
-            ->extract();
+        ;
+        #Helper::tad($element);
 
-        if (is_object($element) && is_object($element->meta))
+        if (!is_object($element))
+            App::abort(404);
+
+        if (is_object($element->meta))
             $element->name = $element->meta->name;
+
+        $element->extract();
+        #Helper::tad($element);
+
+
+        /**
+         * Загружаем атрибуты категорий
+         */
+        $category_attributes = (new CatalogCategoryAttribute())
+            ->where('active', 1)
+            ->with('metas')
+            ->with('meta')
+            ->references('meta')
+            ->where('meta.language', Config::get('app.locale'))
+            ->orderBy('meta.name')
+            ->get()
+        ;
+        #Helper::tad($category_attributes);
+        $category_attributes = DicLib::extracts($category_attributes, null, true, true);
+        $category_attributes = Dic::modifyKeys($category_attributes, 'slug');
+        #Helper::tad($category_attributes);
+
 
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales'));
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'category_attributes'));
 	}
 
 
@@ -198,6 +285,7 @@ class AdminCatalogCategoriesController extends BaseController {
             $element = new CatalogCategory();
 
         $input = Input::all();
+        #Helper::tad($input);
 
         /**
          * Проверяем системное имя
@@ -232,7 +320,35 @@ class AdminCatalogCategoriesController extends BaseController {
          */
         $input['active'] = @$input['active'] ? 1 : NULL;
 
+        /**
+         * Выбрана ли родительская категория
+         */
+        $parent_cat_id = isset($input['parent_cat_id']) ? $input['parent_cat_id'] : false;
+        unset($input['parent_cat_id']);
+
+        /**
+         * Выбрана ли категория для копирования набора атрибутов
+         */
+        $attributes_cat_id = isset($input['attributes_cat_id']) ? $input['attributes_cat_id'] : false;
+        unset($input['attributes_cat_id']);
+
         #Helper::dd($input);
+        #Helper::tad($input);
+
+
+        /**
+         * Загружаем атрибуты категорий
+         */
+        $category_attributes = (new CatalogCategoryAttribute())
+            ->where('active', 1)
+            ->with('metas')
+            ->get()
+        ;
+        $category_attributes = DicLib::extracts($category_attributes, null, true, true);
+        $category_attributes = Dic::modifyKeys($category_attributes, 'slug');
+        #Helper::tad($category_attributes);
+
+
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
@@ -258,37 +374,205 @@ class AdminCatalogCategoriesController extends BaseController {
 
             } else {
 
-                /**
-                 * Ставим элемент в конец списка
-                 */
-                $max_rgt = CatalogCategory::max('rgt');
-                $input['lft'] = @(int)$max_rgt+1;
-                $input['rgt'] = @(int)$max_rgt+2;
+                #Helper::tad($input);
 
-                $element->save();
+                /**
+                 * Если выбрана родительская категория, и она найдена в БД...
+                 */
+                if ($parent_cat_id && NULL !== ($parent_cat = CatalogCategory::find($parent_cat_id))) {
+
+                    #Helper::tad($parent_cat);
+
+                    /**
+                     * Поставим новую категорию в конец родительской
+                     */
+                    $input['lft'] = @(int)$parent_cat->rgt;
+                    $input['rgt'] = @(int)$parent_cat->rgt+1;
+                    $element->save();
+
+                    /**
+                     * Увеличим отступ у всех категорий, следующей за родительской
+                     */
+                    #CatalogCategory::where('rgt', '>', $parent_cat->rgt)->get();
+                    if ($parent_cat->rgt) {
+                        DB::update(DB::raw("UPDATE " . $parent_cat->getTable() . " SET lft = lft + 2 WHERE lft > " . $parent_cat->rgt . ""));
+                        DB::update(DB::raw("UPDATE " . $parent_cat->getTable() . " SET rgt = rgt + 2 WHERE rgt > " . $parent_cat->rgt . ""));
+                    }
+
+                    /**
+                     * Увеличим RGT родительской категории на 2
+                     */
+                    $parent_cat->rgt = $parent_cat->rgt+2;
+                    $parent_cat->save();
+
+                } else {
+
+                    /**
+                     * Ставим элемент в конец списка
+                     */
+                    $max_rgt = CatalogCategory::max('rgt');
+                    $input['lft'] = @(int)$max_rgt+1;
+                    $input['rgt'] = @(int)$max_rgt+2;
+                    $element->save();
+                }
+
                 $element->update($input);
                 $category_id = $element->id;
+
                 $redirect = Input::get('redirect');
 
+
                 /**
-                 * Создаем группу атрибутов по умолчанию
+                 * Функционал копирования из существующей категории в новую набора групп атрибутов и атрибутов для товаров внутри категории
                  */
-                $max_rgt = CatalogAttributeGroup::where('category_id', $category_id)->max('rgt');
-                $group = CatalogAttributeGroup::create(array(
-                    'id' => null,
-                    'category_id' => $category_id,
-                    'active' => 1,
-                    'slug' => 'default',
-                    'lft' => @(int)$max_rgt+1,
-                    'rgt' => @(int)$max_rgt+2,
-                ));
-                CatalogAttributeGroupMeta::create(array(
-                    'id' => null,
-                    'attributes_group_id' => $group->id,
-                    'language' => 'ru',
-                    'active' => 1,
-                    'name' => 'По умолчанию',
-                ));
+                if ($attributes_cat_id) {
+
+                    /**
+                     * Получаем категорию-донора, вместе со всеми нужными данными
+                     */
+                    $donor_cat = CatalogCategory::where('id', $attributes_cat_id)
+                        ->with(['attributes_groups.metas', 'attributes_groups.attributes.metas'])
+                        ->first();
+                    #Helper::tad($donor_cat);
+
+                    if (is_object($donor_cat)) {
+
+                        /**
+                         * Если у донора есть группы атрибутов
+                         */
+                        if (isset($donor_cat->attributes_groups) && is_object($donor_cat->attributes_groups) && $donor_cat->attributes_groups->count()) {
+
+                            foreach ($donor_cat->attributes_groups as $attributes_group) {
+
+                                $temp_array = $attributes_group->toArray();
+
+                                /**
+                                 * Создаем массивы для создания новых записей в БД
+                                 */
+                                $temp_array_metas = $temp_array['metas'];
+                                unset($temp_array['metas']);
+
+                                $temp_array_attributes = $temp_array['attributes'];
+                                unset($temp_array['attributes']);
+
+                                $temp_array['category_id'] = $category_id;
+                                unset($temp_array['id'], $temp_array['created_at'], $temp_array['updated_at']);
+
+                                #Helper::ta($temp_array);
+
+                                /**
+                                 * На всякий случай здесь и далее будем удалять все,
+                                 * что связано с ID только что созданной категории,
+                                 * или новых вложенных элементов для нее.
+                                 */
+                                #CatalogAttributeGroup::where('category_id', $category_id)->delete();
+
+                                /**
+                                 * Создадим новую группу атрибутов, для новой категории
+                                 */
+                                $new_attr_group = CatalogAttributeGroup::create($temp_array);
+
+                                #Helper::ta($new_attr_group);
+
+                                /**
+                                 * Создадим meta-записи текущей группы атрибутов
+                                 */
+                                if (isset($temp_array_metas) && is_array($temp_array_metas) && count($temp_array_metas)) {
+
+                                    #CatalogAttributeGroupMeta::where('attributes_group_id', $new_attr_group->id)->delete();
+
+                                    foreach ($temp_array_metas as $temp_array_meta) {
+
+                                        $temp_array_meta['attributes_group_id'] = $new_attr_group->id;
+                                        unset($temp_array_meta['id'], $temp_array_meta['created_at'], $temp_array_meta['updated_at']);
+
+                                        #Helper::ta($temp_array_meta);
+                                        $new_attr_group_meta = CatalogAttributeGroupMeta::create($temp_array_meta);
+                                        #Helper::ta($new_attr_group_meta);
+
+                                        unset($temp_array_meta);
+                                    }
+                                }
+
+                                /**
+                                 * Создадим атрибуты группы
+                                 */
+                                if (isset($temp_array_attributes) && is_array($temp_array_attributes) && count($temp_array_attributes)) {
+
+                                    #CatalogAttribute::where('attributes_group_id', $new_attr_group->id)->delete();
+
+                                    foreach ($temp_array_attributes as $temp_array_attribute) {
+
+                                        $temp_array_attribute_metas = $temp_array_attribute['metas'];
+                                        unset($temp_array_attribute['metas']);
+
+                                        $temp_array_attribute['attributes_group_id'] = $new_attr_group->id;
+                                        unset($temp_array_attribute['id'], $temp_array_attribute['created_at'], $temp_array_attribute['updated_at']);
+
+                                        #Helper::ta($temp_array_attribute);
+                                        $new_attr = CatalogAttribute::create($temp_array_attribute);
+                                        #Helper::ta($new_attr);
+
+                                        /**
+                                         * Создадим meta-записи текущего атрибута группы
+                                         */
+                                        if (isset($temp_array_attribute_metas) && is_array($temp_array_attribute_metas) && count($temp_array_attribute_metas)) {
+
+                                            CatalogAttributeMeta::where('attribute_id', $new_attr->id)->delete();
+
+                                            foreach ($temp_array_attribute_metas as $temp_array_attribute_meta) {
+
+                                                $temp_array_attribute_meta['attribute_id'] = $new_attr->id;
+                                                unset($temp_array_attribute_meta['id'], $temp_array_attribute_meta['created_at'], $temp_array_attribute_meta['updated_at']);
+
+                                                #Helper::ta($temp_array_attribute_meta);
+                                                $new_attr_meta = CatalogAttributeMeta::create($temp_array_attribute_meta);
+                                                #Helper::ta($new_attr_meta);
+
+                                                unset($temp_array_attribute_meta);
+                                            }
+                                        }
+
+                                        unset($new_attr);
+                                        unset($temp_array_attribute);
+
+                                    }
+                                }
+
+                                unset($temp_array);
+                                unset($new_attr_group);
+
+                            }
+                        }
+
+                    }
+
+                    #die;
+
+                } else {
+
+                    /**
+                     * Создаем группу атрибутов по умолчанию
+                     */
+                    $max_rgt = CatalogAttributeGroup::where('category_id', $category_id)->max('rgt');
+                    $group = CatalogAttributeGroup::create(array(
+                        'id' => null,
+                        'category_id' => $category_id,
+                        'active' => 1,
+                        'slug' => 'default',
+                        'lft' => @(int)$max_rgt+1,
+                        'rgt' => @(int)$max_rgt+2,
+                    ));
+                    CatalogAttributeGroupMeta::create(array(
+                        'id' => null,
+                        'attributes_group_id' => $group->id,
+                        'language' => 'ru',
+                        'active' => 1,
+                        'name' => 'По умолчанию',
+                    ));
+
+                }
+
             }
 
 
@@ -310,6 +594,67 @@ class AdminCatalogCategoriesController extends BaseController {
                     $category_meta->update($meta_array);
                     unset($category_meta);
                 }
+            }
+
+
+            /**
+             * Сохраняем значения атрибутов категории
+             */
+            if (
+                isset($input['attributes']) && is_array($input['attributes']) && count($input['attributes'])
+            ) {
+
+                #Helper::tad($category_attributes);
+                #Helper::tad($input['attributes']);
+
+                /**
+                 * Перебираем все возможные атрибуты категорий
+                 */
+                foreach ($category_attributes as $cat_attr_slug => $cat_attr) {
+
+                    #Helper::ta($cat_attr_slug);
+
+                    /**
+                     * Перебираем все доступные языки
+                     */
+                    #foreach ($input['attributes'] as $locale_sign => $meta_array) {
+                    foreach (Config::get('app.locales') as $locale_sign => $temp) {
+
+                        #Helper::ta($locale_sign);
+                        #Helper::ta($temp);
+                        #continue;
+
+                        $value = isset($input['attributes'][$locale_sign][$cat_attr_slug]) ? $input['attributes'][$locale_sign][$cat_attr_slug] : NULL;
+
+                        $meta_array = $cat_attr_search_array = array(
+                            'category_id' => $category_id,
+                            'attribute_id' => $cat_attr->id,
+                            'language' => $locale_sign
+                        );
+                        #$meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
+                        $meta_array['value'] = $value ?: NULL;
+                        $category_attr = CatalogCategoryAttributeValue::firstOrNew($cat_attr_search_array);
+                        if (!$category_attr->id)
+                            $category_attr->save();
+                        $category_attr->update($meta_array);
+                        unset($category_attr);
+                    }
+                }
+
+                /*
+                foreach ($input['attributes'] as $locale_sign => $meta_array) {
+                    $meta_search_array = array(
+                        'category_id' => $category_id,
+                        'language' => $locale_sign
+                    );
+                    $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
+                    $category_meta = CatalogCategoryMeta::firstOrNew($meta_search_array);
+                    if (!$category_meta->id)
+                        $category_meta->save();
+                    $category_meta->update($meta_array);
+                    unset($category_meta);
+                }
+                */
             }
 
             /**
@@ -362,75 +707,20 @@ class AdminCatalogCategoriesController extends BaseController {
 
 		$json_request = array('status' => FALSE, 'responseText' => '');
 
-        $element = CatalogCategory::where('id', $id)->with('attributes_groups.attributes')->first();
-
+        #$element = CatalogCategory::where('id', $id)->with('attributes_groups.attributes')->first();
+        $element = CatalogCategory::find($id);
         #Helper::tad($element);
 
         if (is_object($element)) {
-            /**
-             * Удаление:
-             * !! товаров категории,
-             * - связок с атрибутами/группами,
-             * + SEO-данных,
-             * + мета-данных
-             * + и самой категории
-             */
 
-
-            /*
-            $groups = $element->attributes_groups;
-            $attributes = $groups->attributes();
-            $groups->delete();
-            $attributes->delete();
-            */
-
-            if (isset($element->attributes_groups) && is_object($element->attributes_groups) && count($element->attributes_groups)) {
-
-                $groups_ids = array();
-                $attributes_ids = array();
-                foreach ($element->attributes_groups as $group) {
-
-                    $groups_ids[] = $group->id;
-
-                    if (isset($group->attributes) && is_object($group->attributes) && count($group->attributes)) {
-                        foreach ($group->attributes as $attribute) {
-                            $attributes_ids[] = $attribute->id;
-                        }
-                    }
-                }
-
-                #Helper::d($groups_ids);
-                #Helper::dd($attributes_ids);
-
-                if (count($attributes_ids)) {
-                    CatalogAttributeMeta::whereIn('attribute_id', $attributes_ids)->delete();
-                    CatalogAttribute::whereIn('id', $attributes_ids)->delete();
-                }
-                if (count($groups_ids)) {
-                    CatalogAttributeGroupMeta::whereIn('attributes_group_id', $groups_ids)->delete();
-                    CatalogAttributeGroup::whereIn('id', $groups_ids)->delete();
-                }
-            }
-
-
-            if (Allow::module('seo')) {
-                Seo::where('module', 'CatalogCategory')
-                    ->where('unit_id', $element->id)
-                    ->delete()
-                ;
-            }
-
-            $element->metas()->delete();
-
-            $element->delete();
-
-            /**
-             * Сдвигаем категории в общем дереве
-             */
-            if ($element->rgt)
-                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
+            $element->full_delete();
 
             $json_request['responseText'] = 'Удалено';
+            $json_request['status'] = TRUE;
+
+        } else {
+
+            $json_request['responseText'] = 'Запись не найдена';
             $json_request['status'] = TRUE;
         }
 
@@ -475,253 +765,6 @@ class AdminCatalogCategoriesController extends BaseController {
         return Response::make('1');
     }
 
-    public function getImport($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
-
-        #Helper::dd($dic);
-
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import', compact('dic', 'dic_id', 'element'));
-    }
-
-    public function postImport2($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        #Helper::dd( Input::all() );
-
-        $input = Input::all();
-        $lines = explode("\n", $input['import_data']);
-        $array = array();
-        $max = 0;
-        foreach ($lines as $line) {
-            if (@$input['trim'])
-                $line = trim($line, $input['trim_params'] . ' ' ?: ' ');
-            if (@$input['delimeter'])
-                $line = explode($input['delimeter'], $line);
-            else
-                $line = array($line);
-
-            if (count($line) > $max)
-                $max = count($line);
-
-            if ($line)
-                $array[] = $line;
-        }
-
-        #Helper::dd($array);
-
-        $fields = array('Выберите...', 'name' => 'Название', 'slug' => 'Системное имя') + array_keys((array)Config::get('dic/' . $dic->slug . '.fields'));
-        #Helper::dd($fields);
-
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import2', compact('dic', 'dic_id', 'element', 'array', 'max', 'fields'));
-    }
-
-    public function postImport3($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        ## Get also exists values
-        #$exist_values = $dic->values;
-        #Helper::ta($exist_values);
-
-        $input = Input::all();
-
-        /*
-        foreach ($exist_values as $e => $exist_value) {
-            if ($input['rewrite_mode'] == 1)
-                $exist_values[$exist_value->name] = $exist_value;
-            else
-                $exist_values[$exist_value->slug] = $exist_value;
-            unset($exist_values[$e]);
-        }
-        Helper::ta($exist_values);
-        */
-
-        $max = count($input['values'][0]);
-
-        $fields = $input['fields'];
-        $values = $input['values'];
-
-        ## Filter fields & values
-        foreach ($fields as $f => $field) {
-            if (is_numeric($field) && $field == 0) {
-                #Helper::d($f . " => " . $field . " = 0");
-                unset($fields[$f]);
-                unset($values[$f]);
-            }
-        }
-
-        #Helper::d($fields);
-        #Helper::d($values);
-
-        ## Make insertions
-        $find_key = ($input['rewrite_mode'] == 1) ? 'name' : 'slug';
-        $array = array();
-        $count = count($values[0]);
-        for ($i = 0; $i < $count; $i++) {
-            $arr = array(
-                'dic_id' => $dic->id,
-            );
-            foreach ($fields as $f => $field) {
-                $arr[$field] = @trim($values[$f][$i]);
-            }
-
-            $find = array($find_key => @$arr[$find_key], 'dic_id' => $dic->id);
-            #unset($arr[$find_key]);
-            if (
-                #$find_key != 'slug'
-                @$input['set_slug']
-                && (
-                    $input['set_slug_elements'] == 'all'
-                    || ($input['set_slug_elements'] == 'empty' && !@$arr['slug'])
-                )
-            ) {
-                $arr['slug'] = Helper::translit(@$arr['name']);
-            }
-
-            if (@$input['set_ucfirst'] && $arr['name']) {
-                $arr['name'] = Helper::mb_ucfirst($arr['name']);
-            }
-
-            #Helper::dd($find);
-
-            #/*
-            $dicval = DicVal::firstOrCreate($find);
-            $dicval->update($arr);
-            #Helper::ta($dicval);
-            #*/
-
-            unset($dicval);
-            #$array[] = $arr;
-        }
-
-        #Helper::d($array);
-
-        return Redirect::route('dicval.index', $dic_id);
-    }
-
-    public function getSphinx($dic_id) {
-
-        if (!Allow::superuser())
-            App::abort(404);
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-
-        #Helper::d('Данные словаря:') . Helper::ta($dic);
-
-        $fields = Config::get('dic/' . $dic->slug . '.fields');
-        if (isset($fields) && is_callable($fields))
-            $fields = $fields();
-
-        #Helper::d('Доп. поля словаря (fields):') . Helper::d($fields);
-
-        $fields_i18n = Config::get('dic/' . $dic->slug . '.fields_i18n');
-        if (isset($fields_i18n) && is_callable($fields_i18n))
-            $fields_i18n = $fields_i18n();
-
-        #Helper::d('Мультиязычные доп. поля словаря (fields_i18n):') . Helper::d($fields_i18n);
-
-        $tbl_dic_field_val = (new DicFieldVal)->getTable();
-        $tbl_dic_textfield_val = (new DicTextFieldVal)->getTable();
-
-        /**
-         * Будут индексироваться только поля следующих типов
-         */
-        $indexed_types = array('textarea', 'textarea_redactor', 'text');
-        $fulltext_types = array('textarea', 'textarea_redactor');
-
-        $selects = array(
-            "dicval.id AS id",
-            $dic->id . " AS dic_id",
-            "'" . $dic->name . "' AS dic_name",
-            "'" . $dic->slug . "' AS dic_slug",
-            "dicval.name AS name"
-        );
-        $sql = array();
-
-        $j = 0;
-        /**
-         * Поиск по обычным полям
-         */
-        if (isset($fields) && is_array($fields) && count($fields)) {
-            foreach ($fields as $field_key => $field) {
-
-                if (!isset($field['type']) || !in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NULL";
-            }
-        }
-        /**
-         * Поиск по мультиязычным полям
-         */
-        if (isset($fields_i18n) && is_array($fields_i18n) && count($fields_i18n)) {
-            foreach ($fields_i18n as $field_key => $field) {
-
-                if (!in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NOT NULL";
-            }
-        }
-
-        $sql[] = "WHERE dicval.version_of IS NULL AND dicval.dic_id = '" . $dic->id . "'";
-
-        $selects_compile = implode(', ', $selects);
-
-        array_unshift($sql, "SELECT " . $selects_compile . " FROM " . (new DicVal)->getTable() . " AS dicval");
-
-        return
-            "<h1>Поиск по словарю &laquo;" . $dic->name . "&raquo; (" . $dic->slug . ")</h1>" .
-            "<h3>SQL-запрос для тестирования (phpMyAdmin):</h3>" .
-            nl2br(implode("\n", $sql)) .
-            "<h3>SQL-запрос для вставки в конфиг Sphinx:</h3>" .
-            "<pre>
-    sql_query     = \\\n        " . (implode(' \\'."\n        ", $sql)) . "
-
-    sql_attr_uint = id
-</pre>"
-            ;
-    }
 
 }
 

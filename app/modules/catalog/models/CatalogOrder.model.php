@@ -16,9 +16,11 @@ class CatalogOrder extends BaseModel {
 
     protected $fillable = array(
         'status_id',
+        'total_sum',
         'client_id',
         'client_name',
         'delivery_info',
+        'comment',
     );
 
 	public static $rules = array(

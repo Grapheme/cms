@@ -214,7 +214,10 @@ class AdminDicvalsController extends BaseController {
         ## Search
         $search_query = NULL;
         if (NULL !== ($search_query = Input::get('q'))) {
-            $elements = $elements->where('name', 'LIKE', '%' . $search_query . '%');
+            $elements = $elements
+                ->where('name', 'LIKE', '%' . $search_query . '%')
+                ->orWhere('slug', 'LIKE', '%' . $search_query . '%')
+            ;
         }
 
 

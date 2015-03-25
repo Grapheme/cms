@@ -168,6 +168,7 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 
     @if ($sortable)
     <script>
+    var show_hide_delete_buttons;
     $(document).ready(function() {
 
         var updateOutput = function(e) {
@@ -202,17 +203,32 @@ function write_level($hierarchy, $elements, $module, $sortable) {
             group: 1
         }).on('change', updateOutput);
 
-        function show_hide_delete_buttons() {
+        show_hide_delete_buttons = function() {
             /*
             $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
             $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
             */
+
+            /**
+             * После удаления категории нужно проверить, а не была ли она _последней вложенной_ дял родительской?
+             */
+            $('.dd-item > button:first-child').parent().find('.dd-list').each(function(){
+                console.log($(this));
+                console.log($(this).find('li').length);
+                if ($(this).find('li').length > 0)
+                    return;
+                $(this).parent().find('button[type=button][data-action]').remove();
+                $(this).remove();
+            });
+
+
 
             $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '0');
             $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').attr('data-can-delete', '1');
 
             $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').show();
             $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .catalog-category-root').hide();
+
             //*/
         }
 

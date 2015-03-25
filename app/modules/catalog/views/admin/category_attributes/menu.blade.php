@@ -2,8 +2,8 @@
 #Helper:dd($dic_id);
 $menus = array();
 $menus[] = array(
-        'link' => URL::route('catalog.category.index'),
-        'title' => 'Все категории',
+        'link' => URL::route('catalog.category_attributes.index'),
+        'title' => 'Все атрибуты',
         'class' => 'btn btn-default'
 );
 /*
@@ -23,30 +23,13 @@ if (
     );
 }
 */
-if (Allow::action($module['group'], 'categories_edit') && isset($root_category) && is_object($root_category) && $root_category->id
-) {
-    $current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
-    $menus[] = array(
-            'link' => URL::route('catalog.category.edit', array('id' => $root_category->id) + $current_link_attributes),
-            'title' => 'Изменить',
-            'class' => 'btn btn-success'
-    );
-}
 
 if (Allow::action($module['group'], 'categories_create')) {
     $current_link_attributes = Helper::multiArrayToAttributes(Input::get('filter'), 'filter');
     $menus[] = array(
-            'link' => URL::route('catalog.category.create', $current_link_attributes),
+            'link' => URL::route('catalog.category_attributes.create', $current_link_attributes),
             'title' => 'Добавить',
             'class' => 'btn btn-primary'
-    );
-}
-
-if (isset($show_attributes_button) && $show_attributes_button == true) {
-    $menus[] = array(
-            'link' => URL::route('catalog.category_attributes.index', $current_link_attributes),
-            'title' => 'Атрибуты категорий',
-            'class' => 'btn btn-warning'
     );
 }
 
@@ -54,7 +37,7 @@ if (isset($show_attributes_button) && $show_attributes_button == true) {
 ?>
 
 <h1>
-    Категории
+    Атрибуты категорий
     @if (isset($element) && is_object($element) && $element->name)
         &nbsp;&mdash;&nbsp;
         {{ $element->name }}

@@ -84,7 +84,9 @@ $(function(){
 							showMessage.smallSuccess();
 
 							//$($this).parents('tr').fadeOut(500,function(){$(this).remove();});
-                            $('.dd-item[data-id=' + $($this).parents('.dd-item').attr('data-id') + ']').slideUp();
+                            //$('.dd-item[data-id=' + $($this).parents('.dd-item').attr('data-id') + ']').slideUp();
+                            $('.dd-item[data-id=' + $($this).parents('.dd-item').attr('data-id') + ']').remove();
+                            show_hide_delete_buttons()
 
 						} else {
 							$($this).elementDisabled(false);

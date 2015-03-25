@@ -76,14 +76,13 @@ class AdminCatalogMenuController extends BaseController {
                 'class' => 'fa-cube',
             );
 
-        #/*
         if (Allow::action(self::$group, 'attributes_view', false, true))
-            $menu_child[] = array(
-                'title' => 'Атрибуты',
-                'link' => self::$group . '/attributes',
-                'class' => 'fa-puzzle-piece',
-            );
-        #*/
+            if (Input::get('category'))
+                $menu_child[] = array(
+                    'title' => 'Атрибуты',
+                    'link' => self::$group . '/attributes?category=' . @(int)Input::get('category'),
+                    'class' => 'fa-puzzle-piece',
+                );
 
         if (Allow::action(self::$group, 'orders_view', false, true))
             $menu_child[] = array(

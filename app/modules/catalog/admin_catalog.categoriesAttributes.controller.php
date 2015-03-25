@@ -1,11 +1,11 @@
 <?php
 
-class AdminCatalogAttributesGroupsController extends BaseController {
+class AdminCatalogCategoriesAttributesController extends BaseController {
 
-    public static $name = 'attributes_groups';
+    public static $name = 'category_attributes';
     public static $group = 'catalog';
-    public static $entity = 'attributes_group';
-    public static $entity_name = 'группа атрибутов';
+    public static $entity = 'attribute';
+    public static $entity_name = 'атрибут';
 
     /****************************************************************************/
 
@@ -65,86 +65,90 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         );
 
         View::share('module', $this->module);
-	}
 
+        /**
+         * Типы атрибутов
+         */
+        $this->types = array(
+            'checkbox' => 'Чекбокс',
+            'text' => 'Текстовая строка',
+            'textarea' => 'Многострочный текст',
+            #'wysiwyg' => 'WYSIWYG редактор текста',
+            'select' => 'Список',
+        );
+	}
 
 	public function index() {
 
-        /*
-        Allow::permission($this->module['group'], 'attributes_view');
+        Allow::permission($this->module['group'], 'categories_view');
 
-        $root_category = NULL;
-        if (NULL !== ($cat_id = Input::get('category'))) {
+        /**
+         * Поулчаем атрибуты
+         */
+        $elements = (new CatalogCategoryAttribute())
+            ->with(['meta'])
+            ->references('meta')
+            ->orderBy('meta.name')
+            ->where('meta.language', Config::get('app.locale'))
+            ->get()
+        ;
+        #Helper::smartQueries(1);
+        #Helper::tad($elements);
 
-            $root_category = CatalogCategory::where('id', $cat_id)
-                ->with(['meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta'])
-                ->first()
-            ;
+        $elements = DicLib::extracts($elements, null, true, false);
+        $elements = Dic::modifyKeys($elements, 'slug');
+        #Helper::smartQueries(1);
+        #Helper::tad($elements);
 
-            #Helper::tad($root_category);
-
-            if (is_object($root_category))
-                $root_category = $root_category->extract(1);
-        }
-
-        #Helper::tad($root_category);
-
-        return View::make($this->module['tpl'].'index', compact('root_category'));
-        */
+        return View::make($this->module['tpl'].'index', compact('elements'));
 	}
 
     /************************************************************************************/
 
 	public function create() {
 
-        Allow::permission($this->module['group'], 'attributes_create');
+        Allow::permission($this->module['group'], 'categories_create');
 
+        /**
+         * Новый (пустой) атрибут категории
+         */
+        $element = new CatalogCategoryAttribute();
 
-        $root_category = NULL;
-        if (NULL !== ($cat_id = Input::get('category'))) {
-
-            $root_category = CatalogCategory::where('id', $cat_id)
-                ->with('meta')
-                ->first()
-            ;
-
-            #Helper::tad($root_category);
-
-            if (is_object($root_category))
-                $root_category = $root_category->extract(1);
-        }
-
-        #Helper::tad($root_category);
-
-        if (!is_object($root_category))
-            App::abort(404);
-
-        $element = new CatalogAttributeGroup();
-
+        /**
+         * Локали
+         */
         $locales = Config::get('app.locales');
 
-		return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
+        $types = $this->types;
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'types'));
 	}
     
 
 	public function edit($id) {
 
-        Allow::permission($this->module['group'], 'attributes_edit');
+        Allow::permission($this->module['group'], 'categories_edit');
 
-		$element = CatalogAttributeGroup::where('id', $id)
-            ->with(['metas', 'meta', 'category.meta'])
+		$element = CatalogCategoryAttribute::where('id', $id)
+            ->with(['metas'])
             ->first()
-            ->extract(1);
+        ;
 
-        #Helper::tad($element);
+        if (!is_object($element))
+            App::abort(404);
 
-        $root_category = $element->category;
+        if (is_object($element->meta))
+            $element->name = $element->meta->name;
+
+        $element->extract();
 
         $locales = Config::get('app.locales');
 
         #Helper::tad($element);
 
-        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'root_category'));
+        $types = $this->types;
+
+        return View::make($this->module['tpl'].'edit', compact('element', 'locales', 'types'));
 	}
 
 
@@ -153,14 +157,14 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
 	public function store() {
 
-        Allow::permission($this->module['group'], 'attributes_create');
+        Allow::permission($this->module['group'], 'categories_create');
 		return $this->postSave();
 	}
 
 
 	public function update($id) {
 
-        Allow::permission($this->module['group'], 'attributes_edit');
+        Allow::permission($this->module['group'], 'categories_edit');
 		return $this->postSave($id);
 	}
 
@@ -168,15 +172,15 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 	public function postSave($id = false){
 
         if (@$id)
-            Allow::permission($this->module['group'], 'attributes_edit');
+            Allow::permission($this->module['group'], 'categories_edit');
         else
-            Allow::permission($this->module['group'], 'attributes_create');
+            Allow::permission($this->module['group'], 'categories_create');
 
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogAttributeGroup::find($id)))
-            $element = new CatalogAttributeGroup();
+        if (!$id || NULL === ($element = CatalogCategoryAttribute::find($id)))
+            $element = new CatalogCategoryAttribute();
 
         $input = Input::all();
 
@@ -192,7 +196,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         $exit = false;
         $i = 1;
         do {
-            $test = CatalogAttributeGroup::where('slug', $slug)->first();
+            $test = CatalogCategoryAttribute::where('slug', $slug)->first();
             #Helper::dd($count);
 
             if (!is_object($test) || $test->id == $element->id) {
@@ -214,6 +218,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
         $input['active'] = @$input['active'] ? 1 : NULL;
 
         #Helper::dd($input);
+        #Helper::tad($input);
 
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
@@ -228,7 +233,7 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
                 $element->update($input);
                 $redirect = false;
-                $attributes_group_id = $element->id;
+                $attribute_id = $element->id;
 
                 /**
                  * Обновим slug на форме
@@ -239,18 +244,13 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
             } else {
 
-                /**
-                 * Ставим элемент в конец списка
-                 */
-                $temp = CatalogAttributeGroup::selectRaw('max(rgt) AS max_rgt')->where('category_id', @$input['category_id'])->first();
-                $input['lft'] = $temp->max_rgt+1;
-                $input['rgt'] = $temp->max_rgt+2;
-
                 $element->save();
                 $element->update($input);
-                $attributes_group_id = $element->id;
+                $attribute_id = $element->id;
+
                 $redirect = Input::get('redirect');
             }
+
 
             /**
              * Сохраняем META-данные
@@ -258,25 +258,24 @@ class AdminCatalogAttributesGroupsController extends BaseController {
             if (
                 isset($input['meta']) && is_array($input['meta']) && count($input['meta'])
             ) {
-                #Helper::d($attribute_id);
                 foreach ($input['meta'] as $locale_sign => $meta_array) {
                     $meta_search_array = array(
-                        'attributes_group_id' => (int)$attributes_group_id,
+                        'attribute_id' => $attribute_id,
                         'language' => $locale_sign
                     );
-                    #Helper::d($meta_search_array);
-                    $attribute_meta = CatalogAttributeGroupMeta::firstOrNew($meta_search_array);
-                    if (!$attribute_meta->id) {
-                        #Helper::tad($attribute_meta);
-                        $attribute_meta->save();
-                    }
-                    $meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
-                    $attribute_meta->update($meta_array);
-                    unset($meta_search_array);
-                    unset($meta_array);
-                    unset($attribute_meta);
+                    #$meta_array['active'] = @$meta_array['active'] ? 1 : NULL;
+                    $category_attribute_meta = CatalogCategoryAttributeMeta::firstOrNew($meta_search_array);
+                    if (!$category_attribute_meta->id)
+                        $category_attribute_meta->save();
+
+                    /**
+                     * Значения атрибута, если он их имеет
+                     */
+                    $meta_array['settings'] = @$meta_array['settings'] ? json_encode($meta_array['settings']) : NULL;
+
+                    $category_attribute_meta->update($meta_array);
+                    unset($category_attribute_meta);
                 }
-                #Helper::d($attribute_id);
             }
 
             $json_request['responseText'] = 'Сохранено';
@@ -296,37 +295,28 @@ class AdminCatalogAttributesGroupsController extends BaseController {
 
 	public function destroy($id){
 
-        Allow::permission($this->module['group'], 'attributes_delete');
+        Allow::permission($this->module['group'], 'categories_delete');
 
 		if(!Request::ajax())
             App::abort(404);
 
 		$json_request = array('status' => FALSE, 'responseText' => '');
 
-        /*
-        $json_request['responseText'] = 'Удалено';
-        $json_request['status'] = TRUE;
-        return Response::json($json_request,200);
-        #*/
+        $element = CatalogCategoryAttribute::where('id', $id)->with(['metas', 'values'])->first();
 
-        $element = CatalogAttributeGroup::find($id);
+        #Helper::tad($element);
 
         if (is_object($element)) {
-
             /**
              * Удаление:
-             * - мета-данных
-             * - самой группы
+             * + значений атрибутов,
+             * + мета-данных
+             * + и самого атрибута
              */
 
+            $element->values()->delete();
             $element->metas()->delete();
             $element->delete();
-
-            /**
-             * Сдвигаем группы атрибудтов в общем дереве
-             */
-            if ($element->rgt)
-                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
 
             $json_request['responseText'] = 'Удалено';
             $json_request['status'] = TRUE;

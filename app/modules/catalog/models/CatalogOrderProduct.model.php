@@ -9,7 +9,9 @@ class CatalogOrderProduct extends BaseModel {
     protected $fillable = array(
         'order_id',
         'product_id',
+        'product_hash',
         'count',
+        'price',
         'product_cache',
     );
 
@@ -23,7 +25,7 @@ class CatalogOrderProduct extends BaseModel {
     }
 
     public function info() {
-        return $this->belongsTo('CatalogProduct', 'product_id', 'id');
+        return $this->belongsTo('CatalogProduct', 'product_id', 'id')->withTrashed();
     }
 
     public function scopeAttributess() {

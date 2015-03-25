@@ -99,7 +99,7 @@ $(function(){
 
 
 $(document).ready(function() {
-    $('select[name=type]').change(function(){
+    $('select[name=type].attribute_type').change(function(){
 
         //alert( $(this).find("option:selected").attr('prefix') );
         //alert( $(this).val() );
@@ -108,6 +108,19 @@ $(document).ready(function() {
             $('.select-values').removeClass('hidden');
         } else {
             $('.select-values').addClass('hidden');
+        }
+
+    });
+
+    $('select[name=type].category_attribute_type').change(function(){
+
+        //alert( $(this).find("option:selected").attr('prefix') );
+        //alert( $(this).val() );
+
+        if ($(this).val() == 'select') {
+            $('.category_attribute_type_i18n').removeClass('hidden');
+        } else {
+            $('.category_attribute_type_i18n').addClass('hidden');
         }
 
     });

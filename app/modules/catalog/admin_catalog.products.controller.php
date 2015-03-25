@@ -75,12 +75,11 @@ class AdminCatalogProductsController extends BaseController {
 
         Allow::permission($this->module['group'], 'products_view');
 
-        $elements = new CatalogProduct();
-        $tbl_cat_product = $elements->getTable();
-
         /**
          * Подготавливаем запрос для выборки
          */
+        $elements = new CatalogProduct();
+        $tbl_cat_product = $elements->getTable();
         $elements = $elements
             ->orderBy(DB::raw('-' . $tbl_cat_product . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
             ->orderBy($tbl_cat_product . '.created_at', 'ASC')
@@ -128,7 +127,30 @@ class AdminCatalogProductsController extends BaseController {
 
         $sortable = 1;
 
-        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category'));
+        /**
+         * Получаем все категории
+         */
+        $categories = new CatalogCategory();
+        $tbl_cat_category = $categories->getTable();
+        $categories = $categories
+            ->orderBy(DB::raw('-' . $tbl_cat_category . '.lft'), 'DESC') ## 0, 1, 2 ... NULL, NULL
+            ->orderBy($tbl_cat_category . '.created_at', 'ASC')
+            ->orderBy($tbl_cat_category . '.id', 'DESC')
+            ->with('meta')
+        ;
+        $categories = $categories->get();
+        if (count($categories))
+            $categories = DicVal::extracts($categories, null, true, true);
+        #Helper::tad($categories);
+
+        /**
+         * Формируем массив с отступами
+         */
+        $categories_for_select = NestedSetModel::get_array_for_select($categories);
+        #Helper::dd($categories_for_select);
+
+
+        return View::make($this->module['tpl'].'index', compact('elements', 'hierarchy', 'sortable', 'root_category', 'categories_for_select'));
 	}
 
     /************************************************************************************/
@@ -141,14 +163,23 @@ class AdminCatalogProductsController extends BaseController {
 
         #Helper::d($element);
 
+        /*
         $element->load(
             'category', 'seos',
             'metas', 'meta',
             'attributes_groups.meta', 'attributes_groups.attributes.meta'
         );
+        */
 
+        $element->load(
+            [
+                'category', 'seos',
+                'metas', 'meta',
+                'attributes_groups.meta', 'attributes_groups.attributes.metas'
+            ]
+        );
 
-        $element->extract(1);
+        $element->extract(0);
 
         if (is_object($element) && is_object($element->meta))
             $element->name = $element->meta->name;
@@ -169,71 +200,13 @@ class AdminCatalogProductsController extends BaseController {
         $categories = $categories->get();
         if (count($categories))
             $categories = DicVal::extracts($categories, null, true, true);
-        #$categories = Dic::modifyKeys($categories, 'id');
-
         #Helper::tad($categories);
 
         /**
-         * Подсчитаем отступ для каждой категории
+         * Формируем массив с отступами
          */
-        $indent_debug = 0;
-        $indent = 0;
-        $last_indent_increate_rgt = array();
-        foreach ($categories as $category) {
-
-            if ($indent_debug)
-                Helper::ta($category);
-
-            $category->indent = $indent;
-
-            if ($indent_debug)
-                Helper::d("Устанавливаем текущий отступ категории: " . $indent);
-
-            if ($category->lft+1 < $category->rgt) {
-
-                ++$indent;
-                $last_indent_increate_rgt[] = $category->rgt;
-
-                if ($indent_debug) {
-                    Helper::d("Увеличиваем текущий уровень отступа: " . $indent . " (" . $category->lft . "+1 < " . $category->rgt . ")");
-                    Helper::d("Добавляем RGT в массив 'RGT родительских категории': " . $category->rgt . " => " . implode(', ', $last_indent_increate_rgt));
-                }
-            }
-
-            #/*
-
-            $plus = 1;
-            $exit = false;
-            do {
-                if (in_array(($category->lft+(++$plus)), $last_indent_increate_rgt)) {
-
-                    --$indent;
-
-                    /*
-                    Helper::d("LFT категории + " . $plus . " (" . ($category->lft+$plus) . ") найдено в массиве 'RGT родительских категорий' => " . implode(', ', $last_indent_increate_rgt));
-                    Helper::d("Уменьшаем текущий уровень отступа: " . $indent);
-                    #*/
-
-                } else {
-                    $exit = true;
-                }
-
-            } while(!$exit);
-
-            #Helper::d("<hr/>");
-        }
-
-        #Helper::tad($categories);
-
-        /**
-         * Соберем все категории в массив с отступами для select
-         */
-        $categories_for_select = array();
-        foreach ($categories as $category) {
-            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
-        }
-        if ($indent_debug)
-            Helper::dd($categories_for_select);
+        $categories_for_select = NestedSetModel::get_array_for_select($categories);
+        #Helper::dd($categories_for_select);
 
 
         $root_category = NULL;
@@ -256,11 +229,10 @@ class AdminCatalogProductsController extends BaseController {
 
         Allow::permission($this->module['group'], 'categories_edit');
 
-
         /**
          * Выборка одного товара со всеми данными, для вывода
          */
-        #/*
+        /*
         $element = CatalogProduct::where('id', $id)
             ->with(
                 'seo', 'meta', 'attributes_groups.meta', 'attributes_groups.attributes.meta'
@@ -278,26 +250,36 @@ class AdminCatalogProductsController extends BaseController {
 
 
         $element = CatalogProduct::where('id', $id)
+            /*
             ->with(
                 'category', 'seos',
                 'metas', 'meta',
                 'attributes_groups.meta', 'attributes_groups.attributes.meta'
             )
+            #*/
             ->with(
-                array('attributes_groups.attributes.values' => function($query) use ($id) {
-                    $query->where('product_id', $id);
-                })
+                [
+                    #/*
+                    'category', 'seos',
+                    'metas', 'meta',
+                    'attributes_groups.meta', 'attributes_groups.attributes.metas',
+                    #*/
+                    'attributes_groups.attributes.values' => function($query) use ($id) {
+                        $query->where('product_id', $id);
+                    }
+                ]
             )
             ->first();
 
         if (!is_object($element))
             App::abort(404);
 
-        $element->extract(1);
+        $element->extract(0);
 
-        if (is_object($element) && is_object($element->meta))
+        if (is_object($element) && isset($element->meta) && is_object($element->meta))
             $element->name = $element->meta->name;
 
+        #Helper::smartQueries(1);
         #Helper::tad($element);
 
         /**
@@ -317,67 +299,10 @@ class AdminCatalogProductsController extends BaseController {
         $categories = Dic::modifyKeys($categories, 'id');
 
         /**
-         * Подсчитаем отступ для каждой категории
+         * Формируем массив с отступами
          */
-        $indent_debug = 0;
-        $indent = 0;
-        $last_indent_increate_rgt = array();
-        foreach ($categories as $category) {
-
-            if ($indent_debug)
-                Helper::ta($category);
-
-            $category->indent = $indent;
-
-            if ($indent_debug)
-                Helper::d("Устанавливаем текущий отступ категории: " . $indent);
-
-            if ($category->lft+1 < $category->rgt) {
-
-                ++$indent;
-                $last_indent_increate_rgt[] = $category->rgt;
-
-                if ($indent_debug) {
-                    Helper::d("Увеличиваем текущий уровень отступа: " . $indent . " (" . $category->lft . "+1 < " . $category->rgt . ")");
-                    Helper::d("Добавляем RGT в массив 'RGT родительских категории': " . $category->rgt . " => " . implode(', ', $last_indent_increate_rgt));
-                }
-            }
-
-            #/*
-
-            $plus = 1;
-            $exit = false;
-            do {
-                if (in_array(($category->lft+(++$plus)), $last_indent_increate_rgt)) {
-
-                    --$indent;
-
-                    /*
-                    Helper::d("LFT категории + " . $plus . " (" . ($category->lft+$plus) . ") найдено в массиве 'RGT родительских категорий' => " . implode(', ', $last_indent_increate_rgt));
-                    Helper::d("Уменьшаем текущий уровень отступа: " . $indent);
-                    #*/
-
-                } else {
-                    $exit = true;
-                }
-
-            } while(!$exit);
-
-            #Helper::d("<hr/>");
-        }
-
-        #Helper::tad($categories);
-
-        /**
-         * Соберем все категории в массив с отступами для select
-         */
-        $categories_for_select = array();
-        foreach ($categories as $category) {
-            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
-        }
-        if ($indent_debug)
-            Helper::dd($categories_for_select);
-
+        $categories_for_select = NestedSetModel::get_array_for_select($categories);
+        #Helper::dd($categories_for_select);
 
         $root_category = NULL;
         if (NULL !== ($cat_id = Input::get('category'))) {
@@ -388,7 +313,6 @@ class AdminCatalogProductsController extends BaseController {
             if (is_object($root_category))
                 $root_category = $root_category->extract();
         }
-
 
         $locales = Config::get('app.locales');
 
@@ -425,8 +349,16 @@ class AdminCatalogProductsController extends BaseController {
 		if(!Request::ajax())
             App::abort(404);
 
-        if (!$id || NULL === ($element = CatalogProduct::find($id)))
+        if (!$id || NULL === ($element = CatalogProduct::find($id))) {
+
             $element = new CatalogProduct();
+            #if (!Input::get('amount'))
+            #    $element->amount = NULL;
+            if (NULL !== ($cat_id = Input::get('category_id')))
+                $element->category_id = $cat_id;
+        }
+
+
 
         /**
          * Подгружаем все возможные атрибуты (через группы атрибутов)
@@ -486,8 +418,6 @@ class AdminCatalogProductsController extends BaseController {
             $form_values['#gallery_id_gallery_id'] = $tmp;
         $input['gallery_id'] = $tmp;
 
-        #Helper::dd($input);
-
         $json_request['responseText'] = "<pre>" . print_r($_POST, 1) . "</pre>";
         #return Response::json($json_request,200);
 
@@ -523,7 +453,12 @@ class AdminCatalogProductsController extends BaseController {
                 $element->save();
                 $element->update($input);
                 $product_id = $element->id;
-                $redirect = Input::get('redirect');
+
+                #$redirect = Input::get('redirect');
+                $temp = [];
+                if (Input::get('category_id'))
+                    $temp['category'] = Input::get('category_id');
+                $redirect = URL::route('catalog.products.index', $temp);
             }
 
             /**
@@ -672,36 +607,11 @@ class AdminCatalogProductsController extends BaseController {
 
         $json_request = array('status' => FALSE, 'responseText' => '');
 
-        $element = CatalogProduct::where('id', $id)
-            #->with('metas')
-            ->first()
-        ;
+        $element = CatalogProduct::find($id);
 
         if (is_object($element)) {
 
-            /**
-             * Удаление:
-             * + SEO-данных,
-             * + мета-данных
-             * + самого товара
-             */
-
-            if (Allow::module('seo')) {
-                Seo::where('module', 'CatalogProduct')
-                    ->where('unit_id', $element->id)
-                    ->delete()
-                ;
-            }
-
-            $element->metas()->delete();
-
-            $element->delete();
-
-            /**
-             * Делаем сдвиг в общем дереве
-             */
-            if ($element->rgt)
-                DB::update(DB::raw("UPDATE " . $element->getTable() . " SET lft = lft - 2, rgt = rgt - 2 WHERE lft > " . $element->rgt . ""));
+            $element->full_delete();
 
             $json_request['responseText'] = 'Удалено';
             $json_request['status'] = TRUE;
@@ -738,255 +648,6 @@ class AdminCatalogProductsController extends BaseController {
 
         return Response::make('1');
     }
-
-    public function getImport($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
-
-        #Helper::dd($dic);
-
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import', compact('dic', 'dic_id', 'element'));
-    }
-
-    public function postImport2($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        #Helper::dd( Input::all() );
-
-        $input = Input::all();
-        $lines = explode("\n", $input['import_data']);
-        $array = array();
-        $max = 0;
-        foreach ($lines as $line) {
-            if (@$input['trim'])
-                $line = trim($line, $input['trim_params'] . ' ' ?: ' ');
-            if (@$input['delimeter'])
-                $line = explode($input['delimeter'], $line);
-            else
-                $line = array($line);
-
-            if (count($line) > $max)
-                $max = count($line);
-
-            if ($line)
-                $array[] = $line;
-        }
-
-        #Helper::dd($array);
-
-        $fields = array('Выберите...', 'name' => 'Название', 'slug' => 'Системное имя') + array_keys((array)Config::get('dic/' . $dic->slug . '.fields'));
-        #Helper::dd($fields);
-
-        $element = $dic;
-
-        return View::make($this->module['tpl'].'import2', compact('dic', 'dic_id', 'element', 'array', 'max', 'fields'));
-    }
-
-    public function postImport3($dic_id){
-
-        Allow::permission($this->module['group'], 'import');
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-        #Helper::tad($dic);
-
-        ## Get also exists values
-        #$exist_values = $dic->values;
-        #Helper::ta($exist_values);
-
-        $input = Input::all();
-
-        /*
-        foreach ($exist_values as $e => $exist_value) {
-            if ($input['rewrite_mode'] == 1)
-                $exist_values[$exist_value->name] = $exist_value;
-            else
-                $exist_values[$exist_value->slug] = $exist_value;
-            unset($exist_values[$e]);
-        }
-        Helper::ta($exist_values);
-        */
-
-        $max = count($input['values'][0]);
-
-        $fields = $input['fields'];
-        $values = $input['values'];
-
-        ## Filter fields & values
-        foreach ($fields as $f => $field) {
-            if (is_numeric($field) && $field == 0) {
-                #Helper::d($f . " => " . $field . " = 0");
-                unset($fields[$f]);
-                unset($values[$f]);
-            }
-        }
-
-        #Helper::d($fields);
-        #Helper::d($values);
-
-        ## Make insertions
-        $find_key = ($input['rewrite_mode'] == 1) ? 'name' : 'slug';
-        $array = array();
-        $count = count($values[0]);
-        for ($i = 0; $i < $count; $i++) {
-            $arr = array(
-                'dic_id' => $dic->id,
-            );
-            foreach ($fields as $f => $field) {
-                $arr[$field] = @trim($values[$f][$i]);
-            }
-
-            $find = array($find_key => @$arr[$find_key], 'dic_id' => $dic->id);
-            #unset($arr[$find_key]);
-            if (
-                #$find_key != 'slug'
-                @$input['set_slug']
-                && (
-                    $input['set_slug_elements'] == 'all'
-                    || ($input['set_slug_elements'] == 'empty' && !@$arr['slug'])
-                )
-            ) {
-                $arr['slug'] = Helper::translit(@$arr['name']);
-            }
-
-            if (@$input['set_ucfirst'] && $arr['name']) {
-                $arr['name'] = Helper::mb_ucfirst($arr['name']);
-            }
-
-            #Helper::dd($find);
-
-            #/*
-            $dicval = DicVal::firstOrCreate($find);
-            $dicval->update($arr);
-            #Helper::ta($dicval);
-            #*/
-
-            unset($dicval);
-            #$array[] = $arr;
-        }
-
-        #Helper::d($array);
-
-        return Redirect::route('dicval.index', $dic_id);
-    }
-
-    public function getSphinx($dic_id) {
-
-        if (!Allow::superuser())
-            App::abort(404);
-
-        $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)
-            #->with('values')
-            ->first();
-
-        if (!is_object($dic))
-            App::abort(404);
-
-        #Helper::d('Данные словаря:') . Helper::ta($dic);
-
-        $fields = Config::get('dic/' . $dic->slug . '.fields');
-        if (isset($fields) && is_callable($fields))
-            $fields = $fields();
-
-        #Helper::d('Доп. поля словаря (fields):') . Helper::d($fields);
-
-        $fields_i18n = Config::get('dic/' . $dic->slug . '.fields_i18n');
-        if (isset($fields_i18n) && is_callable($fields_i18n))
-            $fields_i18n = $fields_i18n();
-
-        #Helper::d('Мультиязычные доп. поля словаря (fields_i18n):') . Helper::d($fields_i18n);
-
-        $tbl_dic_field_val = (new DicFieldVal)->getTable();
-        $tbl_dic_textfield_val = (new DicTextFieldVal)->getTable();
-
-        /**
-         * Будут индексироваться только поля следующих типов
-         */
-        $indexed_types = array('textarea', 'textarea_redactor', 'text');
-        $fulltext_types = array('textarea', 'textarea_redactor');
-
-        $selects = array(
-            "dicval.id AS id",
-            $dic->id . " AS dic_id",
-            "'" . $dic->name . "' AS dic_name",
-            "'" . $dic->slug . "' AS dic_slug",
-            "dicval.name AS name"
-        );
-        $sql = array();
-
-        $j = 0;
-        /**
-         * Поиск по обычным полям
-         */
-        if (isset($fields) && is_array($fields) && count($fields)) {
-            foreach ($fields as $field_key => $field) {
-
-                if (!isset($field['type']) || !in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NULL";
-            }
-        }
-        /**
-         * Поиск по мультиязычным полям
-         */
-        if (isset($fields_i18n) && is_array($fields_i18n) && count($fields_i18n)) {
-            foreach ($fields_i18n as $field_key => $field) {
-
-                if (!in_array($field['type'], $indexed_types))
-                    continue;
-
-                $tbl_field = in_array($field['type'], $fulltext_types) ? $tbl_dic_textfield_val : $tbl_dic_field_val;
-
-                ++$j;
-                $tbl =  "tbl" . $j;
-                ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
-                $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NOT NULL";
-            }
-        }
-
-        $sql[] = "WHERE dicval.version_of IS NULL AND dicval.dic_id = '" . $dic->id . "'";
-
-        $selects_compile = implode(', ', $selects);
-
-        array_unshift($sql, "SELECT " . $selects_compile . " FROM " . (new DicVal)->getTable() . " AS dicval");
-
-        return
-            "<h1>Поиск по словарю &laquo;" . $dic->name . "&raquo; (" . $dic->slug . ")</h1>" .
-            "<h3>SQL-запрос для тестирования (phpMyAdmin):</h3>" .
-            nl2br(implode("\n", $sql)) .
-            "<h3>SQL-запрос для вставки в конфиг Sphinx:</h3>" .
-            "<pre>
-    sql_query     = \\\n        " . (implode(' \\'."\n        ", $sql)) . "
-
-    sql_attr_uint = id
-</pre>"
-            ;
-    }
-
 }
 
 

@@ -8,12 +8,33 @@
  *
  */
 class Catalog extends BaseController {
-	
+
+
 	public function __construct(){
 		##
 	}
 
 
+    /**
+     * @param array $array
+     * @return bool|CatalogOrder
+     */
+    /*
+    Catalog::create_order([
+        'client_name' => 'Ivanov Ivan Ivanovich',
+        'delivery_info' => 'Russia, Rostov-on-Don, Suvorova st. 52a, office 300',
+        'comment' => 'Comment from customer to order',
+        'status' => 1,
+        'products' => [
+            '123_97d170e1550eee4afc0af065b78cda302a97674c' => [
+                'id' => 123,
+                'count' => 1,
+                'price' => 3000,
+                'attributes' => [],
+            ],
+        ],
+    ]);
+     */
     public static function create_order(array $array) {
 
         if (!isset($array) || !is_array($array))
@@ -34,6 +55,10 @@ class Catalog extends BaseController {
         }
         if (isset($array['delivery_info']) && $array['delivery_info'] != '') {
             $order->delivery_info = $array['delivery_info'];
+            $order->save();
+        }
+        if (isset($array['comment']) && $array['comment'] != '') {
+            $order->comment = $array['comment'];
             $order->save();
         }
 
@@ -94,7 +119,7 @@ class Catalog extends BaseController {
             /**
              * Перебираем все переданные товары
              */
-            foreach ($array['products'] as $order_product_id => $order_product) {
+            foreach ($array['products'] as $order_product_hash => $order_product) {
 
                 /**
                  * Если не указаны кол-во или цена - пропускаем товар
@@ -110,9 +135,16 @@ class Catalog extends BaseController {
                 )
                     continue;
 
+                /**
+                 * Добавляем запись о товаре в заказ
+                 */
                 $product = new CatalogOrderProduct();
+                $product->order_id = $order->id;
+                $product->product_id = $order_product['id'];
+                $product->product_hash = $order_product_hash;
                 $product->count = $order_product['count'];
                 $product->price = $order_product['price'];
+                $product->product_cache = NULL; ## FIX IT!
                 $product->save();
 
                 /**
@@ -354,4 +386,98 @@ class Catalog extends BaseController {
         return true;
     }
 
+
+    public static function getCategoryMenuDropdown($categories_array, $filter_default_text = 'Из всех категорий', $filter_name = 'category', $route = 'catalog.products.index') {
+
+        $category_id = Input::get($filter_name);
+        $current_category = NULL;
+        $array = [];
+        $child = [];
+
+        /**
+         * Основной элемент выпадающего меню
+         */
+        if ($category_id && isset($categories_array[$category_id]) && (NULL !== ($current_category = $categories_array[$category_id]))) {
+
+            $current_category = str_replace('&nbsp;', '', $current_category);
+            $current_category = trim($current_category);
+
+            $array[$filter_name] = $category_id;
+            $parent = array(
+                'link' => URL::route($route, $array),
+                'title' => $current_category,
+                'class' => 'btn btn-default',
+            );
+
+            $child[] = array(
+                'link' => URL::route($route, []),
+                'title' => $filter_default_text,
+                'class' => '',
+            );
+
+        } else {
+
+            $parent = array(
+                'link' => URL::route($route, $array),
+                'title' => $filter_default_text,
+                'class' => 'btn btn-default',
+            );
+        }
+
+        /**
+         * Дочерние элементы
+         */
+        foreach ($categories_array as $cat_id => $cat_name) {
+
+            #if ($category_id && $cat_id == $category_id)
+            #    continue;
+
+            $cat_name = trim($cat_name);
+
+            ## Get all current link attributes & modify for next url generation
+            $array = [];
+            $array[$filter_name] = $cat_id;
+
+            $child[] = array(
+                'link' => URL::route($route, $array),
+                'title' => $cat_name,
+                'class' => '',
+            );
+        }
+        ## Assembly
+        $parent['child'] = $child;
+
+        #Helper::tad($parent);
+
+        return $parent;
+    }
+
+
+    public static function get_products() {
+
+        /*
+        $products = (new CatalogProduct)
+            ->with('meta')
+            ->references('meta')
+            #->orderBy('meta.name', 'ASC')
+            ->get();
+        #*/
+
+        $products = (new CatalogProduct)
+            ->with('meta')
+            ->references('meta')
+            ->orderBy('meta.name', 'desc')
+            ->get()
+        ;
+        #die;
+
+        #Helper::smartQueries(1);
+        #die;
+
+        #$products = DicLib::extracts($products, null, true, false);
+
+        Helper::tad($products);
+
+        return $products;
+    }
 }

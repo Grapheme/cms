@@ -148,7 +148,9 @@ class AdminCatalogOrdersController extends BaseController {
         if (!is_object($element))
             App::abort(404);
 
-        $element->extract(1);
+        $element->extract(true, null);
+
+        #Helper::tad($element);
 
         $temp = (new CatalogOrderStatus())
             ->with('meta')

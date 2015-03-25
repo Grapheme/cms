@@ -166,6 +166,13 @@
                     </section>
 
                     <section>
+                        <label class="label">Комментарий к заказу:</label>
+                        <label class="textarea">
+                            {{ Form::textarea('comment') }}
+                        </label>
+                    </section>
+
+                    <section>
                         <label class="label">Создан:</label>
                         <label class="text">
                             {{ $element->created_at->format('H:i, d.m.Y') }}

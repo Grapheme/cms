@@ -56,7 +56,7 @@
                     <section>
                         <label class="label">Тип атрибута</label>
                         <label class="select">
-                            {{ Form::select('type', @$types, $element->type ?: Input::get('type')) }}
+                            {{ Form::select('type', @$types, $element->type ?: Input::get('type'), ['class' => 'attribute_type']) }}
                         </label>
                     </section>
 
