@@ -69,7 +69,7 @@ class AdminPagesPageController extends BaseController {
 
         Allow::permission($this->module['group'], 'view');
 
-        $pages = $this->essence->where('version_of', NULL)->orderBy('start_page', 'DESC')->orderBy('order', 'ASC')->with('blocks')->get();
+        $pages = $this->essence->where('version_of', NULL)->orderBy('start_page', 'DESC')->orderBy('name', 'ASC')->with('blocks')->get();
 
         #Helper::tad($pages);
 
@@ -250,6 +250,10 @@ class AdminPagesPageController extends BaseController {
 
             $redirect = FALSE;
 
+            if (Allow::action('pages', 'advanced', true, false)) {
+                $input['settings']['new_block'] = isset($input['settings']['new_block']) ? 1 : 0;
+            }
+
             ## PAGES
             if ($id != FALSE && $id > 0 && NULL != ($element = $this->essence->find($id))) {
 
@@ -257,6 +261,9 @@ class AdminPagesPageController extends BaseController {
                  * Создаем резервную копию страницы со всеми данными
                  */
                 $this->create_backup($id);
+
+                if (@$input['settings'])
+                    $input['settings'] = json_encode(array_merge(@(array)json_decode($element['settings']), $input['settings']));
 
                 #$element = $this->essence->find($id);
                 $element->update($input);
@@ -266,6 +273,7 @@ class AdminPagesPageController extends BaseController {
                     foreach ($blocks as $block_id => $block_data) {
                         $block_data['slug'] = @$block_data['slug'] ? $block_data['slug'] : $block_data['name'];
                         $block_data['slug'] = Helper::translit($block_data['slug']);
+                        #$block_data['settings'] = json_encode($block_data['settings']);
                         $block = $this->pages_blocks->find($block_id);
                         if (is_object($block)) {
                             $block->update($block_data);
@@ -274,6 +282,9 @@ class AdminPagesPageController extends BaseController {
                 }
 
             } else {
+
+                if (@$input['settings'])
+                    $input['settings'] = json_encode($input['settings']);
 
                 $element = $this->essence->create($input);
                 $id = $element->id;
@@ -502,11 +513,21 @@ class AdminPagesPageController extends BaseController {
         */
 
         $id = Input::get('id');
+
+        $block = $id != FALSE && $id > 0 && $this->pages_blocks->find($id)->exists() ? $this->pages_blocks->find($id) : new PageBlock;
+
         $input = Input::all();
         $locales = Helper::withdraw($input, 'locales');
         $input['template'] = @$input['template'] ? $input['template'] : NULL;
         $input['slug'] = @$input['slug'] ? $input['slug'] : $input['name'];
         $input['slug'] = Helper::translit($input['slug']);
+
+        if (Allow::action('pages', 'advanced', true, false)) {
+            $input['settings']['system_block'] = isset($input['settings']['system_block']) ? 1 : 0;
+        }
+
+        if (@$input['settings'])
+            $input['settings'] = json_encode(array_merge(@(array)json_decode($block['settings']), $input['settings']));
 
         $validator = Validator::make($input, $this->pages_blocks->rules());
         if ($validator->passes()) {
@@ -514,6 +535,7 @@ class AdminPagesPageController extends BaseController {
             $redirect = FALSE;
 
             ## BLOCK
+            /*
             if ($id != FALSE && $id > 0 && $this->pages_blocks->find($id)->exists()) {
 
                 $element = $this->pages_blocks->find($id);
@@ -524,12 +546,15 @@ class AdminPagesPageController extends BaseController {
                 $element = $this->pages_blocks->create($input);
                 $id = $element->id;
             }
+            */
+            $block->save();
+            $block->update($input);
 
             ## BLOCK_META
             if (count($locales)) {
                 foreach ($locales as $locale_sign => $locale_settings) {
                     $locale_settings['template'] = @$locale_settings['template'] ? $locale_settings['template'] : NULL;
-                    $block_meta = $this->pages_blocks_meta->where('block_id', $element->id)->where('language', $locale_sign)->first();
+                    $block_meta = $this->pages_blocks_meta->where('block_id', $block->id)->where('language', $locale_sign)->first();
                     if (is_object($block_meta)) {
                         $block_meta->update($locale_settings);
                     } else {

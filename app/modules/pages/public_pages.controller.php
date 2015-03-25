@@ -55,7 +55,7 @@ class PublicPagesController extends BaseController {
                 #is_string($parameters)
                 #&&
                 count(Config::get('app.locales')) > 1
-                && !Config::get('site.disable_url_modification')
+                && !Config::get('pages.disable_url_modification')
                 && Allow::module('seo')
             ) {
                 $pages = new $class;

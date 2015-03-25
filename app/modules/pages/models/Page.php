@@ -22,8 +22,8 @@ class Page extends BaseModel {
         'type_id',
         'publication',
         'start_page',
-        'in_menu',
         'order',
+        'settings',
     );
 
 
@@ -212,13 +212,15 @@ class Page extends BaseModel {
             if (isset($pages) && is_object($pages) && count($pages)) {
                 $pages_by_slug = new Collection();
                 $pages_by_sysname = new Collection();
+                $pages_by_id = new Collection();
                 foreach ($pages as $p => $page) {
                     $page->extract(1);
                     $pages_by_slug[$page->start_page ? '/' : $page->slug] = $page;
                     $pages_by_sysname[$page->sysname] = $page;
+                    $pages_by_id[$page->id] = $page;
                 }
             }
-            $pages = ['by_slug' => $pages_by_slug, 'by_sysname' => $pages_by_sysname];
+            $pages = ['by_slug' => $pages_by_slug, 'by_sysname' => $pages_by_sysname, 'by_id' => $pages_by_id];
         }
 
         ## Save cache
@@ -233,7 +235,6 @@ class Page extends BaseModel {
         #Helper::tad($pages);
     }
 
-
     public static function drop_cache() {
         Config::set('app.pages', NULL);
         Cache::forget('app.pages');
@@ -246,10 +247,15 @@ class Page extends BaseModel {
         return $pages ?: NULL;
     }
 
-
     public static function all_by_sysname() {
         $pages = Config::get('app.pages');
         $pages = @$pages['by_sysname'];
+        return $pages ?: NULL;
+    }
+
+    public static function all_by_id() {
+        $pages = Config::get('app.pages');
+        $pages = @$pages['by_id'];
         return $pages ?: NULL;
     }
 
@@ -260,12 +266,18 @@ class Page extends BaseModel {
         return $page ?: NULL;
     }
 
-
     public static function by_sysname($sysname) {
         $pages = Config::get('app.pages');
         $page = @$pages['by_sysname'][$sysname];
         return $page ?: NULL;
     }
+
+    public static function by_id($id) {
+        $pages = Config::get('app.pages');
+        $page = @$pages['by_id'][$id];
+        return $page ?: NULL;
+    }
+
 
     public static function slug_by_sysname($sysname) {
         $pages = Config::get('app.pages');
@@ -281,3 +293,16 @@ class Page extends BaseModel {
     }
 
 }
+
+if (!function_exists('pageslug')) {
+    function pageslug($sysname) {
+        return Page::slug_by_sysname($sysname);
+    }
+}
+
+if (!function_exists('pageurl')) {
+    function pageurl($sysname, $params = []) {
+        return URL::route('page', [pageslug($sysname)] + $params);
+    }
+}
+

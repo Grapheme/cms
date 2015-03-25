@@ -137,17 +137,5 @@ function Redirect($url = '', $code = '301 Moved Permanently') {
     die;
 }
 
-if (!function_exists('pageslug')) {
-    function pageslug($sysname) {
-        return Page::slug_by_sysname($sysname);
-    }
-}
-
-if (!function_exists('pageurl')) {
-    function pageurl($sysname) {
-        return Page::slug_by_sysname($sysname);
-    }
-}
-
 ## Выводит на экран все SQL-запросы
 #Event::listen('illuminate.query',function($query){ echo "<pre>" . print_r($query, 1) . "</pre>\n"; });

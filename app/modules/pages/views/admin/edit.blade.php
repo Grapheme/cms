@@ -1,4 +1,8 @@
 @extends(Helper::acclayout())
+<?
+$element->settings = json_decode($element->settings, 1);
+#Helper::ta($element->settings);
+?>
 
 
 @section('style')
@@ -65,7 +69,7 @@
 
                 <div class="col-sm-12 col-md-12 col-lg-12 clearfix">
 
-                    <section class="col col-lg-6 col-sm-12">
+                    <section class="col col-sm-12 @if (Allow::action('pages', 'advanced', true, false)) col-lg-6 @else col-lg-12 @endif">
                         <label class="label">Название</label>
                         <label class="input">
                             {{ Form::text('name') }}
@@ -87,7 +91,7 @@
                 <div class="clearfix">
 
 
-                <section class="col col-lg-6 col-sm-12">
+                <section class="col col-sm-12 @if($show_template_select) col-lg-6 @else col-lg-12 @endif">
                     <label class="label">URL страницы</label>
                     <label class="input">
                         {{ Form::text('slug', NULL, array('placeholder' => '')) }}
@@ -153,6 +157,14 @@
                             {{ Form::checkbox('start_page', 1) }}
                             <i></i>
                             Стартовая страница
+                        </label>
+                    </section>
+
+                    <section class="col col-lg-6 col-sm-12 col-xs-12">
+                        <label class="checkbox">
+                            {{ Form::checkbox('settings[new_block]', 1, (!$element->settings['new_block'] ? null : true)) }}
+                            <i></i>
+                            Запрет на создание блоков
                         </label>
                     </section>
 
@@ -227,7 +239,7 @@
 
                 <header>Блоки на странице:</header>
 
-                <fieldset class="page-blocks">
+                <fieldset class="page-blocks margin-bottom-0 padding-bottom-10">
 
                     <div id="blocks" class="sortable">
                         @if (count($element->blocks))
@@ -237,10 +249,12 @@
                         @endif
                     </div>
 
-                    <div>
-                        <a href="javascript:void(0)" class="new_block">Добавить блок</a>
-                        {{--<a href="javascript:void(0)" class="new_blocks_test">Тестировать</a>--}}
-                    </div>
+                    @if (Allow::action('pages', 'advanced', true, false) || !@$element->settings['new_block'])
+                        <div>
+                            <a href="javascript:void(0)" class="new_block">Добавить блок</a>
+                            {{--<a href="javascript:void(0)" class="new_blocks_test">Тестировать</a>--}}
+                        </div>
+                    @endif
 
                 </fieldset>
 

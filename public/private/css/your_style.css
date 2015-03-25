@@ -1047,3 +1047,8 @@ nav > ul > li > a b {
 .modal-dialog {
     z-index: 1050;
 }
+
+h1.top-module-menu a {
+    color: rgb(51, 51, 51);
+    text-decoration: none;
+}
