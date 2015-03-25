@@ -52,7 +52,7 @@ return array(
 
     'seo' => 1,
 
-    'versions' => 3,
+    'versions' => 0,
 
     'group_actions' => array(
         'moderator' => function() {

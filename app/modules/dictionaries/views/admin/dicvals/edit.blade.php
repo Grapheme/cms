@@ -17,7 +17,7 @@
     $edit_title   = "Добавить запись:";
 
     $url =
-        @$element->id
+        (isset($element->id) && $element->id)
         ? action(is_numeric($dic_id) ? 'dicval.update' : 'entity.update', array('dic_id' => $dic_id, 'id' => $element->id))
         : action(is_numeric($dic_id) ? 'dicval.store'  : 'entity.store',  array('dic_id' => $dic_id));
     $method     = @$element->id ? 'PUT' : 'POST';

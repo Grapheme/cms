@@ -210,6 +210,14 @@ class AdminDicvalsController extends BaseController {
 
         #Helper::tad($dic->pagination);
 
+
+        ## Search
+        $search_query = NULL;
+        if (NULL !== ($search_query = Input::get('q'))) {
+            $elements = $elements->where('name', 'LIKE', '%' . $search_query . '%');
+        }
+
+
         ## Pagination
         if ($dic->pagination > 0)
             $elements = $elements->paginate($dic->pagination);
@@ -264,7 +272,7 @@ class AdminDicvalsController extends BaseController {
 
         #return View::make(Helper::acclayout());
         #return View::make($this->module['tpl'].'index_old', compact('elements', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection'));
-        return View::make($this->module['tpl'].'index', compact('elements', 'elements_pagination', 'hierarchy', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection'));
+        return View::make($this->module['tpl'].'index', compact('elements', 'elements_pagination', 'hierarchy', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection', 'search_query'));
 	}
 
     /************************************************************************************/

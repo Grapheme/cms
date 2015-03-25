@@ -27,7 +27,7 @@
     <h1 class="top-module-menu">
         <a href="{{ URL::route($module['entity'] . '.index') }}">Страницы</a>
         @if (isset($element) && is_object($element) && $element->id)
-            &raquo;
+            &nbsp;&mdash;&nbsp;
             {{--<a href="{{ URL::route($module['entity'] . '.edit', array($element->id)) }}">--}}
                 {{ $element->name ?: $element->slug }}
             {{--</a>--}}
