@@ -149,6 +149,7 @@ class CreateCatalogTables extends Migration {
 
                 $table->string('name')->nullable()->index();
                 $table->text('description');
+                $table->text('full_description');
                 $table->string('price')->nullable()->index();
 
                 $table->text('settings')->nullable();
