@@ -407,6 +407,10 @@ class AdminPagesPageController extends BaseController {
         }
         $page->delete();
 
+        ## Clear & reload pages cache
+        Page::drop_cache();
+        Page::preload();
+
         $json_request['responseText'] = 'Страница удалена';
         $json_request['status'] = TRUE;
 
@@ -651,6 +655,10 @@ class AdminPagesPageController extends BaseController {
 
         #Helper::d($element);
         #Helper::dd($url);
+
+        ## Clear & reload pages cache
+        Page::drop_cache();
+        Page::preload();
 
         #return Redirect::to($url);
         Redirect($url);
