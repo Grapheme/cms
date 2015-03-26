@@ -4,7 +4,7 @@
 
     $menus[] = array(
         'link' => URL::route('catalog.orders.index'),
-        'title' => 'Все заказы',
+        'title' => 'Активные',
         'class' => 'btn btn-default'
     );
 

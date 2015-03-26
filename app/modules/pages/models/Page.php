@@ -219,8 +219,8 @@ class Page extends BaseModel {
                     $pages_by_sysname[$page->sysname] = $page;
                     $pages_by_id[$page->id] = $page;
                 }
+                $pages = ['by_slug' => $pages_by_slug, 'by_sysname' => $pages_by_sysname, 'by_id' => $pages_by_id];
             }
-            $pages = ['by_slug' => $pages_by_slug, 'by_sysname' => $pages_by_sysname, 'by_id' => $pages_by_id];
         }
 
         ## Save cache

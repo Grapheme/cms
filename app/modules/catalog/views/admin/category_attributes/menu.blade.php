@@ -1,11 +1,13 @@
 <?
 #Helper:dd($dic_id);
 $menus = array();
+/*
 $menus[] = array(
         'link' => URL::route('catalog.category_attributes.index'),
         'title' => 'Все атрибуты',
         'class' => 'btn btn-default'
 );
+*/
 /*
 if (
     Allow::action($module['group'], 'categories_delete')
@@ -36,8 +38,10 @@ if (Allow::action($module['group'], 'categories_create')) {
 #Helper::d($menus);
 ?>
 
-<h1>
-    Атрибуты категорий
+<h1 class="top-module-menu">
+    <a href="{{ URL::route('catalog.category_attributes.index') }}">
+        Атрибуты категорий
+    </a>
     @if (isset($element) && is_object($element) && $element->name)
         &nbsp;&mdash;&nbsp;
         {{ $element->name }}

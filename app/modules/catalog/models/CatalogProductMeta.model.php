@@ -20,6 +20,7 @@ class CatalogProductMeta extends BaseModel {
         'active',
         'name',
         'description',
+        'full_description',
         'price',
         'settings',
     );

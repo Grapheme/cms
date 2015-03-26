@@ -155,9 +155,17 @@
                                                 </section>
 
                                                 <section>
-                                                    <label class="label">Описание</label>
+                                                    <label class="label">Краткое описание</label>
                                                     <label class="textarea">
                                                         {{ Form::textarea('meta[' . $locale_sign . '][description]', @$element->metas[$locale_sign]['description']) }}
+                                                    </label>
+                                                </section>
+
+                                                <section>
+                                                    <label class="label">Полное описание</label>
+                                                    <label class="textarea">
+                                                        {{ Form::textarea('meta[' . $locale_sign . '][full_description]', @$element->metas[$locale_sign]['full_description'], ['class' => 'redactor redactor_150']) }}
+
                                                     </label>
                                                 </section>
 

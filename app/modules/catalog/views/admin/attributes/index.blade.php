@@ -24,7 +24,7 @@
 
                         <div class="dd3-content panel-group smart-accordion-default margin-top-0 margin-bottom-0 padding-0 border-0">
                             <div class="panel panel-default">
-                                <div class="panel-heading">
+                                <div class="panel-heading" style="padding:2px 0;">
                                     <h4 class="panel-title panel-title-custom" style="position:relative">
 
                                         <div class="" style="position:absolute; right:0; top:0; padding: 6px 36px 6px 10px;">
@@ -59,8 +59,8 @@
                                         </div>
 
                                         <div data-toggle="collapse" data-parent="#accordion" href="#attributes_group_{{ $attributes_group->id }}" class="panel-title-link collapsed--" style="z-index:9">
-                                            <i class="fa fa-lg fa-angle-down pull-right margin-top-5 accordion-collapse"></i>
-                                            <i class="fa fa-lg fa-angle-up pull-right margin-top-5 accordion-collapse"></i>
+                                            <i class="fa fa-lg fa-angle-down pull-right margin-top-0 accordion-collapse"></i>
+                                            <i class="fa fa-lg fa-angle-up pull-right margin-top-0 accordion-collapse"></i>
                                             <span class="menu_item_title">
                                                 {{ $attributes_group->name }}
                                                 &nbsp;

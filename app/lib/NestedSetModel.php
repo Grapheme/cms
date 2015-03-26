@@ -227,6 +227,72 @@ class NestedSetModel {
 
 
 
+    public static function get_array_for_select($categories) {
+
+        /**
+         * Подсчитаем отступ для каждой категории
+         */
+        $indent_debug = 0;
+        $indent = 0;
+        $last_indent_increate_rgt = array();
+        foreach ($categories as $category) {
+
+            if ($indent_debug)
+                Helper::ta($category);
+
+            $category->indent = $indent;
+
+            if ($indent_debug)
+                Helper::d("Устанавливаем текущий отступ категории: " . $indent);
+
+            if ($category->lft+1 < $category->rgt) {
+
+                ++$indent;
+                $last_indent_increate_rgt[] = $category->rgt;
+
+                if ($indent_debug) {
+                    Helper::d("Увеличиваем текущий уровень отступа: " . $indent . " (" . $category->lft . "+1 < " . $category->rgt . ")");
+                    Helper::d("Добавляем RGT в массив 'RGT родительских категории': " . $category->rgt . " => " . implode(', ', $last_indent_increate_rgt));
+                }
+            }
+
+            #/*
+
+            $plus = 1;
+            $exit = false;
+            do {
+                if (in_array(($category->lft+(++$plus)), $last_indent_increate_rgt)) {
+
+                    --$indent;
+
+                    /*
+                    Helper::d("LFT категории + " . $plus . " (" . ($category->lft+$plus) . ") найдено в массиве 'RGT родительских категорий' => " . implode(', ', $last_indent_increate_rgt));
+                    Helper::d("Уменьшаем текущий уровень отступа: " . $indent);
+                    #*/
+
+                } else {
+                    $exit = true;
+                }
+
+            } while(!$exit);
+
+            #Helper::d("<hr/>");
+        }
+
+        #Helper::tad($categories);
+
+        /**
+         * Соберем все категории в массив с отступами для select
+         */
+        $categories_for_select = array();
+        foreach ($categories as $category) {
+            $categories_for_select[$category->id] = str_repeat('&nbsp; &nbsp; &nbsp; ', $category->indent) . $category->name;
+        }
+        if ($indent_debug)
+            Helper::dd($categories_for_select);
+
+        return $categories_for_select;
+    }
 
 
 

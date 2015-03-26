@@ -337,10 +337,10 @@ margin-left: 0;
 }
 
 .btn-spinner {
-	min-width: 115px !important;
+	min-width: 115epx !important;
 }
 .redactor_box {
-	max-width: 790px;
+	/*max-width: 790px;*/
     /*z-index: 1000;*/
     position: relative;
 }
@@ -871,10 +871,11 @@ div.redactor_dropdown {
 
 
 
-
+/*
 div > .dd-list > .dd-item:first-child > button::before {
     padding-top: 4px
 }
+*/
 
 
 .dd-item-fixed-height .dd-handle {
