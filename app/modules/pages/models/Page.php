@@ -197,7 +197,7 @@ class Page extends BaseModel {
         $cache_key = 'app.pages';
         $cache_pages_limit = Config::get('pages.preload_pages_limit');
 
-        if (Cache::has($cache_key) && !Input::get('drop_pages_cache') && 1) {
+        if (Cache::has($cache_key) && !Input::get('drop_pages_cache')) {
 
             ## From cache
             $pages = Cache::get($cache_key);
@@ -290,6 +290,10 @@ class Page extends BaseModel {
                 $slug = $page->slug;
         }
         return $slug;
+    }
+
+    public function h1_or_name() {
+        return (isset($this->seo) && is_object($this->seo) && isset($this->seo->h1) && $this->seo->h1) ? $this->seo->h1 : $this->name ;
     }
 
 }

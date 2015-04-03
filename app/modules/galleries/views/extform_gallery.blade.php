@@ -12,7 +12,16 @@
             <? $gallery_photos = $gallery->photos()->get(); ?>
             @if ($gallery_photos)
                 <div class="sortable photo-previews">
+                    <?
+                    $bad_photos = [];
+                    ?>
                     @foreach ($gallery_photos as $photo)
+                        <?
+                        if (!$photo->is_correct()) {
+                            $bad_photos[] = $photo->id;
+                            continue;
+                        }
+                        ?>
 
                         <div id="image-{{ $photo->id }}" class="modal fade not-sortable" tabindex="-1" role="dialog" aria-labelledby="image-{{ $photo->id }}Label" aria-hidden="true">
                             <div class="modal-dialog block-center text-center">
@@ -47,3 +56,10 @@
 
     </div>
     <div class="clear"></div>
+<?
+/*
+if (count($bad_photos)) {
+    Photo::whereIn('id', $bad_photos)->full_delete();
+}
+*/
+?>

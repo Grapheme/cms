@@ -22,9 +22,20 @@ class Photo extends Eloquent {
 		return URL::to(Config::get('site.galleries_photo_public_dir') . "/" . $this->name);
 	}
 
+    public function thumbpath() {
+        #return link::to(Config::get('site.galleries_photo_dir')) . "/" . $this->name;
+        return str_replace('//', '/', public_path(Config::get('site.galleries_thumb_public_dir') . "/" . $this->name));
+    }
+
     public function fullpath() {
         #return link::to(Config::get('site.galleries_photo_dir')) . "/" . $this->name;
         return str_replace('//', '/', public_path(Config::get('site.galleries_photo_public_dir') . "/" . $this->name));
+    }
+
+    public function is_correct() {
+        $exists_thumb = file_exists($this->thumbpath());
+        $exists_full  = file_exists($this->fullpath());
+        return (bool)($exists_thumb && $exists_full);
     }
 
     public function extract() {

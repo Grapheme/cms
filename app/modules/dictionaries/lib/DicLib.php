@@ -111,7 +111,7 @@ class DicLib extends BaseController {
      */
     public static function loadImages($collection, $key = 'image_id', $field = null){
 
-        #Helper::ta($collection);
+        #Helper::tad($collection);
 
         if (!is_array($key))
             $key = (array)$key;
@@ -146,7 +146,7 @@ class DicLib extends BaseController {
             $collection->put(0, $temp);
         }
 
-        #Helper::tad('single: ' . $single_mode . ', paginator: ' . $paginator_mode . '');
+        #Helper::tad('single: ' . $single_mode . ', paginator: ' . $paginator_mode . ', key: ' . print_r($key, 1));
 
         #Helper::tad($collection);
         #dd($collection);
@@ -171,7 +171,9 @@ class DicLib extends BaseController {
             /**
              * Перебираем все переданные ключи с ID изображений
              */
-            foreach ($key as $attr)
+            foreach ($key as $attr) {
+
+                #Helper::ta($attr . ' - ' . is_numeric($work_obj->$attr));
 
                 if (!is_object($work_obj)) {
                     dd($work_obj);
@@ -185,6 +187,8 @@ class DicLib extends BaseController {
                     $images_ids_attr[$attr][] = $work_obj->$attr;
                     $images_ids[] = $work_obj->$attr;
                 }
+            }
+
         }
         #Helper::dd($images_ids);
         #Helper::d($images_ids_attr);
@@ -376,7 +380,8 @@ class DicLib extends BaseController {
                 /**
                  * Перебираем все переданные ключи с ID изображений
                  */
-                foreach ($key as $attr)
+                foreach ($key as $attr) {
+
                     if (is_numeric($work_obj->$attr)) {
 
                         if (@$objects[$work_obj->$attr]) {
@@ -387,6 +392,8 @@ class DicLib extends BaseController {
                             $work_obj->setAttribute($attr, $image);
                         }
                     }
+
+                }
 
                 if ($field) {
                     $obj->$field = $work_obj;

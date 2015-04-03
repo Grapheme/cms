@@ -130,8 +130,8 @@ class CatalogProduct extends BaseModel {
      * @return mixed
      */
     public function seo() {
-        return $this->belongsTo('Seo', 'unit_id', 'id')
-            ->where('module', 'CatalogProductMeta')
+        return $this->belongsTo('Seo', 'id', 'unit_id')
+            ->where('module', 'CatalogProduct')
             ->where('language', Config::get('app.locale'))
             ;
     }
@@ -500,4 +500,9 @@ class CatalogProduct extends BaseModel {
 
         return true;
     }
+
+    public function h1_or_name() {
+        return (isset($this->seo) && is_object($this->seo) && isset($this->seo->h1) && $this->seo->h1) ? $this->seo->h1 : $this->name ;
+    }
+
 }
