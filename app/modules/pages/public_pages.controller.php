@@ -186,6 +186,7 @@ class PublicPagesController extends BaseController {
             ## ...пробуем в теме найти шаблон с таким же именем, как запрошенный slug...
             if (
                 $slug != ''
+                && !Config::get('pages.disable_slug_to_template')
                 && preg_match("~^[A-Za-z0-9\-\_]+?$~is", $slug)
                 && View::exists(Helper::layout($slug))
             ) {
