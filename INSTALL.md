@@ -1,14 +1,14 @@
-===================================================
+==============================
 Требования к серверу для проектов
-===================================================
+==============================
 
 PHP 5.4+
- - php.ini: short_open_tag=On
- - Mcrypt PHP Extension
- - OpenSSL PHP Extension
- - Mbstring PHP Extension
- - Tokenizer PHP Extension
- - JSON PHP extension
+php.ini: short_open_tag=On
+Mcrypt PHP Extension
+OpenSSL PHP Extension
+Mbstring PHP Extension
+Tokenizer PHP Extension
+JSON PHP extension
 
 MySQL 5.5+
 
@@ -18,11 +18,14 @@ MySQL 5.5+
 tar, gzip, zip
 curl, git, mc, nano
 
-
-===================================================
+==============================
 Установка
-===================================================
+==============================
 Все команды выполняются из корня приложения!
+
+0) Клонируем проект из репозитория на GitHub или BitBucket
+git clone https://github.com/........git
+Точный адрес репозитория уточнить у разработчика!
 
 1) Устанавливаем менеджер зависимостей Composer:
 curl -sS https://getcomposer.org/installer | php
