@@ -590,6 +590,34 @@ class Dic extends BaseModel {
     }
 
 
+    public static function all_by_slug() {
+        $cache_key = self::$cache_key;
+        $dics = Config::get($cache_key);
+        $dics = @$dics['by_slug'];
+        return $dics ?: NULL;
+    }
+
+    public static function all_by_id() {
+        $cache_key = self::$cache_key;
+        $dics = Config::get($cache_key);
+        $dics = @$dics['by_id'];
+        return $dics ?: NULL;
+    }
+
+
+    public static function by_slug($slug) {
+        $cache_key = self::$cache_key;
+        $dics = Config::get($cache_key);
+        $dic = @$dics['by_slug'][$slug];
+        return $dic ?: NULL;
+    }
+
+    public static function by_id($id) {
+        $cache_key = self::$cache_key;
+        $dics = Config::get($cache_key);
+        $dic = @$dics['by_id'][$id];
+        return $dic ?: NULL;
+    }
 
     /**
      * DEPRECATED

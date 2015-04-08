@@ -29,8 +29,10 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function dic() {
-        return $this->belongsTo('Dictionary', 'dic_id');
+
+        return $this->belongsTo('Dic', 'dic_id');
     }
+
 
     /**
      * Связь возвращает все META-данные записи (для всех языков)
@@ -38,8 +40,10 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function metas() {
+
         return $this->hasMany('DicValMeta', 'dicval_id', 'id');
     }
+
 
     /**
      * Связь возвращает META для записи, для текущего языка запроса
@@ -47,8 +51,10 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function meta() {
+
         return $this->hasOne('DicValMeta', 'dicval_id', 'id')->where('language', Config::get('app.locale'));
     }
+
 
     /**
      * Связь многие-ко-многим между элементами DicVal, с привязкой к dic_id
@@ -56,11 +62,13 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function related_dicvals() {
+
         return $this
             ->belongsToMany('DicVal', 'dictionary_values_rel', 'dicval_parent_id', 'dicval_child_id')
             ->withPivot('dicval_parent_dic_id', 'dicval_child_dic_id', 'dicval_parent_field')
             ;
     }
+
 
     /**
      * Связь возвращает все доп. поля записи (как зависящие от локали, так и нет)
@@ -68,9 +76,10 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function allfields() {
-        return $this->hasMany('DicFieldVal', 'dicval_id', 'id')
-        ;
+
+        return $this->hasMany('DicFieldVal', 'dicval_id', 'id');
     }
+
 
     /**
      * Связь возвращает доп. поля записи: как независящие от языка, так и зависящие (совпадающие с текущей локалью запроса)
@@ -79,17 +88,13 @@ class DicVal extends BaseModel {
      */
     public function fields() {
 
-        #Helper::dd($this);
-
         return $this
             ->hasMany('DicFieldVal', 'dicval_id', 'id')
             ->where('language', Config::get('app.locale'))
             ->orWhere('language', NULL)
-
-            #->whereIn('name', array_keys((array)Config::get('dic.dic_name.fields')))
-
             ;
     }
+
 
     /**
      * Связь возвращает все текстовые поля записи (как зависящие от локали, так и нет)
@@ -97,9 +102,11 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function alltextfields() {
+
         return $this->hasMany('DicTextFieldVal', 'dicval_id', 'id')
             ;
     }
+
 
     /**
      * Связь возвращает текстовые поля записи: как независящие от языка, так и зависящие (совпадающие с текущей локалью запроса)
@@ -107,11 +114,13 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function textfields() {
+
         return $this->hasMany('DicTextFieldVal', 'dicval_id', 'id')
             ->where('language', Config::get('app.locale'))
             ->orWhere('language', NULL)
             ;
     }
+
 
     /**
      * Связь возвращает все резервные копии записи
@@ -119,8 +128,10 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function versions() {
+
         return $this->hasMany('DicVal', 'version_of', 'id')->orderBy('updated_at', 'DESC');
     }
+
 
     /**
      * Связь возвращает оригинальную текущую версию записи
@@ -128,8 +139,10 @@ class DicVal extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function original_version() {
+
         return $this->hasOne('DicVal', 'id', 'version_of');
     }
+
 
     /**
      * Возвращает SEO-данные записи, для текущего языка запроса
@@ -137,11 +150,13 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function seo() {
+
         return $this->hasOne('Seo', 'unit_id', 'id')->where('module', 'dicval')
             ->where('language', Config::get('app.locale'))
             #->where('language', NULL)
             ;
     }
+
 
     /**
      * Связь возвращает все SEO-данные записи, для каждого из языков
@@ -149,6 +164,7 @@ class DicVal extends BaseModel {
      * @return mixed
      */
     public function seos() {
+
         return $this->hasMany('Seo', 'unit_id', 'id')->where('module', 'dicval');
     }
 
@@ -167,6 +183,7 @@ class DicVal extends BaseModel {
      * @author Alexander Zelensky
      */
     public static function count_by_fields($dic_id, $array) {
+
         #SELECT *  FROM `dictionary_fields_values` WHERE `dicval_id` = 162 AND `key` = 'collection_id' AND `value` = 161
         $tbl_dicval = new DicVal;
         $tbl_dicval = $tbl_dicval->getTable();
@@ -184,6 +201,7 @@ class DicVal extends BaseModel {
         return $result;
     }
 
+
     /**
      * Функция принимает в качестве аргументов массив с ID словарей и массив с условиями для выборки из таблицы значений словарей.
      * Условия представляют собой одномерный массив, у которого:
@@ -198,6 +216,7 @@ class DicVal extends BaseModel {
      * @author Alexander Zelensky
      */
     public static function counts_by_fields($dic_ids = array(), $array = array()) {
+
         $tbl_dicval = new DicVal;
         $tbl_dicval = $tbl_dicval->getTable();
         $result = new DicFieldVal;
@@ -248,6 +267,7 @@ class DicVal extends BaseModel {
         return $counts;
     }
 
+
     /**
      * Заготовка запроса для админской части - загрузка всех множественных связей о записи словаря
      *
@@ -259,10 +279,11 @@ class DicVal extends BaseModel {
         return
             $query
                 ->with('metas')
-                ->with('allfields', 'alltextfields')
+                ->with(['allfields', 'alltextfields'])
                 ->with('seos')
             ;
     }
+
 
     /**
      * Заготовка запроса для получения всех одиночных связей для публичной части
@@ -275,10 +296,11 @@ class DicVal extends BaseModel {
         return
             $query
                 ->with('meta')
-                ->with('fields', 'textfields')
+                ->with(['fields', 'textfields'])
                 ->with('seo')
             ;
     }
+
 
     /**
      * Заготовка запроса - получение всех резервных копий записи словаря, для админской части
@@ -322,6 +344,7 @@ class DicVal extends BaseModel {
 
         return $query;
     }
+
 
     /**
      * Функция позволяет отсортировть записи словаря по доп. полю записи.
@@ -389,6 +412,7 @@ class DicVal extends BaseModel {
 
         return $this->scopeHook_up_field($query, $key, $as_alias, $additional_rules, 'join');
     }
+
 
     /*
         Пример использования:
@@ -510,6 +534,7 @@ class DicVal extends BaseModel {
 
         return DicLib::extracts($elements, $field, $unset, $extract_ids);
     }
+
 
     /**
      * Экстрактит одну запись словаря
@@ -666,6 +691,7 @@ class DicVal extends BaseModel {
 
 
     public static function extracts_related($elements, $dicval_data = false, $extract_ids = true) {
+
         $return = new Collection;
         #Helper::dd($return);
         foreach ($elements as $e => $element) {
@@ -698,6 +724,7 @@ class DicVal extends BaseModel {
         }
         return $this;
     }
+
 
     /*
      * USAGE:
@@ -1068,9 +1095,10 @@ class DicVal extends BaseModel {
      */
 
     /**
-     * relations - алиас для свзяи, желательно использовать related_dicvals()
+     * relations - алиас для свзяи; зарегервированное слово Eloquent; вместо него нужно использовать related_dicvals()
      */
     public function relations() {
+
         return $this->related_dicvals();
     }
 
