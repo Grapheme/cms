@@ -1,6 +1,7 @@
+#.htaccess
+
 /vendor
 /bootstrap/compiled.php
-.htaccess
 
 node_modules
 .tmp
