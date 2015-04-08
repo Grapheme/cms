@@ -37,4 +37,8 @@ return array(
         'default_description' => '',
         'default_keywords'    => '',
     ],
+
+    'dics' => [
+        'preload_cache_lifetime' => 60*24, ## время жизни кеша страниц, в минутах
+    ],
 );

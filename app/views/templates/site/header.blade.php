@@ -4,43 +4,8 @@
  */
 ?>
 <?
-#Helper::dd(Config::get('app.locale'));
-
 $route = Route::currentRouteName();
-#Helper::dd($page);
-
-$room_type = Dic::whereSlugValues('room_type');
-$room_types = array();
-$room_type_prices = array();
-if (@count($room_type))
-    foreach ($room_type as $a => $arr) {
-
-        if (is_object($arr->meta))
-            $room_type[$a]->name = $arr->meta->name;
-        if (is_object($arr->fields))
-            foreach ($arr->fields as $field)
-                $room_type[$a]->{$field->key} = $field->value;
-
-        if ($arr->price) {
-            $room_types[$arr->id . '.1'] = $arr->name . ', ' . trans("interface.rooms.single_occupancy");
-            $room_type_prices[$arr->id . '.1'] = $arr->price;
-        }
-        if ($arr->price2) {
-            $room_types[$arr->id . '.2'] = $arr->name . ', ' . trans("interface.rooms.double_occupancy");
-            $room_type_prices[$arr->id . '.2'] = $arr->price2;
-        }
-    }
-
-#Helper::d($room_types);
-#Helper::dd($room_type_prices);
-
-##$prices = json_encode($room_type->lists('price', 'id'));
-##Helper::tad($room_type);
-##Helper::dd($room_type->lists('name', 'id'));
 ?>
-@if (0)
-page:rooms = {{ URL::route('page', 'rooms') }}
-@endif
         <div class="wrapper">
             <header class="main-header">
                 @if ($route == 'mainpage')
@@ -87,14 +52,14 @@ page:rooms = {{ URL::route('page', 'rooms') }}
                             {{ trans('interface.reserve.success') }}
                         </div>
 
-                        {{ Form::open(array('url' => URL::route('ajax-reserve-room'), 'class' => 'smart-form', 'id' => 'reserve-form', 'role' => 'form', 'method' => 'POST')) }}
+                        {{ Form::open(array('url' => URL::route('mainpage'), 'class' => 'smart-form', 'id' => 'reserve-form', 'role' => 'form', 'method' => 'POST')) }}
                             <fieldset class="date-data">
                                 <section>
                                     <header>
                                         {{ trans('interface.reserve.select') }}
                                     </header>
                                     <div class="inline">
-                                        {{ Form::select('room_type', $room_types) }}
+                                        {{ Form::select('room_type', []) }}
                                     </div>
                                     <section class="datepickerFrom inline">
                                         {{ trans('interface.reserve.from') }}
@@ -148,6 +113,6 @@ page:rooms = {{ URL::route('page', 'rooms') }}
             </header>
 
 <script>
-    var prices = {{ json_encode($room_type_prices) }};
+    var prices = {{ json_encode([]) }};
     var currency = '{{ trans("interface.currency_short") }}';
 </script>

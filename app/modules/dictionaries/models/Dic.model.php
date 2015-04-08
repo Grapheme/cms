@@ -8,6 +8,7 @@ class Dic extends BaseModel {
     #public $timestamps = false;
 
 	public static $order_by = "name ASC";
+    public static $cache_key = 'app.dics';
 
     protected $fillable = array(
         'slug',
@@ -38,15 +39,13 @@ class Dic extends BaseModel {
      * @return mixed
      */
     public function values() {
+
+        $tbl_dicval = (new DicVal())->getTable();
+
         return $this->hasMany('DicVal', 'dic_id', 'id')
+            ->select($tbl_dicval.'.*')
             ->where('version_of', NULL)
             ->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals')
-            /*
-            ->with('meta', array('fields' => function($query){
-                #$query->whereIn('name', array_keys((array)Config::get('dic.dic_name.fields')));
-            }))
-            */
-            #->orderBy('order', 'ASC')
             ->orderBy(DB::raw('-lft'), 'DESC')
             ->orderBy('slug', 'ASC')
             ->orderBy('name', 'ASC')
@@ -67,7 +66,6 @@ class Dic extends BaseModel {
         return $this->hasMany('DicVal', 'dic_id', 'id')
             ->select($tbl_dicval.'.*')
             ->where('version_of', NULL)
-            #->with('meta', 'fields', 'textfields', 'seo', 'related_dicvals')
             ;
     }
 
@@ -102,9 +100,10 @@ class Dic extends BaseModel {
      * @author Alexander Zelensky
      */
     public static function modifyKeys($collection, $key = 'slug') {
+
         #Helper::tad($collection);
-        #$array = array();
         $array = new Collection;
+
         foreach ($collection as $c => $col) {
             $current_key = is_object($col) ? $col->$key : @$col[$key];
             if (NULL !== $current_key) {
@@ -115,8 +114,8 @@ class Dic extends BaseModel {
     }
 
     public static function modifyAttrKeys(&$collection, $relation_name = '', $key = 'slug') {
-        #Helper::d($collection);
-        #$array = array();
+
+        #Helper::tad($collection);
         $array = array();
 
         foreach ($collection->attributes[$relation_name] as $c => $col) {
@@ -290,16 +289,18 @@ class Dic extends BaseModel {
 
         $return = new Collection();
 
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+
         if (!is_object($dic))
             return $return;
 
-        $values = (new DicVal);
-        $tbl_dicval = $values->getTable();
+        $values = (new DicVal());
+        #$tbl_dicval = $values->getTable();
         $values = $values
             ->where('dic_id', $dic->id)
             ->where('version_of', NULL)
-            ->select($tbl_dicval.'.*')
+            #->select($tbl_dicval.'.*')
         ;
 
         /**
@@ -337,7 +338,8 @@ class Dic extends BaseModel {
         /**
          * Словарь
          */
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
         if (!is_object($dic))
             return false;
 
@@ -369,7 +371,8 @@ class Dic extends BaseModel {
 
         $return = new Collection();
 
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
         if (!is_object($dic))
             return $return;
 
@@ -409,7 +412,8 @@ class Dic extends BaseModel {
 
         $return = new Collection();
 
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
         if (!is_object($dic))
             return $return;
 
@@ -460,7 +464,8 @@ class Dic extends BaseModel {
 
         $return = new Collection();
 
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
         if (!is_object($dic))
             return $return;
 
@@ -501,7 +506,8 @@ class Dic extends BaseModel {
 
         $return = new Collection();
 
-        $dic = Dic::where('slug', $slug)->first();
+        #$dic = Dic::where('slug', $slug)->first();
+        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
         if (!is_object($dic) || !is_array($val_ids) || !count($val_ids))
             return $return;
 
@@ -528,6 +534,59 @@ class Dic extends BaseModel {
         #Helper::tad($values);
 
         return $values;
+    }
+
+
+
+    /**
+     * Предзагрузка всех словарей и кеширование
+     */
+    public static function preload() {
+
+        $cache_key = self::$cache_key;
+        #$cache_pages_limit = Config::get('pages.preload_dics_limit');
+
+        if (Cache::has($cache_key) && !Input::get('drop_dics_cache')) {
+
+            ## From cache
+            $dics = Cache::get($cache_key);
+
+        } else {
+
+            #echo "LOAD DICS FROM DB!";
+
+            ## From DB
+            $dics = (new Dic())->get();
+
+            if (isset($dics) && is_object($dics) && count($dics)) {
+                $dics_by_slug = [];
+                $dics_by_id = [];
+                foreach ($dics as $d => $dic) {
+                    #$dic->extract(1);
+                    $dics_by_slug[$dic->slug] = $dic;
+                    $dics_by_id[$dic->id] = $dic;
+                }
+                $dics = ['by_slug' => $dics_by_slug, 'by_id' => $dics_by_id];
+            }
+        }
+
+        ## Save cache
+        $cache_lifetime = Config::get('site.dics.preload_cache_lifetime') ?: NULL;
+        if ($cache_lifetime) {
+            $expiresAt = Carbon::now()->addMinutes($cache_lifetime);
+            Cache::put($cache_key, $dics, $expiresAt);
+        }
+
+        Config::set($cache_key, $dics);
+
+        #Helper::tad($dics);
+    }
+
+    public static function drop_cache() {
+
+        $cache_key = self::$cache_key;
+        Config::set($cache_key, NULL);
+        Cache::forget($cache_key);
     }
 
 

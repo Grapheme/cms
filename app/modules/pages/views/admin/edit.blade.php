@@ -62,7 +62,7 @@ $element->settings = json_decode($element->settings, 1);
                 <header>{{ $form_title }}</header>
 
                 <?
-                $_types = Dic::valuesByslug('page_type');
+                #$_types = Dic::valuesByslug('page_type');
                 ?>
 
                 <fieldset></fieldset>
@@ -118,7 +118,7 @@ $element->settings = json_decode($element->settings, 1);
 
                 </div>
 
-                @if ($_types->count())
+                @if (NULL && $_types->count())
                 <div class="col col-sm-12 col-md-12 col-lg-12 clearfix">
 
                     <section class="">

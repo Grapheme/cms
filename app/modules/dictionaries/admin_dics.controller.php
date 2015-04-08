@@ -245,7 +245,11 @@ class AdminDicsController extends BaseController {
                 $redirect = action('dicval.index', array('dic_id' => $dic_id));
             }
 
-			$json_request['responseText'] = 'Сохранено';
+            ## Clear & reload dics cache
+            Dic::drop_cache();
+            Dic::preload();
+
+            $json_request['responseText'] = 'Сохранено';
             if ($redirect)
 			    $json_request['redirect'] = $redirect;
 			$json_request['status'] = TRUE;
@@ -271,7 +275,11 @@ class AdminDicsController extends BaseController {
         if (NULL !== Dictionary::find($id))
             Dictionary::find($id)->delete();
 
-		$json_request['responseText'] = 'Удалено';
+        ## Clear & reload dics cache
+        Dic::drop_cache();
+        Dic::preload();
+
+        $json_request['responseText'] = 'Удалено';
 		$json_request['status'] = TRUE;
 		return Response::json($json_request,200);
 	}
