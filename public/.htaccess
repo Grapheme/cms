@@ -12,8 +12,6 @@
 	# project.dev.grapheme.ru
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{HTTP_HOST} !^dev.grapheme.ru$
-	RewriteCond %{HTTP_HOST} !^dev.grapheme$
     RewriteRule ^ /index.php [L]
 
 </IfModule>
