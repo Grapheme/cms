@@ -182,7 +182,7 @@ class PublicPagesController extends BaseController {
                 $page = $page->where('start_page', 1);
             }
 
-            $page->first();
+            $page = $page->first();
 
         } else {
 
