@@ -618,4 +618,28 @@ class DicLib extends BaseController {
         return $return;
     }
 
+
+    public static function make2levelListForSelect($parents, $parent_field = 'name', $childs, $child_parent_field_id, $child_field_key = 'id', $child_field_value = 'name') {
+
+        $select = [];
+        foreach ($parents as $p => $parent) {
+            if (!isset($select[$parent->$parent_field]))
+                $select[$parent->$parent_field] = [];
+        }
+        #Helper::tad($select);
+
+        foreach ($childs as $c => $child) {
+
+            if (!isset($child->$child_parent_field_id))
+                continue;
+
+            $parent_tmp = $parents[$child->$child_parent_field_id];
+            if (@is_array($select[$parent_tmp->$parent_field]))
+                $select[$parent_tmp->$parent_field][$child->$child_field_key] = $child->$child_field_value;
+        }
+        #Helper::tad($select);
+
+        return $select;
+    }
+
 }

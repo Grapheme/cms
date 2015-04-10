@@ -182,3 +182,6 @@ $.extend($.validator.messages, {
         $(this).html(content + "\n" + '<i class="fa fa-question-circle cursor-help" data-toggle="tooltip" data-placement="bottom" title="' + helpmessage + '"></i>');
     });
 
+    $('.dropdown-menu>li>span').click(function(){
+        return false;
+    });

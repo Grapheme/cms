@@ -348,6 +348,8 @@ class Helper {
 
     public static function drawmenu($menus = false) {
 
+        #Helper::tad($menus);
+
         if (!$menus || !is_array($menus) || !count($menus)) {
             return false;
         }
@@ -376,7 +378,10 @@ HTML;
 
             } elseif (isset($menu['link'])) {
 
-                $current = ($current_url == $menu['link']);
+                #Helper::ta($menu);
+
+                $current = ($current_url == @$menu['link']);
+                #Helper::ta($current_url . ' == ' . $menu['link'] . ' => ' . ($current_url == $menu['link']));
 
                 #$return .= "\n<!--\n" . $_SERVER['REQUEST_URI'] . "\n" . $menu['link'] . "\n-->\n";
 
@@ -387,7 +392,7 @@ HTML;
 
                 $additional = isset($menu['others']) ? self::arrayToAttributes($menu['others']) : '';
 
-                $return .= '<a class="' . @$menu['class'] . ($child_exists ? '' : ' margin-bottom-5') . '" href="' . $menu['link'] . '" ' . $additional . '>'
+                $return .= '<a class="' . @$menu['class'] . ($child_exists ? '' : ' margin-bottom-5') . '" href="' . @$menu['link'] . '" ' . $additional . '>'
                         . ($current ? '<i class="fa fa-check"></i> ' : '')
                         . @$menu['title'] . '</a> ';
 
@@ -395,10 +400,28 @@ HTML;
                     $return .= '<a class="btn btn-default dropdown-toggle ' . @$menu['class'] . '" dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);">
     <span class="caret"></span>
 </a>
-<ul class="dropdown-menu text-left">';
+<ul class="dropdown-menu text-left dropdown-menu-cutted">';
 
                     foreach ($menu['child'] as $child) {
-                        $return .= '<li><a class="' . @$child['class'] . '" href="' . @$child['link'] . '">' . @$child['title'] . '</a></li> ';
+
+                        $current = ($current_url == @$child['link']);
+                        #Helper::ta($current_url . ' == ' . $child['link'] . ' => ' . ($current_url == $child['link']));
+
+                        $el_start = isset($child['link'])
+                            ? '<a class="' . @$child['class'] . '" href="' . @$child['link'] . '">'
+                            : '<span class="' . @$child['class'] . '">'
+                        ;
+                        $el_end = isset($child['link'])
+                            ? '</a>'
+                            : '</span>'
+                        ;
+
+                        $return .= '<li>'
+                                   . $el_start
+                                   . ($current ? '<i class="fa fa-check"></i> ' : '')
+                                   . ($current ? @trim(str_replace('&nbsp;', ' ', $child['title'])) : @$child['title'])
+                                   . $el_end
+                                   . '</li> ';
                     }
 
                     $return .= '</ul> ';
@@ -848,6 +871,8 @@ HTML;
      */
     public static function getDicValMenuDropdown($filter_name, $filter_default_text, $filter_dic_elements, $dic, $dicval = false) {
 
+        #Helper::tad($filter_dic_elements);
+
         $filter = Input::get('filter.fields');
         #Helper::d($filter);
         #Helper::ta($dic);
@@ -861,8 +886,34 @@ HTML;
         ## Main element of the drop-down menu
         if (@$filter[$filter_name]) {
 
+            #Helper::tad($filter[$filter_name]);
+
             ## Get current dicval from array of the gettin' filter_dic_elements #NOSQL
-            $current_dicval = @$filter_dic_elements[$filter[$filter_name]];
+            /*
+            $first_element = NULL;
+            if (count($filter_dic_elements))
+                foreach ($filter_dic_elements as $first_element)
+                    break;
+            */
+            #if (is_string($first_element)) {
+            #    $current_dicval = @$filter_dic_elements[$filter[$filter_name]];
+            #} elseif (is_array($first_element)) {
+
+                foreach ($filter_dic_elements as $e => $element) {
+                    if (is_string($element) && $e == $filter[$filter_name]) {
+                        $current_dicval = $element;
+                        break;
+                    } elseif (is_array($element) && count($element)) {
+                        foreach ($element as $e2 => $el2) {
+                            if ($e2 == $filter[$filter_name]) {
+                                $current_dicval = $el2;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            #}
 
             ## Get all current link attributes & modify for next url generation
             $array = $current_link_attributes;
@@ -874,6 +925,7 @@ HTML;
                 'title' => $current_dicval,
                 'class' => 'btn btn-default',
             );
+
         } else {
 
             ## Get all current link attributes & modify for next url generation
@@ -902,22 +954,51 @@ HTML;
                 'class' => '',
             );
         }
+        #Helper::tad($filter_dic_elements);
         foreach ($filter_dic_elements as $element_id => $element_name) {
 
-            if ($element_id == @$filter[$filter_name]) {
-                continue;
+            if (is_string($element_name)) {
+
+                if ($element_id == @$filter[$filter_name]) {
+                    continue;
+                }
+
+                ## Get all current link attributes & modify for next url generation
+                $array = $current_link_attributes;
+                $array["filter[fields][{$filter_name}]"] = $element_id;
+                $array = (array)$dic_id + $array;
+
+                $product_types[] = array(
+                    'link' => URL::route($route, $array),
+                    'title' => $element_name,
+                    'class' => '',
+                );
+
+            } elseif (is_array($element_name)) {
+
+                $element_names = $element_name;
+                $product_types[] = array(
+                    #'link' => '#',
+                    'title' => $element_id,
+                    'class' => '',
+                );
+
+                foreach ($element_names as $el_id => $element_name) {
+
+                    ## Get all current link attributes & modify for next url generation
+                    $array = $current_link_attributes;
+                    $array["filter[fields][{$filter_name}]"] = $el_id;
+                    $array = (array)$dic_id + $array;
+
+                    $product_types[] = array(
+                        'link' => URL::route($route, $array),
+                        'title' => '&nbsp; &nbsp; &nbsp;' . $element_name,
+                        'class' => '',
+                    );
+                }
+
             }
 
-            ## Get all current link attributes & modify for next url generation
-            $array = $current_link_attributes;
-            $array["filter[fields][{$filter_name}]"] = $element_id;
-            $array = (array)$dic_id + $array;
-
-            $product_types[] = array(
-                'link' => URL::route($route, $array),
-                'title' => $element_name,
-                'class' => '',
-            );
         }
         ## Assembly
         $parent['child'] = $product_types;
