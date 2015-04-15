@@ -290,7 +290,8 @@ class Dic extends BaseModel {
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
 
         if (!is_object($dic))
             return $return;
@@ -339,7 +340,9 @@ class Dic extends BaseModel {
          * Словарь
          */
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
+
         if (!is_object($dic))
             return false;
 
@@ -372,7 +375,9 @@ class Dic extends BaseModel {
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
+
         if (!is_object($dic))
             return $return;
 
@@ -413,7 +418,9 @@ class Dic extends BaseModel {
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
+
         if (!is_object($dic))
             return $return;
 
@@ -465,7 +472,9 @@ class Dic extends BaseModel {
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
+
         if (!is_object($dic))
             return $return;
 
@@ -507,7 +516,9 @@ class Dic extends BaseModel {
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
-        $dic = @Cache::get(self::$cache_key)['by_slug'][$slug];
+        #$dic = @Config::get(self::$cache_key)['by_slug'][$slug];
+        $dic = Dic::by_slug($slug);
+
         if (!is_object($dic) || !is_array($val_ids) || !count($val_ids))
             return $return;
 

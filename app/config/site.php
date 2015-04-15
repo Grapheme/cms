@@ -2,7 +2,8 @@
 
 return array(
 
-    'theme_path' => URL::to('/dist'),
+    'theme_path' => URL::to('/theme/site/dist'),
+    'mobile_theme_path' => URL::to('/theme/mobile/dist'),
 
     'paginate_limit' => 30,
 
@@ -41,4 +42,16 @@ return array(
     'dics' => [
         'preload_cache_lifetime' => 60*24, ## время жизни кеша страниц, в минутах
     ],
+
+
+    ##
+    ## MOBILE VERSION
+    ## Template changing by mobile subdomain
+    ##
+    'mobile' => [
+        'enabled'  => TRUE,
+        'domain'   => 'm',
+        'template' => 'mobile',
+    ],
+
 );
