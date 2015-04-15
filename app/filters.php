@@ -137,5 +137,28 @@ function Redirect($url = '', $code = '301 Moved Permanently') {
     die;
 }
 
+
+###############################################################################
+## MOBILE VERSION
+## Template changing by mobile subdomain
+###############################################################################
+
+$host = explode('.', Request::getHost());
+if (
+    count($host) > 2
+    && Config::get('site.mobile.enabled')
+    && NULL !== ($mobile_domain = Config::get('site.mobile.domain'))
+    && NULL !== ($mobile_template = Config::get('site.mobile.template'))
+    && $host[0] == $mobile_domain
+    && is_dir(app_path('views/templates/' . $mobile_template))
+) {
+    Config::set('site.mobile.active', TRUE);
+    Config::set('app.template', $mobile_template);
+
+    if (NULL !== ($mobile_theme_path = Config::get('site.mobile_theme_path')))
+        Config::set('site.theme_path', $mobile_theme_path);
+}
+
+
 ## Выводит на экран все SQL-запросы
 #Event::listen('illuminate.query',function($query){ echo "<pre>" . print_r($query, 1) . "</pre>\n"; });
