@@ -61,11 +61,7 @@ if (isset($page) && is_object($page) && isset($page->seo) && is_object($page->se
         <meta name="description" content="@yield('description')">
         <meta name="keywords" content="@yield('keywords')">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        {{ HTML::style(Config::get('site.theme_path').'/css/fotorama.css') }}
-        {{ HTML::style(Config::get('site.theme_path').'/css/normalize.css') }}
-        {{ HTML::style(Config::get('site.theme_path').'/css/main.css') }}
-        {{-- HTML::style('static/css/fotorama/fotorama.css') --}}
-        {{ HTML::script(Config::get('site.theme_path').'/js/vendor/modernizr-2.6.2.min.js') }}
+        {{ HTML::style(Config::get('site.theme_path').'/styles/main.css') }}
+        {{ HTML::script(Config::get('site.theme_path').'/js/vendor/modernizr.js') }}

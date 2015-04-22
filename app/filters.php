@@ -155,7 +155,9 @@ if (
     Config::set('site.mobile.active', TRUE);
     Config::set('app.template', $mobile_template);
 
-    if (NULL !== ($mobile_theme_path = Config::get('site.mobile_theme_path')))
+    if (NULL !== ($mobile_theme_path = Config::get('site.mobile.theme_path')))
+        Config::set('site.theme_path', $mobile_theme_path);
+    elseif (NULL !== ($mobile_theme_path = Config::get('site.mobile_theme_path')))
         Config::set('site.theme_path', $mobile_theme_path);
 }
 

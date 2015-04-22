@@ -3,6 +3,7 @@
 #Helper::ta($element);
 #Helper::dd($dic_settings);
 
+## Search meta for current locale
 $element_meta = new DicValMeta;
 if (isset($element->metas) && is_object($element->metas) && $element->metas->count())
     foreach ($element->metas as $tmp) {
@@ -14,75 +15,44 @@ if (isset($element->metas) && is_object($element->metas) && $element->metas->cou
     }
 ?>
 
-@if (count($locales) > 1 && FALSE)
-    <section>
-        <label class="label">{{ $dic->name_title ?: 'Название' }}</label>
-        <label class="input select input-select2">
-            {{ Form::text('locales[' . $locale_sign . '][name]', $element_meta->name, array()) }}
-            @if (isset($dic_settings['name_note']))
-                {{ $dic_settings['name_note'] }}
-            @endif
-        </label>
-    </section>
-@endif
 
+{{-- If parent dictionary have the fields --}}
 @if (count($fields_i18n))
 
     <?
-
     #Helper::ta($fields_i18n);
 
-    $element_fields = array();
-    if (isset($element->allfields) && is_object($element->allfields) && count($element->allfields)) {
-        $element_fields = $element->allfields;
-        if (count($element_fields))
-            foreach ($element_fields as $f => $field) {
-                if (!$field->language)
-                    unset($element_fields[$f]);
-            }
-        #$element_fields = $element_fields->lists('value', 'key');
-        #Helper::ta($element_fields);
-    }
-    $element_textfields = array();
-    if (isset($element->alltextfields) && is_object($element->alltextfields) && count($element->alltextfields)) {
-        $element_textfields = $element->alltextfields;
-        if (count($element_textfields))
-            foreach ($element_textfields as $f => $field) {
-                if (!$field->language)
-                    unset($element_textfields[$f]); else
-                    $element_fields[$f] = $field;
-            }
-        #$element_fields = $element_fields->lists('value', 'key');
-        #Helper::ta($element_fields);
-    }
+    ## Get element fields
+    $element_fields = (isset($element->allfields) && is_array($element->allfields)
+                       && isset($element->allfields[$locale_sign])
+                       && is_array($element->allfields[$locale_sign])) ? $element->allfields[$locale_sign] : [];
     #Helper::ta($element_fields);
-    #Helper::ta($element_textfields);
+
+    ## Get element text fields
+    $element_textfields = (isset($element->alltextfields) && is_array($element->alltextfields)
+                       && isset($element->alltextfields[$locale_sign])
+                       && is_array($element->alltextfields[$locale_sign])) ? $element->alltextfields[$locale_sign] : [];
+    #Helper::tad($element_textfields);
+
+    ## All element fields
+    $element_fields_all = $element_fields + $element_textfields;
+    #Helper::tad($element_fields_all);
     ?>
 
     @foreach ($fields_i18n as $field_name => $field)
         <?
-        $field_meta = new DicFieldVal();
-        foreach ($element_fields as $tmp) {
-            #Helper::ta($tmp);
-            if (isset($field_name) && $tmp->key == $field_name && $tmp->language == $locale_sign) {
-                $field_meta = $tmp;
-                #Helper::ta($field_meta);
-                break;
-            }
-        }
+        $field_meta_value = isset($element_fields_all[$field_name]) ? $element_fields_all[$field_name] : NULL;
+        #Helper::ta($field_meta_value);
 
-                #var_dump($field_meta);
-                #continue;
+        $form_field = Helper::formField('fields_i18n[' . $locale_sign . '][' . $field_name . ']', $field, $field_meta_value, $element);
+        #var_dump($form_field);
 
-        #$field_meta_value = isset($field_meta->value) && $field_meta->value ? $field_meta->value : NULL;
-
-        $form_field = Helper::formField('fields_i18n[' . $locale_sign . '][' . $field_name . ']', $field, $field_meta->value, $element);
         if (!isset($form_field) || !$form_field)
             continue;
 
-        #continue;
-
-
+        ######################################################################
+        ## Experimental, not tested! Conflicts are possible!
+        ######################################################################
         if (isset($field['scripts'])) {
             #var_dump($field['scripts']);
             global $dicval_edit_scripts;
@@ -90,9 +60,7 @@ if (isset($element->metas) && is_object($element->metas) && $element->metas->cou
             $dicval_edit_scripts[] = $field['scripts'];
             #var_dump($dicval_edit_scripts);
         }
-
-
-        #$form_field = false;
+        ######################################################################
         ?>
 
         <section>
@@ -111,6 +79,5 @@ if (isset($element->metas) && is_object($element->metas) && $element->metas->cou
         </section>
 
     @endforeach
-
 
 @endif

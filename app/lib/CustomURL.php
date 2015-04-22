@@ -1,4 +1,4 @@
-<?php namespace Illuminate\Support\Facades;
+<?php namespace Sngrl\Support\Facades;
 
 ##
 ## See \vendor\laravel\framework\src\Illuminate\Support\Facades\\URL.php

@@ -334,7 +334,11 @@ class AdminDicvalsController extends BaseController {
         if (!is_object($element))
             App::abort(404);
 
+        #Helper::tad($element);
+
         $element->extract(0);
+
+        #Helper::tad($element);
 
         if (Config::get('debug') == 1)
             Helper::tad($element);
@@ -669,6 +673,8 @@ class AdminDicvalsController extends BaseController {
                 $this->callHook('after_update', $dic, $element);
             elseif ($mode == 'store')
                 $this->callHook('after_store', $dic, $element);
+            $this->callHook('after_store_update_destroy', $dic, $element);
+            $this->callHook('after_store_update_destroy_order', $dic, $element);
 
 			$json_request['responseText'] = 'Сохранено';
             if ($redirect && Input::get('redirect'))
@@ -747,6 +753,8 @@ class AdminDicvalsController extends BaseController {
         }
 
         $this->callHook('after_destroy', $dic, $element);
+        $this->callHook('after_store_update_destroy', $dic, $element);
+        $this->callHook('after_store_update_destroy_order', $dic, $element);
 
         $json_request['responseText'] = 'Удалено';
 		$json_request['status'] = TRUE;
@@ -1122,6 +1130,7 @@ class AdminDicvalsController extends BaseController {
     }
 
 
+    /*
     public function postAjaxOrderSave() {
 
         $poss = Input::get('poss');
@@ -1137,6 +1146,7 @@ class AdminDicvalsController extends BaseController {
 
         return Response::make('1');
     }
+    */
 
 
     public function postAjaxNestedSetModel() {
@@ -1146,6 +1156,9 @@ class AdminDicvalsController extends BaseController {
         $data = Input::get('data');
         $data = json_decode($data, 1);
         #Helper::dd($data);
+
+        $dic_id = NULL;
+        $dic = NULL;
 
         if (count($data)) {
 
@@ -1157,13 +1170,21 @@ class AdminDicvalsController extends BaseController {
 
                 if (count($dicvals)) {
                     foreach ($dicvals as $dicval) {
+                        if (!$dic_id)
+                            $dic_id = $dicval->dic_id;
                         $dicval->lft = $id_left_right[$dicval->id]['left'];
                         $dicval->rgt = $id_left_right[$dicval->id]['right'];
                         $dicval->save();
                     }
+                    if ($dic_id) {
+                        $dic = Dic::by_id($dic_id);
+                    }
                 }
             }
         }
+
+        $this->callHook('after_order', $dic);
+        $this->callHook('after_store_update_destroy_order', $dic);
 
         return Response::make('1');
     }

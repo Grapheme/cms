@@ -46,7 +46,8 @@ class PublicPagesController extends BaseController {
         ##
         ## Add URL modifier for check SEO url of the page (custom UrlGenerator functionality)
         ##
-        URL::add_url_modifier('page', function(&$parameters) use ($class) {
+        /*
+        URL::add_url_modifier('page', function(&$name, &$parameters) use ($class) {
             #var_dump($class); die;
             #Helper::dd('Page url modifier!');
             #Helper::dd($parameters);
@@ -67,43 +68,54 @@ class PublicPagesController extends BaseController {
                 #$parameters = '111';
             }
         });
+        */
+        #/*
+        if (
+            count(Config::get('app.locales')) > 1
+            && !Config::get('pages.disable_url_modification')
+        ) {
+            ## Mainpage route modifier
+            URL::add_url_modifier('mainpage', function(&$name, &$parameters) use ($class) {
+
+                #print_r($parameters);
+
+                if (isset($parameters['lang']) && $parameters['lang'] == Config::get('app.default_locale'))
+                    unset($parameters['lang']);
+
+                #print_r($parameters);
+            });
+        }
+        #*/
 
         ## Если в конфиге прописано несколько языковых версий - генерим роуты с языковым префиксом
         if (is_array(Config::get('app.locales')) && count(Config::get('app.locales')) > 1) {
 
             $default_locale_mainpage = ( Config::get('app.default_locale') == Config::get('app.locale') );
+            #$locale_sign = Config::get('app.locale');
 
-            ## Генерим роуты только для текущего языка
-            $locale_sign = Config::get('app.locale');
-            ## ...генерим роуты с префиксом (первый сегмент), который будет указывать на текущую локаль
-            Route::group(array('before' => 'i18n_url', 'prefix' => $locale_sign), function() use ($class, $default_locale_mainpage) {
+            ## Генерим роуты для всех языков с префиксом (первый сегмент), который будет указывать на текущую локаль
+            Route::group(array('before' => 'i18n_url', 'prefix' => '{lang}'), function() use ($class, $default_locale_mainpage) {
 
                 ## Regular page
-                Route::any('/{url}', array(
-                    'as' => 'page',
-                    'uses' => $class.'@showPage',
-                    #function($url) {
-                    #    Helper::dd($url);
-                    #}
-                ));
+                Route::any('/{url}', array('as' => 'page', 'uses' => $class . '@showPage'));
 
                 ## Main page for non-default locale
-                if (!Config::get('pages.disable_mainpage_route') && !$default_locale_mainpage)
-                    Route::any('/', array(
-                        'as' => 'mainpage',
-                        'before' => 'i18n_url',
-                        'uses' => $class.'@showPage'
-                    ));
+                #if (!Config::get('pages.disable_mainpage_route') && !$default_locale_mainpage)
+                #    Route::any('/', array('as' => 'mainpage', 'uses' => $class.'@showPage'));
+
+                ## Main page for current locale (non-default)
+                #Route::any('/', array('as' => 'mainpage_i18n', 'uses' => $class.'@showPage'));
 
             });
 
+            Route::any('{lang?}', array('as' => 'mainpage', 'uses' => $class.'@showPage'));
+
             ## Main page for default locale
-            if (!Config::get('pages.disable_mainpage_route') && $default_locale_mainpage)
-                Route::any('/', array(
-                    'as' => 'mainpage',
-                    'before' => '',
-                    'uses' => $class.'@showPage'
-                ));
+            #if (!Config::get('pages.disable_mainpage_route') && $default_locale_mainpage)
+            #    Route::any('/', array('as' => 'mainpage', 'uses' => $class.'@showPage'));
+
+            ## Main page for default locale
+            #Route::any('/', array('as' => 'mainpage_default', 'uses' => $class.'@showPage'));
 
         } else {
 
@@ -113,7 +125,7 @@ class PublicPagesController extends BaseController {
                 ## Regular page
                 Route::any('/{url}', array(
                     'as' => 'page',
-                    'uses' => $class.'@showPage'
+                    'uses' => $class.'@showPageSingle'
                 ));
 
                 ## Main page
@@ -121,7 +133,7 @@ class PublicPagesController extends BaseController {
 
                     Route::any('/', array(
                         'as' => 'mainpage',
-                        'uses' => $class.'@showPage'
+                        'uses' => $class.'@showPageSingle'
                     ));
                 }
             });
@@ -167,8 +179,20 @@ class PublicPagesController extends BaseController {
 	}
 
 
+    ## Функция для просмотра одноязычной страницы
+    public function showPageSingle($slug = false) {
+
+        #dd($slug);
+        return $this->showPage(Config::get('app.locale'), $slug);
+    }
+
     ## Функция для просмотра мультиязычной страницы
-    public function showPage($slug = false){
+    public function showPage($lang = NULL, $slug = false) {
+
+        #dd($lang);
+
+        if (!$lang)
+            $lang = Config::get('app.locale');
 
         ## Как будем искать страницы - в кеше или в БД?
         if (Config::get('pages.not_cached')) {
@@ -181,6 +205,8 @@ class PublicPagesController extends BaseController {
             } else {
                 $page = $page->where('start_page', 1);
             }
+
+            $page->with(['blocks.meta', 'seo']);
 
             $page = $page->first();
 
@@ -195,7 +221,7 @@ class PublicPagesController extends BaseController {
         }
 
         #Helper::smartQueries(1); #die;
-        #Helper::ta($page);
+        #Helper::tad($page);
 
         ## Если страница не найдена...
         if (!isset($page) || !is_object($page)) {
@@ -265,7 +291,7 @@ class PublicPagesController extends BaseController {
 
         #Helper::tad($page);
 
-        return View::make($template, compact('page'));
+        return View::make($template, compact('page', 'lang'))->render();
 	}
     
 

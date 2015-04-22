@@ -3,7 +3,8 @@
 return array(
 
     'theme_path' => URL::to('/theme/site/dist'),
-    'mobile_theme_path' => URL::to('/theme/mobile/dist'),
+    #'theme_path' => URL::to('/theme/' . Config::get('app.template') . '/dist'),
+    #'mobile_theme_path' => URL::to('/theme/mobile/dist'),
 
     'paginate_limit' => 30,
 
@@ -52,6 +53,7 @@ return array(
         'enabled'  => TRUE,
         'domain'   => 'm',
         'template' => 'mobile',
+        'theme_path' => URL::to('/theme/mobile/dist'),
     ],
 
 );

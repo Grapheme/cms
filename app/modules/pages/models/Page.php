@@ -93,13 +93,17 @@ class Page extends BaseModel {
         #Helper::tad($this);
 
         $content_container = false;
-        if (isset($this->blocks[$slug]->content))
+        if (isset($this->blocks[$slug]->metas[Config::get('app.locale')]))
+            $content_container = $this->blocks[$slug]->metas[Config::get('app.locale')];
+        elseif (isset($this->blocks[$slug]->content))
             $content_container = $this->blocks[$slug];
         elseif (isset($this->blocks[$slug]->meta) && !is_null($this->blocks[$slug]->meta))
             $content_container = $this->blocks[$slug]->meta;
 
         if (!$content_container)
             return '';
+
+        #dd($content_container);
 
         #Helper::dd($this->blocks[$slug]->meta->content);
         ## Without blade syntax compile
@@ -163,9 +167,24 @@ class Page extends BaseModel {
 
         ## Extract blocks
         if (isset($this->blocks)) {
-            $blocks = new Collection();
+            #$all_blocks = [];
+            $blocks = new Collection;
             foreach ($this->blocks as $b => $block) {
-                if (isset($block->meta) && 1) {
+
+                #Helper::tad($block);
+
+                $metas = new Collection;
+
+                if (isset($block->metas)) {
+                    foreach ($block->metas as $block_meta) {
+                        $metas[$block_meta->language] = $block_meta;
+                    }
+                }
+
+                #Helper::tad($metas);
+
+                /*
+                if (isset($block->meta)) {
                     if ($block->meta->name)
                         $block->name = $block->meta->name;
                     if ($block->meta->template)
@@ -175,16 +194,24 @@ class Page extends BaseModel {
                         unset($block->meta);
                 }
                 #$this->blocks[$block->slug] = $block;
+                */
+
+                #unset($block->relations['metas']);
+                #$block->metas = $metas;
+                $block->setRelation('metas', $metas);
+
                 $blocks[$block->slug] = $block;
-                unset($this->relations['blocks']);
-                $this->relations['blocks'] = $blocks;
-                #if ($b != $block->slug || $b === 0)
-                #    unset($this->blocks[$b]);
+                #$all_blocks[$block->language][$block->slug] = $block;
+
+                #unset($this->relations['blocks']);
+                #$this->relations['blocks'] = $blocks;
             }
+            #unset($this->relations['blocks']);
+            #$this->blocks = $blocks;
+            $this->setRelation('blocks', $blocks);
         }
 
-
-        #Helper::ta($this);
+        #Helper::tad($this);
 
         return $this;
     }
@@ -213,14 +240,23 @@ class Page extends BaseModel {
             #echo "LOAD PAGES FROM DB!";
 
             ## From DB
-            $pages = (new Page())->where('publication', 1)->where('version_of', NULL)->with(['metas', 'blocks.metas', 'seos', 'blocks.meta', 'meta', 'seo'])->get();
+            $pages = (new Page())
+                ->where('publication', 1)
+                ->where('version_of', NULL)
+                ->with(['metas', 'blocks.metas', 'seos', 'blocks.meta', 'meta', 'seo'])
+                ->get()
+            ;
 
             if (isset($pages) && is_object($pages) && count($pages)) {
                 $pages_by_slug = new Collection();
                 $pages_by_sysname = new Collection();
                 $pages_by_id = new Collection();
                 foreach ($pages as $p => $page) {
+
+                    #Helper::ta($page);
                     $page->extract(1);
+                    #Helper::tad($page);
+
                     $pages_by_slug[$page->start_page ? '/' : $page->slug] = $page;
                     $pages_by_sysname[$page->sysname] = $page;
                     $pages_by_id[$page->id] = $page;

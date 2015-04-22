@@ -70,7 +70,6 @@
 
 
 @section('scripts')
-	<script src="{{ link::to('private/js/modules/pages.js') }}"></script>
 	<script type="text/javascript">
 		if(typeof pageSetUp === 'function'){pageSetUp();}
 		if(typeof runFormValidation === 'function'){

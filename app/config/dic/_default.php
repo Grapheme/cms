@@ -465,10 +465,28 @@ if (len > 0) {
         'after_destroy' => function ($dic, $dicval) {
         },
 
+        /**
+         * Вызывается после изменения порядка сортировки
+         */
+        'after_order' => function ($dic) {
+        },
+
+        /**
+         * Вызывается после создания, обновления или удаления записи
+         */
+        'after_store_update_destroy' => function ($dic, $dicval) {
+        },
+
+        /**
+         * Вызывается после создания, обновления, удаления записи, изменения порядка сортировки
+         */
+        'after_store_update_destroy_order' => function ($dic = NULL, $dicval = NULL) {
+        },
     ),
 
     /*
     'first_line_modifier' => function($line, $dic, $dicval) {
+        $dicval->extract(true);
         return '<a href="' . URL::route('feedback.view', $dicval->id) . '" target="_blank">' . $line . '</a> <i class="fa fa-arrow-right"></i>';
     },
     #*/
@@ -483,6 +501,7 @@ if (len > 0) {
      * Вкл./выкл. модуль SEO для данного словаря
      */
     'seo' => false,
+    #'seo' => ['title', 'description', 'keywords', 'h1'],
 
     /**
      * Поддержка версионности. В данном случае система будет хранить 3 последние резервные копии

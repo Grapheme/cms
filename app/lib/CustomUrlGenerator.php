@@ -1,13 +1,18 @@
 <?php namespace Illuminate\Routing;
 
-##
-## See \vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php
-##
-
+use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
 
+/**
+ * Custom UrlGenerator Class - for redeclare route() method
+ *
+ * @package Illuminate\Routing
+ *
+ * @see \vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php
+ */
 class CustomUrlGenerator extends UrlGenerator {
 
+    private $url_modifiers = [];
 
 	##
     ## Custom URL::route() method
@@ -15,12 +20,64 @@ class CustomUrlGenerator extends UrlGenerator {
 	public function route($name, $parameters = array(), $absolute = true, $route = null)
 	{
         ##
-        ## Call url link modifier closure
+        ## Call route modifier closure
         ##
-        if (@is_callable($this->url_modifiers[$name])) {
+        if (isset($this->url_modifiers[$name]) && is_callable($this->url_modifiers[$name])) {
             #\Helper::dd($parameters);
-            $this->url_modifiers[$name]($parameters);
+            $this->url_modifiers[$name]($name, $parameters);
+            #print_r($parameters);
         }
+
+
+        ##
+        ## !!! IMPORTANT FOR MULTILANGUAGE!!!
+        ## Apply the route default parameters
+        ## Need CustomRouter, CustomRoute & him custom facades
+        ##
+        $route = $route ?: $this->routes->getByName($name);
+
+        if (NULL !== $route) {
+            $parameters = (array)$parameters;
+            $defaults = (array)$route->getDefaults();
+        }
+
+        #if ($name == 'mainpage') {
+        #    var_dump($route);
+        #}
+
+        if ($name == 'page' && 0) {
+            var_dump($route);
+            var_dump((array)$route->parameterNames());
+            var_dump($parameters);
+            var_dump($defaults);
+            #die;
+        }
+
+        if (NULL !== $route) {
+            foreach ((array)$route->parameterNames() as $value) {
+                #echo $value . '<br/>';
+
+                /*
+                ## Route parameter - required or not?
+                $required = TRUE;
+                preg_match('~\{' . $value . '(\?|)\}~is', $route->getPath(), $matches);
+                #print_r($matches);
+                if (isset($matches[1]) && $matches[1] === '?')
+                    $required = FALSE;
+                */
+
+                #print_r(\Config::get('app.locale'));
+
+                if ($route->getName() == 'mainpage' && $value == 'lang' && isset($defaults[$value]) && $defaults[$value] == \Config::get('app.locale'))
+                    continue;
+
+                if (!isset($parameters[$value]) && isset($defaults[$value])) {
+                    $parameters[$value] = $defaults[$value];
+                }
+            }
+        }
+        #print_r($parameters);
+
 
         ##
         ## Call original URL::route() with 100% right $parameters
@@ -30,6 +87,7 @@ class CustomUrlGenerator extends UrlGenerator {
 
 
     /**
+     * Custom action method
      * Get the URL to a controller action.
      *
      * @param  string  $action
@@ -37,30 +95,22 @@ class CustomUrlGenerator extends UrlGenerator {
      * @param  bool    $absolute
      * @return string
      */
-    ##
-    ## Custom URL::action() method
-    ##
     public function action($action, $parameters = array(), $absolute = true)
     {
-
-        #\Helper::dd(rand(9999999,99999999));
-        #\Helper::dd($parameters);
-
         ##
         ## Call url link modifier closure
         ##
-        if (isset($action) && $action != '' && isset($this->url_modifiers[$action]) && @is_callable($this->url_modifiers[$action])) {
+        if (isset($action) && $action != '' && isset($this->url_modifiers[$action]) && is_callable($this->url_modifiers[$action])) {
             #\Helper::dd($parameters);
-            $this->url_modifiers[$action]($parameters);
+            $this->url_modifiers[$action]($action, $parameters);
         }
 
         return parent::route($action, $parameters, $absolute, $this->routes->getByAction($action));
-        #return $this->route($action, $parameters, $absolute, $this->routes->getByAction($action));
     }
 
 
     ##
-    ## Add url link modifier closure
+    ## Add route modifier closure
     ##
     public function add_url_modifier($route_name = false, $closure) {
 
@@ -69,23 +119,22 @@ class CustomUrlGenerator extends UrlGenerator {
 
         #\Helper::dd($route_name);
 
-        if (!@$this->url_modifiers || !@is_array($this->url_modifiers))
-            $this->url_modifiers = array();
-
-        $this->url_modifiers[$route_name] = $closure;
+        if (!isset($this->url_modifiers[$route_name]))
+            $this->url_modifiers[$route_name] = $closure;
+        else
+            throw new \Exception('Route "' . $route_name . '" also have modifier.');
     }
 
 
     public function get_modified_parameters($route_name, $params = array()) {
-        if (isset($route_name) && $route_name != '' && isset($this->url_modifiers[$route_name]) && @is_callable($this->url_modifiers[$route_name])) {
+        if (isset($route_name) && $route_name != '' && isset($this->url_modifiers[$route_name]) && is_callable($this->url_modifiers[$route_name])) {
             #\Helper::d('=== START URL::get_modified_parameters() ===');
             #\Helper::d($route_name);
             #\Helper::d($params);
             $this->url_modifiers[$route_name]($params);
             #\Helper::d($params);
             #\Helper::d('=== END URL::get_modified_parameters() ===');
-            return $params;
         }
-
+        return $params;
     }
 }

@@ -359,6 +359,7 @@ class AdminGalleriesController extends BaseController {
 		$photo = Photo::create(array(
 			'name' => $result['filename'],
 			'gallery_id' => 0,
+			'title' => '',
 		));
 
         ## All OK, return result
@@ -412,7 +413,7 @@ class AdminGalleriesController extends BaseController {
 			File::makeDirectory($thumbsPath, 0777, TRUE);
 
         ## Generate filename
-		$fileName = time() . "_" . rand(10000000, 99999999) . '.' . $file->getClientOriginalExtension();
+		$fileName = time() . "_" . rand(1000, 1999) . '.' . $file->getClientOriginalExtension();
 
         ## Get images resize parameters from config
 		$thumb_size = Config::get('site.galleries_thumb_size');

@@ -152,6 +152,7 @@ var dropzone_translate = {
                 $(el).find(".dz-preview").hide();
                 $(preview).css("background-image", "url("+response['thumb']+")");
                 $(preview).find(".photo-full-link").attr("href", response['full']);
+                $(preview).find(".modal-dialog img").attr("src", response['full']);
                 $(preview).find(".photo-delete-single").attr("data-photo-id", response['image_id']);
                 $(preview).show();
                 $(preview).parents().find('.photo-preview-container').show();

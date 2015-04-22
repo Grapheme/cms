@@ -23,7 +23,7 @@ if (!is_array($element->settings) && $element->settings != '')
 <input type="hidden" name="id" value="{{ $element->id }}" />
 {{ Form::hidden('settings[editor_state]') }}
 @endif
-<div class="modal-dialog">
+<div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -33,7 +33,7 @@ if (!is_array($element->settings) && $element->settings != '')
                 Редактировать блок
             </h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body padding-bottom-10">
 
             <div class="row">
                 <div class="col-md-12">
@@ -112,7 +112,7 @@ if (!is_array($element->settings) && $element->settings != '')
             @endif
 
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer margin-top-5">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">
                 Закрыть
             </button>

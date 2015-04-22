@@ -8,42 +8,41 @@ $seo = isset($value) && is_object($value) ? $value : new Seo;
 
     <fieldset>
 
-        <section>
-            <label class="label">Title</label>
-            <label class="input">
-                {{ Form::text($name.'[title]', $seo->title) }}
-            </label>
-        </section>
-
-        <section>
-            <label class="label">Description</label>
-            <label class="textarea">
-                {{ Form::textarea($name.'[description]', $seo->description, array('rows' => 4)) }}
-            </label>
-        </section>
-
-        <section>
-            <label class="label">Keywords</label>
-            <label class="textarea">
-                {{ Form::textarea($name.'[keywords]', $seo->keywords, array('rows' => 3)) }}
-            </label>
-        </section>
-
-        @if (0)
-        <section>
-            <label class="label">URL</label>
-            <label class="input">
-                {{ Form::text($name.'[url]', $seo->url) }}
-            </label>
-        </section>
+        @if (!is_array($params) || in_array('title', $params))
+            <section>
+                <label class="label">Title</label>
+                <label class="input">
+                    {{ Form::text($name.'[title]', $seo->title) }}
+                </label>
+            </section>
         @endif
 
-        <section>
-            <label class="label">Заголовок H1</label>
-            <label class="input">
-                {{ Form::text($name.'[h1]', $seo->h1) }}
-            </label>
-        </section>
+        @if (!is_array($params) || in_array('description', $params))
+            <section>
+                <label class="label">Description</label>
+                <label class="textarea">
+                    {{ Form::textarea($name.'[description]', $seo->description, array('rows' => 4)) }}
+                </label>
+            </section>
+        @endif
+
+        @if (!is_array($params) || in_array('keywords', $params))
+            <section>
+                <label class="label">Keywords</label>
+                <label class="textarea">
+                    {{ Form::textarea($name.'[keywords]', $seo->keywords, array('rows' => 3)) }}
+                </label>
+            </section>
+        @endif
+
+        @if (!is_array($params) || in_array('h1', $params))
+            <section>
+                <label class="label">Заголовок H1</label>
+                <label class="input">
+                    {{ Form::text($name.'[h1]', $seo->h1) }}
+                </label>
+            </section>
+        @endif
 
     </fieldset>
 

@@ -413,6 +413,7 @@ margin-left: 0;
 .photo-preview-single {
     width:200px;
     height:200px;
+    background-color: #efefef !important;
 }
 
 .clear {

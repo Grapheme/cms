@@ -15,21 +15,17 @@
     	<div class="egg-dropzone-single dropzone" data-name="{{ $name }}" data-gallery_id="0"<? if (isset($params) && is_array($params) && count($params)) { foreach($params as $key => $value) { echo ' data-' . $key . '="' . $value . '"'; } } ?><? if ($photo_exists) { echo " style='display:none'";} ?>></div>
         <div class="superbox_ photo-preview-container" style="margin-top:10px;">
 
-            @if ($photo_exists)
+            <div class="photo-preview photo-preview-single" style="@if($photo_exists) background-image:url({{ URL::to($photo->thumb()) }}); @else display:none; @endif">
+                <a href="{{ $photo_exists ? URL::to($photo->path()) : '#photo-path' }}" target="_blank" title="Полноразмерное изображение" style="display:block; height:100%; color:#090; background:transparent" data-toggle='modal' data-target='#image-{{ md5($name) }}'></a>
+                <a href="#" class="photo-delete-single" data-photo-id="{{ $photo_exists ? $photo->id : '#photo-id' }}" style="">Удалить</a>
 
-            	<div class="photo-preview photo-preview-single" style="background-image:url({{ URL::to($photo->thumb()) }});">
-            		<a href="{{ URL::to($photo->path()) }}" target="_blank" title="Полноразмерное изображение" style="display:block; height:100%; color:#090; background:transparent"></a>
-            		<a href="#" class="photo-delete-single" data-photo-id="{{ $photo->id }}" style="">Удалить</a>
-            	</div>
+                <div id="image-{{ md5($name) }}" class="modal fade not-sortable" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg block-center text-center">
+                        <img src="{{ $photo_exists ? URL::to($photo->path()) : '#' }}" style="max-width:100%">
+                    </div>
+                </div>
 
-            @else
-
-            	<div class="photo-preview photo-preview-single" style="display:none;">
-            		<a href="#photo-path" target="_blank" title="Полноразмерное изображение" class="photo-full-link" style="display:block; height:100%; color:#090; background:transparent"></a>
-            		<a href="#" class="photo-delete-single" data-photo-id="#photo-id" style="">Удалить</a>
-            	</div>
-
-            @endif
+            </div>
 
         </div>
     </div>

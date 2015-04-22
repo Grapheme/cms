@@ -234,8 +234,8 @@ foreach ($files as $dir => $dir_files) {
 
 
 @section('scripts')
-{{ HTML::script("js/vendor/jquery-form.min.js") }}
-{{ HTML::script("js/plugin/zeroclipboard/ZeroClipboard.min.js") }}
+{{ HTML::script("private/js/vendor/jquery-form.min.js") }}
+{{ HTML::script("private/js/plugin/zeroclipboard/ZeroClipboard.min.js") }}
 <script>
 
     /***************************************************************************/
@@ -281,12 +281,20 @@ foreach ($files as $dir => $dir_files) {
             //$($this).attr('data-new', 0);
         });
         //console.log(client);
+
+
+        // Width of the TH with locale name/sign
+        var locale_row_width = (parseInt($('.tbl_header').css('width'), 10) - parseInt($('.tbl_header th:first').css('width'), 10)) / {{ count($dirs) }};
+        $('.locale_row').css('width', locale_row_width);
+
+        // Width of first TH of the table with parameters
+        $('[data-file][data-name] th').css('width', 250);
     }
     activate_clipboard();
 
     /***************************************************************************/
 
-    $('.add_parameter').click(function(){
+    $(document).on('click', '.add_parameter', function(){
         //alert('123');
         var name = prompt('Введите имя переменной', 'default.name');
         var file = $(this).data('file');
@@ -363,6 +371,7 @@ foreach ($files as $dir => $dir_files) {
                     type: 'GET',
                     success: function(response, textStatus, xhr){
                         $('main.content').parent().html(response);
+                        activate_clipboard();
                     },
                     error: function(xhr,textStatus,errorThrown){
                     }
@@ -451,15 +460,6 @@ foreach ($files as $dir => $dir_files) {
         }
 
     });
-
-    // Width of the TH with locale name/sign
-    var locale_row_width = (parseInt($('.tbl_header').css('width'), 10) - parseInt($('.tbl_header th:first').css('width'), 10)) / {{ count($dirs) }};
-    $('.locale_row').css('width', locale_row_width);
-
-    // Width of first TH of the table with parameters
-    $('[data-file][data-name] th').css('width', 250);
-
-
 
 </script>
 @stop

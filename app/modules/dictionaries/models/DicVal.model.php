@@ -340,7 +340,13 @@ class DicVal extends BaseModel {
         $rand_tbl_alias = md5(time() . rand(999999, 9999999));
         $query->join($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
             ->where($rand_tbl_alias . '.key', '=', $key)
-            ->where($rand_tbl_alias . '.value', $condition, $value);
+            ->where($rand_tbl_alias . '.value', $condition, $value)
+            /*
+            ## Multilanguage
+            ->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
+            ->orWhere($rand_tbl_alias . '.language', '=', NULL)
+            */
+            ;
 
         return $query;
     }
@@ -374,6 +380,8 @@ class DicVal extends BaseModel {
                     ->on($rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
                     #->where($rand_tbl_alias . '.key', '=', DB::raw("'" . $key . "'"))
                     ->where($rand_tbl_alias . '.key', '=', $key)
+                    ->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
+                    ->orWhere($rand_tbl_alias . '.language', '=', NULL)
                 ;
             })
             ->orderBy($rand_tbl_alias . '.value', $order_method)
@@ -549,16 +557,25 @@ class DicVal extends BaseModel {
         #Helper::ta($this);
 
         ## Extract all fields (without language & all i18n)
-        if (isset($this->allfields) && @is_object($this->allfields)) {
+        if (isset($this->allfields) && is_object($this->allfields)) {
 
-            if (count($this->allfields))
+            if (count($this->allfields)) {
+                $temp = [];
                 foreach ($this->allfields as $field) {
-                    $this->{$field->key} = $field->value;
+                    $lang = $field->language ? $field->language : Config::get('app.locale');
+                    if (!isset($temp[$lang])) {
+                        $temp[$lang] = [];
+                    }
+                    $temp[$lang][$field->key] = $field->value;
                 }
-            if ($unset)
                 unset($this->allfields);
+                $this->allfields = $temp;
+            }
+        }
 
-        } elseif (isset($this->fields) && @is_object($this->fields)) {
+        #Helper::tad($this);
+
+        if (isset($this->fields) && is_object($this->fields)) {
 
             ## Extract fields (with NULL language or language = default locale)
             if (count($this->fields))
@@ -570,17 +587,27 @@ class DicVal extends BaseModel {
 
         }
 
+        #Helper::tad($this);
+
         ## Extract all text fields (without language & all i18n)
         if (isset($this->alltextfields) && @is_object($this->alltextfields)) {
 
-            if (count($this->alltextfields))
-                foreach ($this->alltextfields as $textfield) {
-                    $this->{$textfield->key} = $textfield->value;
+            if (count($this->alltextfields)) {
+                $temp = [];
+                foreach ($this->alltextfields as $field) {
+                    if (!isset($temp[$field->language])) {
+                        $temp[$field->language] = [];
+                    }
+                    $temp[$field->language][$field->key] = $field->value;
                 }
-            if ($unset)
                 unset($this->alltextfields);
+                $this->alltextfields = $temp;
+            }
+        }
 
-        } elseif (isset($this->textfields) && @is_object($this->textfields)) {
+        #Helper::ta($this);
+
+        if (isset($this->textfields) && @is_object($this->textfields)) {
 
             ## Extract text fields (with NULL language or language = default locale)
             if (count($this->textfields))
@@ -590,6 +617,8 @@ class DicVal extends BaseModel {
             if ($unset)
                 unset($this->textfields);
         }
+
+        #Helper::ta($this);
 
         ## Extract SEOs
         if (isset($this->seos)) {
@@ -1139,4 +1168,28 @@ class DicVal extends BaseModel {
 
         return $dicval;
     }
+
+
+    public function is_img($field) {
+        return (is_object($this) && isset($this->$field) && is_object($this->$field) && $this->$field->full() != '');
+    }
+    public function is_image($field) {
+        return $this->is_img($field);
+    }
+    public function is_photo($field) {
+        return $this->is_img($field);
+    }
+    public function img_full($field) {
+        #Helper::tad($this);
+        if (is_object($this) && isset($this->$field) && is_object($this->$field))
+            return $this->$field->full();
+        return NULL;
+    }
+    public function img_thumb($field) {
+        #Helper::tad($this);
+        if (is_object($this) && isset($this->$field) && is_object($this->$field))
+            return $this->$field->thumb();
+        return NULL;
+    }
+
 }
