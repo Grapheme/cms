@@ -359,7 +359,7 @@ class AdminGalleriesController extends BaseController {
 		$photo = Photo::create(array(
 			'name' => $result['filename'],
 			'gallery_id' => 0,
-			'title' => '',
+            'title' => '',
 		));
 
         ## All OK, return result

@@ -423,6 +423,177 @@ class DicLib extends BaseController {
 
 
     /**
+     * С помощью данного метода можно подгрузить загруженные файлы (Upload) к элементам коллекции по их ID, хранящемся в поле
+     * В качестве третьего параметра можно передать название поля элемента коллекции, например связи один-ко-многим.
+     *
+     * Пример вызова:
+     * $specials = DicLib::loadUploads($specials, ['upload_id']);
+     *
+     * @param $collection
+     * @param string $key
+     * @param string/null $field
+     * @return bool
+     */
+    public static function loadUploads($collection, $key = 'upload_id', $field = null){
+
+        #Helper::tad($collection);
+
+        if (!is_array($key))
+            $key = (array)$key;
+
+        #Helper::ta(get_class($collection));
+        #Helper::tad($collection instanceof Collection);
+
+        #Helper::ta((int)($collection instanceof \Illuminate\Pagination\Paginator));
+        #dd($collection);
+        #var_dump($collection);
+
+        $single_mode = false;
+        $paginator_mode = false;
+
+        #die($collection instanceof Collection);
+
+        if ($collection instanceof Collection || $collection instanceof Illuminate\Database\Eloquent\Collection) {
+
+            ## all ok
+
+        } elseif ($collection instanceof \Illuminate\Pagination\Paginator) {
+
+            $paginator_mode = true;
+            $paginator = clone $collection;
+            $collection = $collection->getItems();
+
+        } else {
+
+            $single_mode = true;
+            $temp = $collection;
+            $collection = new Collection();
+            $collection->put(0, $temp);
+        }
+
+        #Helper::tad('single: ' . $single_mode . ', paginator: ' . $paginator_mode . ', key: ' . print_r($key, 1));
+
+        #Helper::tad($collection);
+        #dd($collection);
+
+        if (!count($collection) || !count($key))
+            return $collection;
+
+        $upload_ids = array();
+        /**
+         * Перебираем все объекты в коллекции
+         */
+        foreach ($collection as $obj) {
+
+            /**
+             * Если при вызове указано поле (связь) - берем ее вместо текущего объекта
+             */
+            $work_obj = $field ? $obj->$field : $obj;
+
+            #dd($work_obj->$key[0]);
+            #dd($work_obj);
+
+            /**
+             * Перебираем все переданные ключи с ID изображений
+             */
+            foreach ($key as $attr) {
+
+                #Helper::ta($attr . ' - ' . is_numeric($work_obj->$attr));
+
+                if (!is_object($work_obj)) {
+                    dd($work_obj);
+                }
+
+                if (is_numeric($work_obj->$attr)) {
+
+                    /**
+                     * Собираем ID изображений - в общий список и в список с разбиением по ключу
+                     */
+                    $upload_ids_attr[$attr][] = $work_obj->$attr;
+                    $upload_ids[] = $work_obj->$attr;
+                }
+            }
+
+        }
+        #Helper::dd($upload_ids);
+        #Helper::d($upload_ids_attr);
+
+
+        $images = [];
+        $uploads = [];
+        if (count($upload_ids)) {
+
+            $uploads = Upload::whereIn('id', $upload_ids)->get();
+            $uploads = self::modifyKeys($uploads, 'id');
+            #Helper::tad($uploads);
+        }
+
+        #dd($collection);
+
+        if (count($uploads)) {
+
+            /**
+             * Перебираем все объекты в коллекции
+             */
+            foreach ($collection as $o => $obj) {
+
+                /**
+                 * Если при вызове указано поле (связь) - берем ее вместо текущего объекта
+                 */
+                $work_obj = $field ? $obj->$field : $obj;
+
+                /**
+                 * Перебираем все переданные ключи с ID файлов
+                 */
+                foreach ($key as $attr) {
+
+                    if (is_object($work_obj) && is_numeric($work_obj->$attr)) {
+
+                        if (@$uploads[$work_obj->$attr]) {
+
+                            $tmp = $work_obj->$attr;
+                            $upload = $uploads[$tmp];
+
+                            $work_obj->setAttribute($attr, $upload);
+                        }
+                    }
+                }
+
+                if ($field) {
+                    $obj->$field = $work_obj;
+                    #} else {
+                    #    $obj = $work_obj;
+                }
+
+                if (is_object($collection))
+                    $collection->put($o, $obj);
+                else
+                    $collection[$o] = $obj;
+            }
+        }
+
+        #dd($single_mode);
+
+        if ($paginator_mode) {
+
+            $paginator->setItems($collection);
+            $collection = $paginator;
+
+        } else if ($single_mode) {
+
+            $collection = $collection[0];
+        }
+
+        #Helper::tad($collection);
+        #dd($collection);
+        #var_dump($collection);
+        #Helper::ta('<hr/>');
+
+        return $collection;
+    }
+
+
+    /**
      * Функция для вывода выпадающего списка в верхнем меню для фильтрации результатов
      *
      * @param $filter_name

@@ -343,13 +343,16 @@
                                         <i></i>
                                         Шаблон активности (regexp)
                                     </label>
-                                    <label class="input">
+                                    <label class="input" style="display: none;">
                                         {{ Form::text('items[%N%][active_regexp]', '%active_regexp%', ['class' => 'active_regexp']) }}
                                     </label>
                                     <label class="checkbox">
                                         <input type="checkbox" name="items[%N%][hidden]" value="1" %is_hidden% />
                                         <i></i>
                                         Скрыть
+                                    </label>
+                                    <label class="input">
+                                        {{ Form::text('items[%N%][li_class]', '%li_class%', ['placeholder' => 'class для контейнера (li)']) }}
                                     </label>
                                 </span>
 
@@ -494,8 +497,16 @@
                 <i></i>
                 Использовать данные из функции
             </label>
-            <label class="note">
+            <label class="note margin-bottom-15">
                 Если отмечена данная опция, то текст ссылки, ее url и прочие данные будут браться непосредственно из самой функции, без учета указанных данных.
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" name="items[%N%][as_is]" value="1" class="use_function_data" %as_is% />
+                <i></i>
+                Выводить данные "как есть"
+            </label>
+            <label class="note">
+                Результат работы функции будет выведен в "чистом" виде, без подстановки в шаблоны
             </label>
 
             {{ Form::hidden('null', '<без названия>', array('class' => 'default_text_for_title')) }}

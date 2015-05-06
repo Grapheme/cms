@@ -1192,4 +1192,16 @@ class DicVal extends BaseModel {
         return NULL;
     }
 
+
+    public function is_upload($field) {
+        return (is_object($this) && isset($this->$field) && is_object($this->$field) && $this->$field->path != '');
+    }
+    public function upload($field) {
+        if (is_object($this) && isset($this->$field) && is_object($this->$field) && $this->$field->path != '') {
+            return $this->$field->path;
+        } else {
+            return NULL;
+        }
+    }
+
 }

@@ -126,6 +126,7 @@ var menu_editor = {
                 block = str_replace('%function_name%', params.function_name, block);
                 block = str_replace('%text%', params.text, block);
                 block = str_replace('%use_function_data%', params.use_function_data ? 'checked' : '', block);
+                block = str_replace('%as_is%', params.as_is ? 'checked' : '', block);
                 break;
             default:
                 break;
@@ -141,6 +142,7 @@ var menu_editor = {
         main_block = str_replace('%use_active_regexp%', params.use_active_regexp == '1' ? 'checked' : '', main_block);
         main_block = str_replace('%active_regexp%', typeof params.active_regexp != 'undefined' ? params.active_regexp : '', main_block);
         main_block = str_replace('%is_hidden%', params.hidden == '1' ? 'checked' : '', main_block);
+        main_block = str_replace('%li_class%', typeof params.li_class != 'undefined' ? params.li_class : '', main_block);
 
         var inner_list_block = '';
         if (inner_list) {
