@@ -413,6 +413,7 @@ class AdminGalleriesController extends BaseController {
 			File::makeDirectory($thumbsPath, 0777, TRUE);
 
         ## Generate filename
+        srand((float)microtime() * 1000000);
 		$fileName = time() . "_" . rand(1000, 1999) . '.' . $file->getClientOriginalExtension();
 
         ## Get images resize parameters from config

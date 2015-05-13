@@ -28,9 +28,9 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
 
             <li class="dd-item dd3-item dd-item-fixed-height" data-id="{{ $element->id }}">
                 @if ($sortable > 0)
-                <div class="dd-handle dd3-handle">
-                    Drag
-                </div>
+                    <div class="dd-handle dd3-handle">
+                        Drag
+                    </div>
                 @endif
                 <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
 
@@ -165,47 +165,47 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
     @endif
 
     @if ($sortable && $dic->sortable > 0)
-    <script>
-    $(document).ready(function() {
+        <script>
+        $(document).ready(function() {
 
-        var updateOutput = function(e) {
+            var updateOutput = function(e) {
+
+                show_hide_delete_buttons();
+
+                var list = e.length ? e : $(e.target), output = $(list.data('output'));
+                if (window.JSON) {
+                    var data = window.JSON.stringify(list.nestable('serialize'));
+                    $.ajax({
+                        url: "{{ URL::route('dicval.nestedsetmodel') }}",
+                        type: "post",
+                        data: { data: data },
+                        success: function(jhr) {
+                            //console.clear();
+                            //console.log(jhr);
+                        }
+                    });
+                    output.val(data);
+                } else {
+                    output.val('JSON browser support required for this demo.');
+                }
+            };
+
+            //updateOutput($('.dd.dicval-list').data('output', $('#nestable-output')));
+
+            $('.dd.dicval-list').nestable({
+                maxDepth: {{ (int)$dic->sortable }},
+                group: 1
+            }).on('change', updateOutput);
+
+            function show_hide_delete_buttons() {
+                $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
+                $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
+            }
 
             show_hide_delete_buttons();
-
-            var list = e.length ? e : $(e.target), output = $(list.data('output'));
-            if (window.JSON) {
-                var data = window.JSON.stringify(list.nestable('serialize'));
-                $.ajax({
-                    url: "{{ URL::route('dicval.nestedsetmodel') }}",
-                    type: "post",
-                    data: { data: data },
-                    success: function(jhr) {
-                        //console.clear();
-                        //console.log(jhr);
-                    }
-                });
-                output.val(data);
-            } else {
-                output.val('JSON browser support required for this demo.');
-            }
-        };
-
-        //updateOutput($('.dd.dicval-list').data('output', $('#nestable-output')));
-
-        $('.dd.dicval-list').nestable({
-            maxDepth: {{ (int)$dic->sortable }},
-            group: 1
-        }).on('change', updateOutput);
-
-        function show_hide_delete_buttons() {
-            $('.dd-item > button:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').hide();
-            $('.dd-item > div:first-child').parent().find('.dd3-content:first .dicval-actions .dicval-actions-delete').show();
-        }
-
-        show_hide_delete_buttons();
-
-    });
-    </script>
+    
+        });
+        </script>
     @endif
 
 @stop

@@ -419,10 +419,7 @@ class MenuConstructor {
                 /**
                  * Сделаем замену паттернов
                  */
-                $url = strtr($url, [
-                    '%locale%' => Config::get('app.locale'),
-                    '%default_locale%' => Config::get('app.default_locale'),
-                ]);
+                $url = $this->replaces($url);
                 #var_dump($element['active_regexp']);
                 return $url;
                 break;
@@ -445,7 +442,9 @@ class MenuConstructor {
                         }
                     }
                 }
-                return URL::route($element['route_name'], $route_params);
+                $url = URL::route($element['route_name'], $route_params);
+                $url = $this->replaces($url);
+                return $url;
                 break;
 
             case 'function':
@@ -453,7 +452,9 @@ class MenuConstructor {
                 $function = Config::get('menu.functions.' . $element['function_name']);
                 if (isset($function) && is_callable($function)) {
                     $result = $function();
-                    return @$result['url'] ?: false;
+                    $url = @$result['url'] ?: '';
+                    $url = $this->replaces($url);
+                    return $url;
                 }
                 return false;
                 break;
@@ -462,6 +463,22 @@ class MenuConstructor {
                 return false;
                 break;
         }
+    }
+
+
+    /**
+     * Замены паттернов
+     *
+     * @param $text
+     *
+     * @return string
+     */
+    private function replaces($text) {
+        $text = strtr($text, [
+            '%locale%' => Config::get('app.locale'),
+            '%default_locale%' => Config::get('app.default_locale'),
+        ]);
+        return $text;
     }
 
 
@@ -497,10 +514,7 @@ class MenuConstructor {
             }
 
             try{
-                $element['active_regexp'] = strtr($element['active_regexp'], [
-                    '%locale%' => Config::get('app.locale'),
-                    '%default_locale%' => Config::get('app.default_locale'),
-                ]);
+                $element['active_regexp'] = $this->replaces($element['active_regexp']);
             } catch (Exception $e) {
                 echo 'Error: ',  $e->getMessage(), "\n";
                 Helper::tad($element);

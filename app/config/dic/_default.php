@@ -522,6 +522,22 @@ if (len > 0) {
     ),
 
     /**
+     * Возможность переопределить настройки сортировки по определенным условиям
+     */
+    'sortable' => function(&$dic = NULL, $dicvals = NULL) {
+        /*
+        if (!Input::get('filter.fields.category_id')) {
+
+            $dic->pagination = 30;
+            #$dic->sort_by = 'name';
+            return false;
+
+        } else
+        #*/
+            return ($dic->sortable && $dic->pagination == 0 && $dic->sort_by == NULL);
+    },
+
+    /**
      * Максимальное количество элементов в списке.
      * Если достигнуто - кнопка "Добавить" будет скрыта.
      */

@@ -43,7 +43,7 @@
 
                             @if ($element->mime1 == 'image')
                             <div style="background:url({{ $element->filesize < 100000 ? $element->path : '' }}) no-repeat #aaa 50% 50% / cover; position:absolute; top:0; right:0; height:100%; width:100px;">
-                                <a href="{{ URL::to($element->path) }}" target="_blank" style="display:block; width:100%; height:100%; color:#fff; text-align:center; margin:12px auto;">@if($element->filesize > 100000) <i class="fa fa-image fa-4x"></i> @endif</a>
+                                <a href="{{ URL::to($element->path) }}" target="_blank" style="display:block; width:100%; height:100%; color:#fff; text-align:center; margin:5px auto;">@if($element->filesize > 100000) <i class="fa fa-image fa-4x"></i> @endif</a>
                             </div>
                             @endif
 

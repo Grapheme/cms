@@ -238,7 +238,7 @@ $(document).on("click", ".delete_menu_item", function(e) {
     e.preventDefault();
 
     //var block = $(this).parents('.menu_item');
-    var block = $(this).parents('.dd-item');
+    var block = $(this).parents('.dd-item').first();
     //console.log(block);
 
     // ask verification
