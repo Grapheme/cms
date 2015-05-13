@@ -378,6 +378,10 @@ class AdminDicvalsController extends BaseController {
 
         $this->dicval_permission($dic, (@$id ? 'dicval_edit' : 'dicval_create'));
 
+        ## Dic settings
+        $dic_settings = Config::get('dic/' . $dic->slug);
+        #Helper::dd($dic_settings);
+
         $element = new DicVal;
         if ($id)
             $element = DicVal::find($id);
@@ -680,13 +684,38 @@ class AdminDicvalsController extends BaseController {
             $this->callHook('after_store_update_destroy_order', $dic, $element);
 
 			$json_request['responseText'] = 'Сохранено';
-            if ($redirect && Input::get('redirect'))
-			    $json_request['redirect'] = Input::get('redirect');
-			$json_request['status'] = TRUE;
+
+
+            if ($redirect) {
+
+                $redirect_url = NULL;
+                if (@$dic_settings['new_element_redirect'] == 'list') {
+
+                    $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
+
+                } elseif (@is_array($dic_settings['new_element_redirect']) && isset($dic_settings['new_element_redirect']['route_name'])) {
+
+                    $redirect_url = URL::route($dic_settings['new_element_redirect']['route_name'], (array)@$dic_settings['new_element_redirect']['route_params']) . (@$dic_settings['new_element_redirect']['add_query_string'] && Request::getQueryString() ? '?' . Request::getQueryString() : '');
+
+                } elseif (@$dic_settings['new_element_redirect'] == 'new' || !@$dic_settings['new_element_redirect']) {
+
+                    $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, 'id' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
+
+                }
+            }
+
+
+            if ($redirect && $redirect_url)
+			    $json_request['redirect'] = $redirect_url;
+
+            $json_request['status'] = TRUE;
+
 		} else {
+
 			$json_request['responseText'] = 'Неверно заполнены поля';
 			$json_request['responseErrorText'] = $validator->messages()->all();
 		}
+
 		return Response::json($json_request, 200);
 	}
 
