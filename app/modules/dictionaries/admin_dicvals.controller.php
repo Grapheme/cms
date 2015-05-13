@@ -697,7 +697,8 @@ class AdminDicvalsController extends BaseController {
 
                     $redirect_url = URL::route($dic_settings['new_element_redirect']['route_name'], (array)@$dic_settings['new_element_redirect']['route_params']) . (@$dic_settings['new_element_redirect']['add_query_string'] && Request::getQueryString() ? '?' . Request::getQueryString() : '');
 
-                } elseif (@$dic_settings['new_element_redirect'] == 'new' || !@$dic_settings['new_element_redirect']) {
+                #} elseif (@$dic_settings['new_element_redirect'] == 'new' || !@$dic_settings['new_element_redirect']) {
+                } else {
 
                     $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, 'id' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
 
