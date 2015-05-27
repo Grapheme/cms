@@ -89,6 +89,28 @@ class CatalogAttribute extends BaseModel {
                 if ($this->meta->name != '')
                     $this->name = $this->meta->name;
 
+                if (isset($this->meta->settings) && is_string($this->meta->settings)) {
+                    $this->meta->settings = json_decode($this->meta->settings, 1);
+
+                    if ($this->type == 'select') {
+                        $settings = $this->meta->settings;
+
+                        $temp = explode("\n", $settings['values']);
+                        $array = [];
+                        if (count($temp)) {
+                            foreach ($temp as $tmp) {
+                                $tmp = trim($tmp);
+                                $array[$tmp] = $tmp;
+                            }
+                        }
+                        $settings['values'] = $array;
+                        #Helper::tad($settings['values']);
+
+                        $this->meta->settings = $settings;
+                    }
+
+                    $this->settings = (array)(is_array($this->settings) ? $this->settings : json_decode($this->settings)) + (array)$this->meta->settings;
+                }
             }
 
             if ($unset)
@@ -143,6 +165,9 @@ class CatalogAttribute extends BaseModel {
             }
 
         }
+
+        #$this->settings = json_decode($this->settings, 1);
+        #Helper::ta($this);
 
         return $this;
     }

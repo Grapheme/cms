@@ -112,7 +112,7 @@ class AdminDicvalsController extends BaseController {
         $elements = new DicVal;
         $tbl_dicval = $elements->getTable();
         $elements = $elements
-            ->select($tbl_dicval . '.*')
+            #->select($tbl_dicval . '.*')
             ->where($tbl_dicval.'.dic_id', (int)$dic->id)
             ->where($tbl_dicval.'.version_of', '=', NULL)
             ->with('fields')
@@ -187,6 +187,7 @@ class AdminDicvalsController extends BaseController {
                 /**
                  * ORDER BY по произвольному полю
                  */
+                /*
                 #Helper::dd($dic->sort_by);
                 #$dic->sort_by .= '2';
                 $tbl_fields = (new DicFieldVal())->getTable();
@@ -199,12 +200,17 @@ class AdminDicvalsController extends BaseController {
 
                         ;
                     })
-                    /* !!! WHERE должно быть именно здесь, а не внутри JOIN-а !!! */
-                    /* !!! Иначе происходит неведомая хрень: dic_id = 'field' !!! */
+                    ### !!! WHERE должно быть именно здесь, а не внутри JOIN-а !!! ###
+                    ### !!! Иначе происходит неведомая хрень: dic_id = 'field' !!! ###
                     ->where($rand_tbl_alias . '.key', '=', $dic->sort_by)
                     ->addSelect($rand_tbl_alias . '.value AS ' . $dic->sort_by)
-                    ->orderBy($dic->sort_by, $sort_order)
-                    ->orderBy($tbl_dicval.'.created_at', 'DESC'); /* default */
+                    #->orderBy($dic->sort_by, $sort_order)
+                    ->orderBy($rand_tbl_alias.'.value', $sort_order)
+                    ->orderBy($tbl_dicval.'.created_at', 'DESC') ## default
+                ;
+                */
+                $elements = $elements->order_by_field($dic->sort_by, $sort_order);
+
                 break;
         }
 
@@ -406,8 +412,10 @@ class AdminDicvalsController extends BaseController {
             $input['slug'] = Helper::translit($input['name']);
         */
 
-        if (!@$input['name'])
+        if (!isset($input['name']) || !mb_strlen($input['name']))
             $input['name'] = '';
+
+        $input['name'] = trim($input['name']);
 
         /**
          * Генерация системного имени в зависимости от настроек словаря

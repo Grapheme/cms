@@ -21,9 +21,9 @@ function write_level($hierarchy, $elements, $module, $sortable) {
 
             <li class="dd-item dd3-item dd-item-fixed-height" data-id="{{ $element->id }}">
                 @if ($sortable > 0)
-                <div class="dd-handle dd3-handle">
-                    Drag
-                </div>
+                    <div class="dd-handle dd3-handle">
+                        Drag
+                    </div>
                 @endif
                 <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
 

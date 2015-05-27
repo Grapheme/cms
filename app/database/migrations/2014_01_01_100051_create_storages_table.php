@@ -16,7 +16,7 @@ class CreateStoragesTable extends Migration {
     			$table->text('value');
     			$table->timestamps();
 
-           		$table->index('module', 'name');
+           		$table->unique('module', 'name');
     		});
             echo(' + ' . $this->table . PHP_EOL);
         } else {

@@ -204,6 +204,10 @@ class PublicCatalogController extends BaseController {
         ## Если товар найден и в корзине, и в каталоге
         if ($exists_cart && $exists_catalog) {
 
+            ## Не позволяем заказать товара больше, чем его есть на складе
+            if ($product->amount > 0 && $product->amount < $good['amount'])
+                $good['amount'] = $product->amount;
+
             ## Обновляем кол-во товара в позиции (корзина)
             CatalogCart::update($good['hash'], ['amount' => $good['amount']], true);
 

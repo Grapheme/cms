@@ -33,6 +33,32 @@ class CatalogProduct extends BaseModel {
 
 
 
+    public function grps() {
+        return
+            isset($this->attributes_groups)
+            && is_object($this->attributes_groups)
+            && $this->attributes_groups->count()
+                ? $this->attributes_groups
+                : [];
+    }
+
+    public function grp_attrs($group) {
+        $grps = $this->grps();
+
+        #Helper::ta($group);
+        #Helper::ta($grps);
+        #Helper::tad($grps[$group]->relations['attributes']);
+        #dd($grps[$group]);
+
+        return
+            isset($grps[$group])
+            && is_object($grps[$group])
+            && isset($grps[$group]->relations['attributes'])
+            && is_object($grps[$group]->relations['attributes'])
+                ? $grps[$group]->relations['attributes']
+                : [];
+    }
+
     public function attr($group, $attr, $return = 'value') {
         /*
         $attr_exists =
@@ -187,6 +213,9 @@ class CatalogProduct extends BaseModel {
 
                 if ($this->meta->description != '')
                     $this->description = $this->meta->description;
+
+                if ($this->meta->full_description != '')
+                    $this->full_description = $this->meta->full_description;
 
                 if ($this->meta->price != '')
                     $this->price = $this->meta->price;

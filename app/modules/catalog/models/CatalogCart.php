@@ -78,6 +78,8 @@ class CatalogCart {
 
     public static function get_full($load = false) {
 
+        #Helper::tad(self::$goods);
+
         if ($load)
             self::load();
 

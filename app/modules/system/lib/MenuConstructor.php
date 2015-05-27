@@ -5,7 +5,12 @@ class MenuConstructor {
 
     public function __construct($slug) {
 
-        $menu_item = Storage::where('module', 'menu')->where('name', $slug)->first();
+        $menu_item = Storage::where('module', 'menu')->where('name', $slug);
+
+        if (NULL != ($db_remember_timeout = Config::get('app.settings.main.db_remember_timeout')) && $db_remember_timeout > 0)
+            $menu_item->remember($db_remember_timeout);
+
+        $menu_item = $menu_item->first();
         if (!is_object($menu_item) || !$menu_item->value)
             return false;
 
@@ -64,7 +69,12 @@ class MenuConstructor {
              */
             if (count($this->pages_ids)) {
 
-                $pages = Page::whereIn('id', $this->pages_ids)->get();
+                $pages = Page::whereIn('id', $this->pages_ids);
+
+                if (NULL != ($db_remember_timeout = Config::get('app.settings.main.db_remember_timeout')) && $db_remember_timeout > 0)
+                    $pages->remember($db_remember_timeout);
+
+                $pages = $pages->get();
                 #Helper::tad($pages);
                 $pages_by_sysname = new Collection();
                 if (count($pages)) {
@@ -338,6 +348,22 @@ class MenuConstructor {
         if (@$data['hidden'])
             return false;
 
+        if (@$data['use_display_logic'] && @$data['display_logic'] != '') {
+            #Helper::ta($data['display_logic']);
+            $result = NULL;
+            try {
+
+                $code = '$result = @(bool)(' . $data['display_logic'] . ');';
+                @eval($code);
+                #die;
+
+            } catch (Exception $e) {
+                #
+            }
+            if (!$result)
+                return false;
+        }
+
         return $this->get_element_info_by_data($data);
     }
 
@@ -410,7 +436,7 @@ class MenuConstructor {
 
             case 'page':
                 if (isset($this->pages[$element['page_id']]) && is_object($this->pages[$element['page_id']]))
-                    return URL::route('page', $this->pages[$element['page_id']]->slug);
+                    return URL::route('page', ['slug' => $this->pages[$element['page_id']]->slug]);
                 return false;
                 break;
 

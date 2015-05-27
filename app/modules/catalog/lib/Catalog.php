@@ -148,6 +148,21 @@ class Catalog extends BaseController {
                 $product->save();
 
                 /**
+                 * Уменьшаем кол-во товара на складе
+                 */
+                ## Нужно добавить условие - настройку, и продумать поведение, если товара на складе меньше, чем в заказе
+                if (TRUE && NULL !== ($good = CatalogProduct::find($order_product['id']))) {
+                    if ($good->amount > 0) {
+                        $good->amount = $good->amount - $order_product['count'];
+                    }
+                    if ($good->amount < 0) {
+                        $good->amount = 0;
+                    }
+                    $good->save();
+                }
+
+
+                /**
                  * Добавляем цену позиции к общей сумме
                  */
                 $total_sum += abs($order_product['count'] * $order_product['price']);

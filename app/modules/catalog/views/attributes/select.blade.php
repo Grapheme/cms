@@ -7,6 +7,10 @@
 
         $settings = isset($attribute->metas[$locale_sign]->settings) ? $attribute->metas[$locale_sign]->settings : NULL;
 
+    } elseif (isset($attribute->settings) && is_array($attribute->settings)) {
+
+        $settings = $attribute->settings;
+
     } else {
 
         #$settings = $attribute->settings;
@@ -14,20 +18,31 @@
         $settings = isset($attribute->metas) && isset($attribute->metas[$locale_sign]) && isset($attribute->metas[$locale_sign]->settings) ? $attribute->metas[$locale_sign]->settings : NULL;
     }
 
-    if (isset($settings) && $settings && isset($settings['values']) && is_string($settings['values'])) {
-        $temp = (array)explode("\n", $settings['values']);
-        if (count($temp))
-            foreach ($temp as $tmp) {
-                $tmp = trim($tmp);
-                if (!$tmp)
-                    continue;
-                $values[$tmp] = $tmp;
-            }
+    #Helper::ta($settings);
+
+    if (isset($settings) && $settings && isset($settings['values'])) {
+
+        if (is_array($settings['values'])) {
+
+            $values = $settings['values'];
+
+        } elseif (is_string($settings['values'])) {
+
+            $temp = (array)explode("\n", $settings['values']);
+            if (count($temp))
+                foreach ($temp as $tmp) {
+                    $tmp = trim($tmp);
+                    if (!$tmp)
+                        continue;
+                    $values[$tmp] = $tmp;
+                }
+        }
     }
 
     ?>
 
     {{ Helper::tad_($attribute) }}
+    {{ Helper::d_($values) }}
     {{ Helper::d_($value) }}
 
     <section>

@@ -114,7 +114,7 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
         <div class="clear"></div>
 
         @if ($dic->pagination > 0)
-            {{ $elements_pagination->links() }}
+            {{ $elements_pagination->appends(Input::all())->links() }}
         @endif
 
 	@else

@@ -26,6 +26,7 @@ class CatalogAttributeGroup extends BaseModel {
 
     public function attributes() {
         return $this->hasMany('CatalogAttribute', 'attributes_group_id', 'id')
+            ->where('active', '1')
             ->orderBy('lft', 'ASC')
             ;
     }
@@ -135,6 +136,10 @@ class CatalogAttributeGroup extends BaseModel {
                 }
             }
         }
+
+        #$this->settings = json_decode($this->settings, 1);
+        #Helper::ta($this->settings);
+        #Helper::ta($this);
 
         #/*
         ## Extract category

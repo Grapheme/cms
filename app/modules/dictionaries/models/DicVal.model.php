@@ -317,15 +317,17 @@ class DicVal extends BaseModel {
     /**
      * Функция позволяет отфильтровать записи словаря по доп. полю записи.
      * Только для использования в функции-замыкании доп. условий при получении записей словаря
+     * Если передать параметр $multilingual = TRUE, то к выборке будет добавлено условие language = [текущая локаль|NULL]
      *
      * @param $query
      * @param $key
      * @param string $condition
      * @param null $value
+     * @param bool $multilingual
      * @param bool $do_nothing_if_null
      * @return mixed
      */
-    public function scopeFilter_by_field($query, $key, $condition = '=', $value = NULL, $do_nothing_if_null = false) {
+    public function scopeFilter_by_field($query, $key, $condition = '=', $value = NULL, $multilingual = false, $do_nothing_if_null = false) {
 
         if ($value === NULL)
             if ($do_nothing_if_null)
@@ -337,16 +339,31 @@ class DicVal extends BaseModel {
 
         $tbl_dicval = (new DicVal())->getTable();
         $tbl_dic_field_val = (new DicFieldVal())->getTable();
-        $rand_tbl_alias = md5(time() . rand(999999, 9999999));
+        #$rand_tbl_alias = md5(time() . rand(999999, 9999999));
+
+        ## For cache
+        $num = (int)Config::get('temp.rand_tbl_alias');
+        $rand_tbl_alias = 'rand_tbl_alias_' . (++$num);
+        Config::set('temp.rand_tbl_alias', $num);
+
         $query->join($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
             ->where($rand_tbl_alias . '.key', '=', $key)
             ->where($rand_tbl_alias . '.value', $condition, $value)
+        ;
             /*
             ## Multilanguage
             ->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
             ->orWhere($rand_tbl_alias . '.language', '=', NULL)
             */
+
+        if ($multilingual) {
+            $query
+                ->where(function ($query) use ($rand_tbl_alias) {
+                    $query->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'));
+                    $query->orWhere($rand_tbl_alias . '.language', '=', NULL);
+                })
             ;
+        }
 
         return $query;
     }
@@ -365,7 +382,12 @@ class DicVal extends BaseModel {
 
         $tbl_dicval = (new DicVal())->getTable();
         $tbl_dic_field_val = (new DicFieldVal())->getTable();
-        $rand_tbl_alias = md5(time() . rand(999999, 9999999));
+        #$rand_tbl_alias = md5(time() . rand(999999, 9999999));
+
+        ## For cache
+        $num = (int)Config::get('temp.rand_tbl_alias');
+        $rand_tbl_alias = 'rand_tbl_alias_' . (++$num);
+        Config::set('temp.rand_tbl_alias', $num);
 
         /*
         $query->leftJoin($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
@@ -380,10 +402,23 @@ class DicVal extends BaseModel {
                     ->on($rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
                     #->where($rand_tbl_alias . '.key', '=', DB::raw("'" . $key . "'"))
                     ->where($rand_tbl_alias . '.key', '=', $key)
-                    ->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
-                    ->orWhere($rand_tbl_alias . '.language', '=', NULL)
+
+                    ##
+                    ## Вынесено за JOIN
+                    ##
+                    #->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
+                    #->orWhere($rand_tbl_alias . '.language', '=', NULL)
                 ;
             })
+
+            ##
+            ## Чтобы "взять в скобки" условие языка - пришлось вынести сюда. ХЗ как отразится в будущем.
+            ##
+            ->where(function ($query) use ($rand_tbl_alias) {
+                $query->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'));
+                $query->orWhere($rand_tbl_alias . '.language', '=', NULL);
+            })
+
             ->orderBy($rand_tbl_alias . '.value', $order_method)
             ->addSelect(DB::raw('`' . $rand_tbl_alias . '`.`value` AS ' . $key))
         ;
@@ -448,7 +483,13 @@ class DicVal extends BaseModel {
 
         $tbl_dicval = (new DicVal())->getTable();
         $tbl_dic_field_val = (new DicFieldVal())->getTable();
-        $rand_tbl_alias = md5(time() . rand(999999, 9999999));
+        #$rand_tbl_alias = md5(time() . rand(999999, 9999999));
+
+        ## For cache
+        $num = (int)Config::get('temp.rand_tbl_alias');
+        $rand_tbl_alias = 'rand_tbl_alias_' . (++$num);
+        Config::set('temp.rand_tbl_alias', $num);
+
         $query
             ->addSelect(DB::raw('`' . $rand_tbl_alias . '`.`value` AS ' . $as_alias))
 
@@ -506,7 +547,13 @@ class DicVal extends BaseModel {
 
         $tbl_dicval = (new DicVal())->getTable();
         $tbl_dicvalrel = (new DicValRel())->getTable();
-        $rand_tbl_alias = md5(time() . rand(999999, 9999999));
+        #$rand_tbl_alias = md5(time() . rand(999999, 9999999));
+
+        ## For cache
+        $num = (int)Config::get('temp.rand_tbl_alias');
+        $rand_tbl_alias = 'rand_tbl_alias_' . (++$num);
+        Config::set('temp.rand_tbl_alias', $num);
+
         $query
             ->join($tbl_dicvalrel . ' AS ' . $rand_tbl_alias, function ($join) use ($rand_tbl_alias, $tbl_dicval, $tbl_dicvalrel, $field1, $field2, $value, $condition) {
 
@@ -595,10 +642,11 @@ class DicVal extends BaseModel {
             if (count($this->alltextfields)) {
                 $temp = [];
                 foreach ($this->alltextfields as $field) {
-                    if (!isset($temp[$field->language])) {
-                        $temp[$field->language] = [];
+                    $lang = $field->language ? $field->language : Config::get('app.locale');
+                    if (!isset($temp[$lang])) {
+                        $temp[$lang] = [];
                     }
-                    $temp[$field->language][$field->key] = $field->value;
+                    $temp[$lang][$field->key] = $field->value;
                 }
                 unset($this->alltextfields);
                 $this->alltextfields = $temp;

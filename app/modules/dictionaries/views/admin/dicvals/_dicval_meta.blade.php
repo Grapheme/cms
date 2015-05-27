@@ -44,7 +44,7 @@ if (isset($element->metas) && is_object($element->metas) && $element->metas->cou
         $field_meta_value = isset($element_fields_all[$field_name]) ? $element_fields_all[$field_name] : NULL;
         #Helper::ta($field_meta_value);
 
-        $form_field = Helper::formField('fields_i18n[' . $locale_sign . '][' . $field_name . ']', $field, $field_meta_value, $element);
+        $form_field = Helper::formField('fields_i18n[' . $locale_sign . '][' . $field_name . ']', $field, $field_meta_value, $element, $field_name);
         #var_dump($form_field);
 
         if (!isset($form_field) || !$form_field)

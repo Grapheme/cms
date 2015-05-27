@@ -497,7 +497,7 @@ HTML;
     ## Uses in Dictionaries module (DicVal additional fields)
     ## $element - current DicVal model
     ##
-    public static function formField($name, $array, $value = false, $element = false) {
+    public static function formField($name, $array, $value = false, $element = false, $field_name = false) {
 
         if (!@$array || !is_array($array) || !@$name) {
             return false;
@@ -603,8 +603,11 @@ HTML;
 
                 #Helper::d($array);
                 #Helper::ta($element);
+                
+                $v = $value;
+                #$v = @$element->{$field_name};
                 return '<label class="checkbox">'
-                . Form::checkbox($name, 1, $value, $others_array)
+                . Form::checkbox($name, 1, $v, $others_array)
                 . '<i></i>'
                 . '<span>' . $array['title'] . '</span>'
                 . '</label>';

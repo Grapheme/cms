@@ -128,7 +128,7 @@
                                     <label class="note first_note">{{ @$field['first_note'] }}</label>
                                 @endif
                                 <div class="input {{ @$field['type'] }} {{ @$field['label_class'] }}">
-                                    {{ Helper::formField('fields[' . @$field_name . ']', @$field, $value, $element) }}
+                                    {{ Helper::formField('fields[' . @$field_name . ']', @$field, $value, $element, $field_name) }}
                                 </div>
                                 @if (@$field['second_note'])
                                     <label class="note second_note">{{ @$field['second_note'] }}</label>
