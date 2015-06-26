@@ -28,11 +28,13 @@ class ModulesTableSeeder extends Seeder{
 			'order'=> 3
 		));
 
+        /*
 		Module::create(array(
 			'name' => 'catalog',
 			'on' => 0,
 			'order'=> 4
 		));
+        */
 
 		Module::create(array(
 			'name' => 'uploads',

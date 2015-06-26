@@ -43,18 +43,18 @@
 
                             @if ($element->mime1 == 'image')
                             <div style="background:url({{ $element->filesize < 100000 ? $element->path : '' }}) no-repeat #aaa 50% 50% / cover; position:absolute; top:0; right:0; height:100%; width:100px;">
-                                <a href="{{ URL::to($element->path) }}" target="_blank" style="display:block; width:100%; height:100%; color:#fff; text-align:center; margin:5px auto;">@if($element->filesize > 100000) <i class="fa fa-image fa-4x"></i> @endif</a>
+                                <a href="{{ $element->public_path() }}" target="_blank" style="display:block; width:100%; height:100%; color:#fff; text-align:center; margin:5px auto;">@if($element->filesize > 100000) <i class="fa fa-image fa-4x"></i> @endif</a>
                             </div>
                             @endif
 
 						</td>
 						<td class="text-center" style="vertical-align:middle; white-space:nowrap;">
 
-                            <span class="btn btn-warning copy-button" title="Скопировать путь до файла" data-clipboard-text="{{ $element->path  }}">
+                            <span class="btn btn-warning copy-button" title="Скопировать путь до файла" data-clipboard-text="{{ $element->public_path() }}">
                                 <i class="fa fa-copy"></i>
                             </span>
 
-                            <a href="{{ URL::to($element->path) }}" target="_blank" download="{{ $element->original_name }}" class="btn btn-success" title="Скачать">
+                            <a href="{{ $element->public_path() }}" target="_blank" download="{{ $element->original_name }}" class="btn btn-success" title="Скачать">
                                 <i class="fa fa-download"></i>
                             </a>
 

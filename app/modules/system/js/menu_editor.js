@@ -144,6 +144,8 @@ var menu_editor = {
         main_block = str_replace('%use_active_regexp%', params.use_active_regexp == '1' ? 'checked' : '', main_block);
         main_block = str_replace('%active_regexp%', typeof params.active_regexp != 'undefined' ? params.active_regexp : '', main_block);
 
+        main_block = str_replace('%use_active_hierarchy%', params.use_active_hierarchy == '1' ? 'checked' : '', main_block);
+
         main_block = str_replace('%use_display_logic%', params.use_display_logic == '1' ? 'checked' : '', main_block);
         main_block = str_replace('%display_logic%', typeof params.display_logic != 'undefined' ? params.display_logic : '', main_block);
 

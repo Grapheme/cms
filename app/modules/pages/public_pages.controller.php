@@ -271,6 +271,15 @@ class PublicPagesController extends BaseController {
         ## Экстрактим страницу
         $page->extract(true);
 
+        ## Настройки page_meta
+        $page_meta_settings =
+            isset($page->metas) && is_object($page->metas[Config::get('app.locale')])
+                ? (array)json_decode($page->metas[Config::get('app.locale')]->settings, true)
+                : []
+        ;
+
+        $page->page_meta_settings = $page_meta_settings;
+
         #Helper::tad($page);
         #Helper::dd($page->blocks['pervyy_blok']->meta->content);
 
@@ -291,7 +300,7 @@ class PublicPagesController extends BaseController {
 
         #Helper::tad($page);
 
-        return View::make($template, compact('page', 'lang'))->render();
+        return View::make($template, compact('page', 'lang', 'page_meta_settings'))->render();
 	}
     
 

@@ -25,7 +25,7 @@ class CreatePagesTables extends Migration {
                 $table->boolean('publication')->default(1)->unsigned()->nullable()->index();
     			$table->boolean('start_page')->unsigned()->nullable()->index();
                 $table->integer('order')->unsigned()->nullable()->index();
-                $table->text('settings');
+                $table->longText('settings')->default('');
 
                 $table->timestamps();
      		});
@@ -41,6 +41,7 @@ class CreatePagesTables extends Migration {
                 $table->string('language', 16)->nullable()->index();
 
                 $table->string('template', 128)->nullable();
+                $table->longText('settings')->default('');
 
     			$table->timestamps();
      		});
@@ -59,7 +60,7 @@ class CreatePagesTables extends Migration {
                 $table->string('desc', 128)->nullable();
                 $table->string('template', 128)->nullable();
                 $table->integer('order')->unsigned()->nullable()->index();
-                $table->text('settings');
+                $table->longText('settings')->default('');
 
     			$table->timestamps();
     		});
@@ -74,7 +75,7 @@ class CreatePagesTables extends Migration {
                 $table->integer('block_id')->unsigned()->nullable()->index();
 
                 $table->string('name', 128)->nullable();
-    			$table->text('content')->nullable();
+    			$table->longText('content')->nullable();
                 $table->string('language', 16)->nullable()->index();
                 $table->string('template', 128)->nullable();
 

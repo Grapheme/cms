@@ -236,3 +236,31 @@ function DicVal_values_validation(form) {
     }
     $(form).ajaxSubmit(options);
 }
+
+var clear_dic_confirm = false;
+$('form.clear_dic').submit(function () {
+
+    if (clear_dic_confirm)
+        return true;
+
+    var $form = $(this);
+    var tecs = typeof total_elements_current_selection != 'undefined' ? total_elements_current_selection : 0;
+
+    $.SmartMessageBox({
+        title   : "Внимание!",
+        content : "Все записи (" + tecs + ") будут удалены! Для продолжения введите в поле ниже текст \"delete\" (без кавычек):",
+        buttons : "[Отмена][Удалить все записи (" + tecs + ")]",
+        input   : "text",
+        placeholder : ""
+    }, function(ButtonPress, Value) {
+
+        //alert(ButtonPress + " " + Value);
+        if (ButtonPress === 'Удалить все записи (' + tecs + ')' && Value === 'delete') {
+            clear_dic_confirm = true;
+            $($form).submit();
+        }
+    });
+
+    //e.preventDefault();
+    return false;
+});

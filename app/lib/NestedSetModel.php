@@ -89,6 +89,89 @@ class NestedSetModel {
     }
 
 
+    public function get_children_ids_by_id_from_id_left_right($id_left_right, $id) {
+
+        if (!isset($id_left_right) || !$id_left_right || !is_array($id_left_right) || !count($id_left_right))
+            return false;
+
+        $this->id_left_right = $id_left_right;
+
+        $this->parent_id = 0;
+
+        $dbg = 0;
+
+        if ($dbg) {
+            Helper::d($id_left_right);
+            echo "<hr/>";
+        }
+
+        /**
+         * Сначала проставим parent_id
+         */
+        $this->set_parent_id($this->id_left_right);
+
+        if ($dbg) {
+            Helper::d($this->id_left_right);
+            echo "<hr/>";
+        }
+
+        /**
+         * Сформируем древовидную структуру
+         */
+        $tree = $this->get_hierarchy($this->id_left_right);
+
+        #Helper::tad($tree);
+
+        if ($dbg) {
+            Helper::dd($tree);
+            echo "<hr/>";
+        }
+
+        $ids = $this->get_children_ids_by_id($tree, $id);
+
+        /**
+         * Вернем дерево
+         */
+        return $ids;
+    }
+
+
+    public function get_children_ids_by_id($tree, $id) {
+
+        #Helper::ta($tree);
+
+        $ids = [];
+        #$temp = [];
+        foreach ($tree as $element) {
+
+            if (!isset($element['id']) || $element['id'] != $id)
+                continue;
+
+            if (isset($element['children']) && is_array($element['children']) && count($element['children']))
+                $ids = $this->get_ids_by_id_from_children($element['children'], $id);
+        }
+        #Helper::ta($temp);
+        #$ids = array_merge($ids, $temp);
+        return $ids;
+    }
+
+
+    public function get_ids_by_id_from_children($tree, $id) {
+
+        #Helper::ta($tree);
+
+        $ids = [];
+        foreach ($tree as $element) {
+            $ids[] = $element['id'];
+            if (isset($element['children']) && is_array($element['children']) && count($element['children'])) {
+
+                $temp = $this->get_ids_by_id_from_children($element['children'], $id);
+                $ids = array_merge($ids, $temp);
+            }
+        }
+        return $ids;
+    }
+
     /**
      * Рекурсивно устанавливает всем элементам parent_id
      *

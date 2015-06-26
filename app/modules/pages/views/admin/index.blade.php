@@ -53,7 +53,12 @@
 				@endforeach
 				</tbody>
 			</table>
-		</div>
+
+            @if (method_exists($pages, 'links'))
+                {{ $pages->appends(Input::all())->links() }}
+            @endif
+
+        </div>
 	</div>
 	@else
 	<div class="row">

@@ -144,7 +144,11 @@
                                         </p>
                                     @else
                                         <label class="select">
-                                            {{ Form::select('page_id', $pages->lists('name', 'id')) }}
+                                            <?php
+                                                $pages_for_select = $pages->lists('name', 'id');
+                                                natsort($pages_for_select);
+                                            ?>
+                                            {{ Form::select('page_id', $pages_for_select) }}
                                         </label>
 
                                         <label class="margin-top-10">
@@ -406,6 +410,12 @@
                 <a href="{{ URL::route('page.edit', '++page_id++') }}" target="_blank">перейти</a>
             </label>
 
+            <label class="checkbox">
+                <input type="checkbox" name="items[%N%][use_active_hierarchy]" value="1" class="use_active_hierarchy click_hidded_option" %use_active_hierarchy% />
+                <i></i>
+                Активность согласно иерархии страниц
+            </label>
+
             {{ Form::hidden('items[%N%][type]', 'page') }}
             {{ Form::hidden('items[%N%][page_id]', '%page_id%') }}
             {{ Form::hidden('null', '<без названия>', array('class' => 'default_text_for_title')) }}
@@ -633,4 +643,3 @@
 	</script>
 
 @stop
-

@@ -1252,4 +1252,13 @@ class DicVal extends BaseModel {
         }
     }
 
+    public function field($field) {
+        $locale = Config::get('app.locale');
+        if (is_object($this) && isset($this->allfields) && isset($this->allfields[$locale][$field]) && $this->allfields[$locale][$field] != '') {
+            return $this->allfields[$locale][$field];
+        } else {
+            return NULL;
+        }
+    }
+
 }

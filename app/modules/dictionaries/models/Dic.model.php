@@ -287,6 +287,10 @@ class Dic extends BaseModel {
      */
     public static function valuesBySlug($slug, Closure $conditions = NULL, $with = 'all', $extract = true, $unset = true, $extract_ids = false, $paginate = false) {
 
+        #Helper::tad(serialize($conditions));
+        #$cache_key = md5($conditions);
+        #Helper::tad($cache_key);
+
         $return = new Collection();
 
         #$dic = Dic::where('slug', $slug)->first();
@@ -322,12 +326,12 @@ class Dic extends BaseModel {
 
         $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
 
-        ##
-        ## Cache relations
-        ##
         if (count($with)) {
 
-            if (NULL != $db_remember_timeout) {
+            ##
+            ## Cache relations
+            ##
+            if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
 
                 $temp = [];
                 foreach ($with as $relation) {
@@ -344,8 +348,10 @@ class Dic extends BaseModel {
         ##
         ## Cache query
         ##
-        if (NULL != $db_remember_timeout)
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
             $values->remember($db_remember_timeout);
+        }
 
         $values = $paginate ? $values->paginate((int)$paginate) : $values->get();
 
@@ -386,8 +392,11 @@ class Dic extends BaseModel {
         ##
         ## Cache query
         ##
-        if (NULL != ($db_remember_timeout = Config::get('app.settings.main.db_remember_timeout')) && $db_remember_timeout > 0)
+        $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
             $values->remember($db_remember_timeout);
+        }
 
         $count = $values->count();
         return $count;
@@ -426,8 +435,34 @@ class Dic extends BaseModel {
         else
             $with = (array)$with;
 
-        if (count($with))
+        $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
+
+        if (count($with)) {
+
+            ##
+            ## Cache relations
+            ##
+            if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+                $temp = [];
+                foreach ($with as $relation) {
+                    $temp[$relation] = function($query) use ($db_remember_timeout) {
+                        $query->remember($db_remember_timeout);
+                    };
+                }
+                $with = $temp;
+            }
+
             $value = $value->with($with);
+        }
+
+        ##
+        ## Cache query
+        ##
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+            $value->remember($db_remember_timeout);
+        }
 
         $value = $value->first();
 
@@ -469,8 +504,34 @@ class Dic extends BaseModel {
         else
             $with = (array)$with;
 
-        if (count($with))
+        $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
+
+        if (count($with)) {
+
+            ##
+            ## Cache relations
+            ##
+            if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+                $temp = [];
+                foreach ($with as $relation) {
+                    $temp[$relation] = function($query) use ($db_remember_timeout) {
+                        $query->remember($db_remember_timeout);
+                    };
+                }
+                $with = $temp;
+            }
+
             $values = $values->with($with);
+        }
+
+        ##
+        ## Cache query
+        ##
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+            $values->remember($db_remember_timeout);
+        }
 
         $values = $values->get();
 
@@ -523,8 +584,34 @@ class Dic extends BaseModel {
         else
             $with = (array)$with;
 
-        if (count($with))
+        $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
+
+        if (count($with)) {
+
+            ##
+            ## Cache relations
+            ##
+            if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+                $temp = [];
+                foreach ($with as $relation) {
+                    $temp[$relation] = function($query) use ($db_remember_timeout) {
+                        $query->remember($db_remember_timeout);
+                    };
+                }
+                $with = $temp;
+            }
+
             $value = $value->with($with);
+        }
+
+        ##
+        ## Cache query
+        ##
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+            $value->remember($db_remember_timeout);
+        }
 
         $value = $value->first();
 
@@ -567,8 +654,34 @@ class Dic extends BaseModel {
         else
             $with = (array)$with;
 
-        if (count($with))
+        $db_remember_timeout = Config::get('app.settings.main.db_remember_timeout');
+
+        if (count($with)) {
+
+            ##
+            ## Cache relations
+            ##
+            if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+                $temp = [];
+                foreach ($with as $relation) {
+                    $temp[$relation] = function($query) use ($db_remember_timeout) {
+                        $query->remember($db_remember_timeout);
+                    };
+                }
+                $with = $temp;
+            }
+
             $values = $values->with($with);
+        }
+
+        ##
+        ## Cache query
+        ##
+        if (NULL != $db_remember_timeout && is_numeric($db_remember_timeout) && $db_remember_timeout > 0) {
+
+            $values->remember($db_remember_timeout);
+        }
 
         $values = $values->get();
 

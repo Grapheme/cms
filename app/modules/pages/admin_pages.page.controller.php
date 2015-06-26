@@ -16,6 +16,10 @@ class AdminPagesPageController extends BaseController {
             $entity = $class::$entity;
 
             Route::get($class::$group . '/{id}/restore', array('as' => $entity . '.restore', 'uses' => $class . "@restore"));
+
+            Route::get($class::$group . '/hierarchy', array('as' => $entity . '.hierarchy', 'uses' => $class . "@getHierarchy"));
+            Route::post($class::$group . '/nestedsetmodel', array('as' => $class::$group . '.nestedsetmodel', 'uses' => $class . "@postAjaxNestedSetModel"));
+
             Route::resource($class::$group /* . "/" . $entity */, $class, array(
                 'except' => array('show'), 'names' => array(
                     'index' => $entity . '.index', 'create' => $entity . '.create', 'store' => $entity . '.store', 'edit' => $entity . '.edit', 'update' => $entity . '.update', 'destroy' => $entity . '.destroy',
@@ -69,13 +73,43 @@ class AdminPagesPageController extends BaseController {
 
         Allow::permission($this->module['group'], 'view');
 
-        $pages = $this->essence->where('version_of', NULL)->orderBy('start_page', 'DESC')->orderBy('name', 'ASC')->with('blocks')->get();
+        $pages = $this->essence
+            ->where('version_of', NULL)
+            ->orderBy('start_page', 'DESC')
+            ->with('blocks')
+        ;
+
+        $order_bys = ['date' => 'created_at', 'name' => 'name', 'url' => 'slug'];
+        $order_types = ['asc', 'desc'];
+
+        $order_by = Input::get('order_by');
+        $order_type = $order_type_tmp = Input::get('order_type');
+
+        $order_by_tmp = @$order_bys[$order_by];
+
+        if (!$order_by_tmp) {
+            $order_by_tmp = 'name';
+        }
+
+        if (!$order_type_tmp || !in_array($order_type_tmp, $order_types)) {
+            $order_type_tmp = 'asc';
+        }
+
+        setcookie('admin__pages__order_by', $order_by, time()+60*60*24*30);
+        setcookie('admin__pages__order_type', $order_type, time()+60*60*24*30);
+
+        $pages = $pages->orderBy($order_by_tmp, $order_type_tmp);
+
+        $pages = $pages->paginate(30);
+        #$pages = $pages->get();
 
         #Helper::tad($pages);
 
         $locales = $this->locales;
 
-        return View::make($this->module['tpl'] . 'index', compact('pages', 'locales'));
+        $list_mode = 1;
+
+        return View::make($this->module['tpl'] . 'index', compact('pages', 'locales', 'order_by', 'order_type', 'list_mode'));
     }
 
 
@@ -232,6 +266,10 @@ class AdminPagesPageController extends BaseController {
         $blocks_new = Helper::withdraw($input, 'blocks_new');
         #$seo = Helper::withdraw($input, 'seo');
 
+        $fields_all = @$input['fields'];
+        $element_fields = Config::get('pages.fields');
+        $element_fields = is_callable($element_fields) ? $element_fields() : [];
+
         $input['template'] = @$input['template'] ? $input['template'] : NULL;
         $input['start_page'] = @$input['start_page'] ? 1 : NULL;
 
@@ -270,8 +308,16 @@ class AdminPagesPageController extends BaseController {
                 ## PAGES_BLOCKS - update
                 if (count($blocks)) {
                     foreach ($blocks as $block_id => $block_data) {
-                        $block_data['slug'] = @$block_data['slug'] ? $block_data['slug'] : $block_data['name'];
-                        $block_data['slug'] = Helper::translit($block_data['slug']);
+
+                        if (Allow::action('pages', 'advanced', true, false)) {
+
+                            if (isset($block_data['slug'])) {
+
+                                $block_data['slug'] = trim($block_data['slug']) != '' ? $block_data['slug'] : $block_data['name'];
+                                $block_data['slug'] = Helper::translit($block_data['slug']);
+                            }
+                        }
+
                         #$block_data['settings'] = json_encode($block_data['settings']);
                         $block = $this->pages_blocks->find($block_id);
                         if (is_object($block)) {
@@ -299,8 +345,29 @@ class AdminPagesPageController extends BaseController {
                 foreach ($locales as $locale_sign => $locale_settings) {
 
                     $seo = Helper::withdraw($locale_settings, 'seo');
-                    $locale_settings['template'] = @$locale_settings['template'] ? $locale_settings['template'] : NULL;
+
                     $page_meta = $this->pages_meta->where('page_id', $element->id)->where('language', $locale_sign)->first();
+
+                    ## Сохраняем доп. поля
+                    ## Сыровато, требует доработки - нужно сделать по аналогии со словарями
+                    #Helper::tad($fields_all);
+                    $fields = (array)$fields_all[$locale_sign];
+                    if (count($fields)) {
+                        foreach ($fields as $field_name => $field) {
+
+                            if (is_callable($handler = @$element_fields[$field_name]['handler'])) {
+                                #Helper::d($handler);
+                                $field = $handler($field, $element);
+                                $fields[$field_name] = $field;
+                            }
+                        }
+                    }
+                    $settings = is_object($page_meta) ? @json_decode($page_meta->settings, true) : [];
+                    $settings['fields'] = $fields;
+                    $locale_settings['settings'] = json_encode($settings);
+
+                    $locale_settings['template'] = @$locale_settings['template'] ? $locale_settings['template'] : NULL;
+
                     if (is_object($page_meta)) {
                         $page_meta->update($locale_settings);
                     } else {
@@ -328,9 +395,18 @@ class AdminPagesPageController extends BaseController {
             ## PAGES_BLOCKS - create
             if (count($blocks_new)) {
                 foreach ($blocks_new as $null => $block_data) {
+
                     $block_data['page_id'] = $id;
-                    $block_data['slug'] = @$block_data['slug'] ? $block_data['slug'] : $block_data['name'];
-                    $block_data['slug'] = Helper::translit($block_data['slug']);
+
+                    if (Allow::action('pages', 'advanced', true, false)) {
+
+                        if (isset($block_data['slug'])) {
+
+                            $block_data['slug'] = trim($block_data['slug']) != '' ? $block_data['slug'] : $block_data['name'];
+                            $block_data['slug'] = Helper::translit($block_data['slug']);
+                        }
+                    }
+
                     $this->pages_blocks->create($block_data);
                 }
             }
@@ -529,11 +605,20 @@ class AdminPagesPageController extends BaseController {
 
         $input = Input::all();
         $locales = Helper::withdraw($input, 'locales');
-        $input['template'] = @$input['template'] ? $input['template'] : NULL;
-        $input['slug'] = @$input['slug'] ? $input['slug'] : $input['name'];
-        $input['slug'] = Helper::translit($input['slug']);
 
         if (Allow::action('pages', 'advanced', true, false)) {
+
+            if (isset($input['template'])) {
+
+                $input['template'] = trim($input['template']) != '' ? $input['template'] : NULL;
+            }
+
+            if (isset($input['slug'])) {
+
+                $input['slug'] = trim($input['slug']) != '' ? $input['slug'] : $input['name'];
+                $input['slug'] = Helper::translit($input['slug']);
+            }
+
             $input['settings']['system_block'] = isset($input['settings']['system_block']) ? 1 : 0;
         }
 
@@ -592,6 +677,127 @@ class AdminPagesPageController extends BaseController {
 
         return Response::json($json_request, 200);
         #return '';
+    }
+
+
+
+    public function getHierarchy() {
+
+        $pages = $this->essence
+            ->where('version_of', NULL)
+            ->orderBy('start_page', 'DESC')
+            ->get()
+        ;
+
+        #Helper::tad($pages);
+
+        if (count($pages)) {
+
+            $temp = new Collection();
+            foreach ($pages as $page) {
+                $temp[$page->id] = $page;
+            }
+            $pages = $temp;
+        }
+
+        $pages2 = clone $pages;
+
+        /*
+        $temp = [];
+        $lft = 0;
+        foreach ($pages as $page) {
+            ++$lft;
+            $rgt = $lft+1;
+            $temp[$page->id] = [
+                'id' => $page->id,
+                'lft' => $lft,
+                'rgt' => $rgt,
+            ];
+            ++$lft;
+        }
+        Helper::tad(json_encode($temp));
+        #*/
+
+        $current_hierarchy = Storage::where('module', 'pages')->where('name', 'hierarchy')->pluck('value');
+        #Helper::tad($current_hierarchy);
+
+        /*
+        $temp = [
+            1 => [
+                'lft' => 1,
+                'rgt' => 2,
+            ],
+        ];
+        Helper::tad(json_encode($temp));
+        */
+
+        $elements = json_decode($current_hierarchy, false);
+        #Helper::tad($elements);
+        #dd($elements);
+
+        $id_left_right = [];
+        if (count($elements)) {
+
+            foreach($elements as $element_id => $element) {
+                #dd($element);
+                $id_left_right[$element_id] = array();
+                $id_left_right[$element_id]['left'] = $element->left;
+                $id_left_right[$element_id]['right'] = $element->right;
+            }
+        }
+        #Helper::tad($id_left_right);
+
+        $hierarchy = (new NestedSetModel())->get_hierarchy_from_id_left_right($id_left_right);
+        #Helper::tad($hierarchy);
+
+        $total_elements = count($pages);
+
+        $sortable = 9;
+
+        return View::make($this->module['tpl'] . 'hierarchy', compact('pages', 'pages2', 'hierarchy', 'total_elements', 'sortable'));
+    }
+
+
+    public function postAjaxNestedSetModel() {
+
+        #$input = Input::all();
+
+        $data = Input::get('data');
+        $data = json_decode($data, 1);
+        #Helper::dd($data);
+        $dic_id = NULL;
+        $dic = NULL;
+
+        if (count($data)) {
+
+            $id_left_right = (new NestedSetModel())->get_id_left_right($data);
+
+            #Helper::tad($id_left_right);
+
+            Storage::where('module', 'pages')->where('name', 'hierarchy')->update(['value' => json_encode($id_left_right)]);
+
+            #if (count($id_left_right)) {
+
+                /*
+                $dicvals = DicVal::whereIn('id', array_keys($id_left_right))->get();
+
+                if (count($dicvals)) {
+                    foreach ($dicvals as $dicval) {
+                        if (!$dic_id)
+                            $dic_id = $dicval->dic_id;
+                        $dicval->lft = $id_left_right[$dicval->id]['left'];
+                        $dicval->rgt = $id_left_right[$dicval->id]['right'];
+                        $dicval->save();
+                    }
+                    if ($dic_id) {
+                        $dic = Dic::by_id($dic_id);
+                    }
+                }
+                */
+            #}
+        }
+
+        return Response::make('1');
     }
 
 

@@ -43,6 +43,12 @@ if (Allow::action($module['group'], 'edit') && (!$dic->entity || Allow::superuse
             'link' => action('dic.edit', array('dic_id' => $dic->id)), 'title' => 'Изменить', 'class' => 'btn btn-success'
     );
 }
+if (isset($total_elements_current_selection) && is_numeric($total_elements_current_selection) && $total_elements_current_selection > 0 && Allow::superuser()) {
+    $menus[] = array(
+        #'link' => URL::route('dic.clear', array('dic_id' => $dic->id)), 'title' => 'Очистить', 'class' => 'btn btn-danger'
+        'raw' => Form::open(['url' => URL::route('dic.clear', array('dic_id' => $dic->id)), 'method' => 'POST', 'class' => 'clear_dic', 'style' => 'display:inline-block']) . Form::submit('Очистить', ['class' => 'btn btn-danger margin-bottom-5']) . Form::close(),
+    );
+}
 
 if (isset($dic_settings['menus']))
     $dic_menu = $dic_settings['menus'];
@@ -62,7 +68,7 @@ if (isset($dic_menu) && is_callable($dic_menu)) {
 {{ Form::close() }}
 
 <h1 class="top-module-menu">
-    <a href="{{ URL::route(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) }}">{{ $dic->name }}</a>
+    <a href="{{ URL::route(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) }}" title="{{ isset($total_elements_current_selection) && $total_elements_current_selection ? 'Всего записей: ' . $total_elements_current_selection : '' }}">{{ $dic->name }}</a>
     {{ $dic->entity && is_numeric($dic_id) ? ' <i class="fa fa-angle-double-right"></i> <a href="' . URL::route('entity.index', $dic->slug) . '" title="Вынесено в отдельную сущность">' . $dic->slug . '</a>' : '' }}
     @if (isset($element) && is_object($element) && $element->name)
         &nbsp;&mdash;&nbsp;

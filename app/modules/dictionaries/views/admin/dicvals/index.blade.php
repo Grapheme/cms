@@ -134,6 +134,10 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
 
     <div class="clear"></div>
 
+    <script>
+        var total_elements_current_selection = {{ (int)@$total_elements_current_selection }};
+    </script>
+
 @stop
 
 

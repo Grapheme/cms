@@ -87,7 +87,7 @@ class AdminGroupsController extends BaseController {
 
 			$json_request['responseText'] = "Группа &laquo;" . $input['desc'] . "&raquo; создана";
 			#$json_request['responseText'] = print_r(Input::get('actions'), 1);
-			$json_request['redirect'] = link::auth('groups');
+			$json_request['redirect'] = link::auth('system/groups');
 			$json_request['status'] = TRUE;
 
 		} else {

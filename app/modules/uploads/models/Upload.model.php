@@ -28,6 +28,12 @@ class Upload extends BaseModel {
         return str_replace('//', '/', Config::get('site.uploads_dir', public_path('uploads/files')) . "/" . basename($this->path));
     }
 
+
+    public function public_path() {
+
+        return URL::to(Config::get('site.uploads_public_dir', public_path('uploads/files')) . '/' . basename($this->path));
+    }
+
     /*
     public function metas() {
         return $this->hasMany('NewsMeta', 'news_id', 'id');

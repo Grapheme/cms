@@ -158,7 +158,7 @@ class AdminDicvalsController extends BaseController {
          */
         $total_elements_current_selection = clone $elements;
         $total_elements_current_selection = (int)$total_elements_current_selection->count();
-        #Helper::ta($total_elements_current_selection);
+        #Helper::tad($total_elements_current_selection);
 
         switch ($dic->sort_by) {
             case '':
@@ -231,7 +231,21 @@ class AdminDicvalsController extends BaseController {
         #Helper::dd($dic_settings);
 
         ## Sortable settings
-        $sortable = ($dic->sortable && $dic->pagination == 0 && $dic->sort_by == NULL) ? true : false;
+        $sortable = ($dic->sortable && $dic->pagination == 0 && $dic->sort_by == null) ? true : false;
+
+        ## Disable sortable without needable filter options
+        if ($sortable && isset($dic_settings['disable_ordering_without_filter']) && $dic_settings['disable_ordering_without_filter']) {
+            $dic_settings['disable_ordering_without_filter'] = (array)$dic_settings['disable_ordering_without_filter'];
+            #Helper::ta($dic_settings['disable_ordering_without_filter']);
+            if (count($dic_settings['disable_ordering_without_filter'])) {
+                foreach ($dic_settings['disable_ordering_without_filter'] as $condition) {
+                    if (!Input::get('filter.fields.' . $condition)) {
+                        $sortable = false;
+                        break;
+                    }
+                }
+            }
+        }
 
         if (isset($dic_settings['sortable']) && is_callable($dic_settings['sortable']))
             $sortable = $dic_settings['sortable']($dic, $elements);
@@ -247,12 +261,14 @@ class AdminDicvalsController extends BaseController {
 
         $elements_pagination = clone $elements;
 
-        DicVal::extracts($elements, true);
-        $elements = Dic::modifyKeys($elements, 'id');
+        DicVal::extracts($elements, null, true, true);
+        #$elements = Dic::modifyKeys($elements, 'id');
 
-        if (Config::get('debug') == 1)
+        if (Config::get('debug') == 1 || Input::get('debug') == 1) {
+
+            Helper::smartQueries(1);
             Helper::tad($elements);
-
+        }
 
         $actions_column = false;
         if (
@@ -266,6 +282,7 @@ class AdminDicvalsController extends BaseController {
 
         $total_elements = DicVal::where('dic_id', $dic->id)->where('version_of', '=', NULL)->count();
 
+        $this->callHook('before_index_view_create_edit', $dic, $elements);
         $this->callHook('before_index_view', $dic, $elements);
 
 
@@ -300,6 +317,7 @@ class AdminDicvalsController extends BaseController {
 
         $this->checkDicUrl($dic, $dic_id);
         $this->callHook('before_all', $dic);
+        $this->callHook('before_index_view_create_edit', $dic);
         $this->callHook('before_create_edit', $dic);
         $this->callHook('before_create', $dic);
 
@@ -337,6 +355,7 @@ class AdminDicvalsController extends BaseController {
         $element = $element->first();
 
         $this->callHook('before_all', $dic);
+        $this->callHook('before_index_view_create_edit', $dic, null, $element);
         $this->callHook('before_create_edit', $dic, $element);
         $this->callHook('before_create', $dic, $element);
 
@@ -383,10 +402,6 @@ class AdminDicvalsController extends BaseController {
             App::abort(404);
 
         $this->dicval_permission($dic, (@$id ? 'dicval_edit' : 'dicval_create'));
-
-        ## Dic settings
-        $dic_settings = Config::get('dic/' . $dic->slug);
-        #Helper::dd($dic_settings);
 
         $element = new DicVal;
         if ($id)
@@ -699,16 +714,17 @@ class AdminDicvalsController extends BaseController {
                 $redirect_url = NULL;
                 if (@$dic_settings['new_element_redirect'] == 'list') {
 
-                    $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
+                    #$redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
+                    $redirect_url = Input::get('redirect');
 
                 } elseif (@is_array($dic_settings['new_element_redirect']) && isset($dic_settings['new_element_redirect']['route_name'])) {
 
-                    $redirect_url = URL::route($dic_settings['new_element_redirect']['route_name'], (array)@$dic_settings['new_element_redirect']['route_params']) . (@$dic_settings['new_element_redirect']['add_query_string'] && Request::getQueryString() ? '?' . Request::getQueryString() : '');
+                    $redirect_url = URL::route($dic_settings['new_element_redirect']['route_name'], (array)@$dic_settings['new_element_redirect']['route_params']) . (@$dic_settings['new_element_redirect']['add_query_string'] && Input::get('query_string') ? Input::get('query_string') : '');
 
                 #} elseif (@$dic_settings['new_element_redirect'] == 'new' || !@$dic_settings['new_element_redirect']) {
                 } else {
 
-                    $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, 'id' => $element->id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '');
+                    $redirect_url = URL::route(is_numeric($dic_id) ? 'dicval.edit' : 'entity.edit', array('dic_id' => $dic_id, 'id' => $element->id)) . (Input::get('query_string') ? Input::get('query_string') : '');
 
                 }
             }
@@ -724,16 +740,19 @@ class AdminDicvalsController extends BaseController {
 			$json_request['responseText'] = 'Неверно заполнены поля';
 			$json_request['responseErrorText'] = $validator->messages()->all();
 		}
-
 		return Response::json($json_request, 200);
 	}
 
     /************************************************************************************/
 
-	#public function deleteDestroy($entity, $id){
-	public function destroy($dic_id, $id){
+    public function full_destroy($dic_id, $id) {
+        return $this->destroy($dic_id, $id, false);
+    }
 
-		if(!Request::ajax())
+	#public function deleteDestroy($entity, $id){
+	public function destroy($dic_id, $id, $check_ajax = true){
+
+		if($check_ajax && !Request::ajax())
             App::abort(404);
 
         $dic = Dictionary::where(is_numeric($dic_id) ? 'id' : 'slug', $dic_id)->first();

@@ -210,9 +210,10 @@ class AdminUploadsController extends BaseController {
 
                         ## Move file
                         $dir = Config::get('site.uploads_dir', public_path('uploads/files'));
-                        $file_name = time() . "_" . rand(1000, 1999) . '.' . $file->getClientOriginalExtension();
+                        $file_name = time() . "_" . rand(1000000, 1999999) . '.' . $file->getClientOriginalExtension();
                         $file->move($dir, $file_name);
-                        $path = preg_replace("~^" . addslashes(public_path()) . "~is", '', $dir . '/' . $file_name);
+                        #$path = preg_replace("~^" . addslashes(public_path()) . "~is", '', $dir . '/' . $file_name);
+                        $path = $dir . '/' . $file_name;
                         #Helper::dd(filesize($dir . '/' . $file_name));
 
                         $input = array(

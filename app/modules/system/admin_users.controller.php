@@ -123,7 +123,7 @@ class AdminUsersController extends BaseController {
 
 			$json_request['responseText'] = "Пользователь добавлен";
 			#$json_request['responseText'] = print_r(Input::get('actions'), 1);
-			$json_request['redirect'] = link::auth($this->module['rest'].'/edit/'.$user->id);
+			$json_request['redirect'] = link::auth('system/' . $this->module['rest'].'/edit/'.$user->id);
 			$json_request['status'] = TRUE;
 
 		} else {

@@ -14,6 +14,7 @@ class TablesSeeder extends Seeder{
 		));
         */
 
+        /*
         Dic::create(array(
             'id' => 1,
             'slug' => 'options',
@@ -41,6 +42,7 @@ class TablesSeeder extends Seeder{
             'sort_order_reverse' => '0',
             'sortable' => '1',
         ));
+        */
 
         /*
         DicVal::inject('room_type', array(

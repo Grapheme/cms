@@ -12,7 +12,7 @@ return array(
                 #'description' => 'Здесь собраны основные настройки сайта',
                 'options' => array(
                     [
-                        'group_title' => 'Первая секция',
+                        'group_title' => 'Настройки отправки почты',
                         'style' => 'margin: 0 0 5px 0',
                     ],
 
@@ -34,6 +34,13 @@ return array(
                     'db_remember_timeout' => array(
                         'title' => 'Кол-во минут, на которое кешировать ВСЕ запросы к БД (не рекомендуется)',
                         'type' => 'text',
+                    ),
+
+                    ['group_title' => 'Прочее'],
+
+                    'tpl_footer_counters' => array(
+                        'title' => 'Код невидимых счетчиков (Я.Метрика, Google Analytics и т.д.)',
+                        'type' => 'textarea',
                     ),
                 ),
             ];

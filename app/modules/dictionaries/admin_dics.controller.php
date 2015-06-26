@@ -22,6 +22,7 @@ class AdminDicsController extends BaseController {
             Route::post('dic/{dic_id}/import3', array('as' => 'dic.import3', 'uses' => $class.'@postImport3'));
 
             Route::get('dic/{dic_id}/sphinx',  array('as' => 'dic.sphinx',   'uses' => $class.'@getSphinx'));
+            Route::post('dic/{dic_id}/clear',  array('as' => 'dic.clear',   'uses' => $class.'@postClear'));
 
             Route::resource('dic', $class,
                 array(
@@ -447,6 +448,7 @@ class AdminDicsController extends BaseController {
         return Redirect::route('dicval.index', $dic_id);
     }
 
+
     public function getSphinx($dic_id) {
 
         if (!Allow::superuser())
@@ -548,6 +550,24 @@ class AdminDicsController extends BaseController {
             ;
     }
 
+
+    public function postClear($dic_id) {
+
+        #Helper::tad($dic_id);
+        #Helper::tad(URL::route('dicval.index', ['dic_id' => $dic_id]));
+
+        $dic = Dic::by_id($dic_id);
+        $dicvals = Dic::valuesBySlug($dic->slug, NULL, []);
+        #Helper::tad($dicvals);
+        $adc = new AdminDicvalsController;
+        if (count($dicvals)) {
+            foreach ($dicvals as $dicval) {
+                $id = $dicval->id;
+                $adc->full_destroy($dic_id, $id);
+            }
+        }
+        return Redirect::route('dicval.index', ['dic_id' => $dic_id]);
+    }
 }
 
 

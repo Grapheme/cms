@@ -40,8 +40,15 @@ class CustomUrlGenerator extends UrlGenerator {
             $defaults = (array)$route->getDefaults();
         }
 
-        if ($name == 'mainpage' && 0) {
+        #if ($name == 'mainpage') {
+        #    var_dump($route);
+        #}
+
+        if ($name == 'page' && 0) {
             var_dump($route);
+            var_dump((array)$route->parameterNames());
+            var_dump($parameters);
+            var_dump($defaults);
             #die;
         }
 

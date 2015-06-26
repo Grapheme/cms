@@ -519,101 +519,117 @@ class MenuConstructor {
 
         #Helper::tad($element);
 
+        $is_active = false;
+
         /**
          * Собственное правило для определения активности пункта меню
          * Проверка текущего URL на соответствие шаблону регулярного выражения
          */
-        if (isset($element) && is_array($element) && @$element['use_active_regexp'] && @$element['active_regexp']) {
+        if (isset($element) && is_array($element)) {
 
-            /**
-             * Сделаем замену в регулярке, если у нас обычная страница
-             */
-            if (isset($element['type']) && $element['type'] == 'page') {
-                $page = isset($this->pages[$element['page_id']]) ? $this->pages[$element['page_id']] : NULL;
-                if ($page && is_object($page) && $page->slug) {
-                    $element['active_regexp'] = strtr($element['active_regexp'], [
-                        '%slug%' => $page->slug,
-                        '%url%' => $page->slug,
-                    ]);
-                }
-                #var_dump($element['active_regexp']);
-            }
+            if (
+                (@$element['use_active_regexp'] && @$element['active_regexp'])
+            ) {
 
-            try{
-                $element['active_regexp'] = $this->replaces($element['active_regexp']);
-            } catch (Exception $e) {
-                echo 'Error: ',  $e->getMessage(), "\n";
-                Helper::tad($element);
-                #die;
-            }
+                #Helper::ta($element);
 
-            /**
-             * Замена конструкций вида %_page_sysname_>url%
-             */
-            preg_match_all('~\%([A-Za-z0-9\-\_]+)\>url\%~is', $element['active_regexp'], $matches);
+                if (@$element['use_active_regexp'] && @$element['active_regexp']) {
 
-            if (isset($matches[1]) && count($matches[1])) {
-
-                #var_dump($matches);
-                #Helper::ta($this->pages_by_sysname);
-                $pages = new Collection();
-                $page_sysnames = [];
-                ## Все найденные конструкции
-                foreach ($matches[1] as $page_sysname) {
-                    if (isset($this->pages_by_sysname[$page_sysname])) {
-                        ## Ищем текущую страницу среди страниц текущего меню
-                        $pages[$page_sysname] = $this->pages_by_sysname[$page_sysname];
-                    } elseif (NULL !== Config::get('pages.preload_pages_limit') && NULL !== ($tmp = Page::by_sysname($page_sysname))) {
-                        ## Ищем текущую страницу в кеше страниц
-                        $pages[$page_sysname] = $tmp;
-                    } else {
-                        ## Если страница уж совсем нигде не нашлась - придется ее подгружать из БД. Делать это будем позже одним запросом.
-                        $page_sysnames[] = $page_sysname;
-                    }
-                }
-                ## Если есть список страниц для их подгрузки из БД - сделаем это!
-                if (count($page_sysnames)) {
-                    $temp = Page::whereIn('sysname', $page_sysnames)->where('version_of', NULL)->get();
-                    if (count($temp)) {
-                        ## Если что-то нашлось - разложим по sysname
-                        $pages_by_sysnames = new Collection();
-                        foreach ($temp as $tmp) {
-                            if (!$tmp->sysname)
-                                continue;
-                            $pages_by_sysnames[$tmp->sysname] = $tmp;
+                    /**
+                     * Сделаем замену в регулярке, если у нас обычная страница
+                     */
+                    if (isset($element['type']) && $element['type'] == 'page') {
+                        $page = isset($this->pages[$element['page_id']]) ? $this->pages[$element['page_id']] : NULL;
+                        if ($page && is_object($page) && $page->slug) {
+                            $element['active_regexp'] = strtr($element['active_regexp'], [
+                                '%slug%' => $page->slug, '%url%' => $page->slug,
+                            ]);
                         }
-                        if (count($pages_by_sysnames)) {
-                            ## Найдем недостающие страницы и добавим их в список
-                            foreach ($page_sysnames as $psn) {
-                                if (isset($pages_by_sysnames[$psn]))
-                                    $pages[$psn] = $pages_by_sysnames[$psn];
+                        #var_dump($element['active_regexp']);
+                    }
+
+                    try {
+                        $element['active_regexp'] = $this->replaces($element['active_regexp']);
+                    } catch (Exception $e) {
+                        echo 'Error: ', $e->getMessage(), "\n";
+                        Helper::tad($element);
+                        #die;
+                    }
+
+                    /**
+                     * Замена конструкций вида %_page_sysname_>url%
+                     */
+                    preg_match_all('~\%([A-Za-z0-9\-\_]+)\>url\%~is', $element['active_regexp'], $matches);
+
+                    if (isset($matches[1]) && count($matches[1])) {
+
+                        #var_dump($matches);
+                        #Helper::ta($this->pages_by_sysname);
+                        $pages = new Collection();
+                        $page_sysnames = [];
+                        ## Все найденные конструкции
+                        foreach ($matches[1] as $page_sysname) {
+                            if (isset($this->pages_by_sysname[$page_sysname])) {
+                                ## Ищем текущую страницу среди страниц текущего меню
+                                $pages[$page_sysname] = $this->pages_by_sysname[$page_sysname];
+                            } elseif (NULL !== Config::get('pages.preload_pages_limit') && NULL !== ($tmp = Page::by_sysname($page_sysname))) {
+                                ## Ищем текущую страницу в кеше страниц
+                                $pages[$page_sysname] = $tmp;
+                            } else {
+                                ## Если страница уж совсем нигде не нашлась - придется ее подгружать из БД. Делать это будем позже одним запросом.
+                                $page_sysnames[] = $page_sysname;
                             }
                         }
-                    }
-                    unset($temp, $tmp);
-                }
-                #Helper::tad($pages_by_sysnames);
-                #Helper::tad($pages);
+                        ## Если есть список страниц для их подгрузки из БД - сделаем это!
+                        if (count($page_sysnames)) {
+                            $temp = Page::whereIn('sysname', $page_sysnames)->where('version_of', NULL)->get();
+                            if (count($temp)) {
+                                ## Если что-то нашлось - разложим по sysname
+                                $pages_by_sysnames = new Collection();
+                                foreach ($temp as $tmp) {
+                                    if (!$tmp->sysname)
+                                        continue;
+                                    $pages_by_sysnames[$tmp->sysname] = $tmp;
+                                }
+                                if (count($pages_by_sysnames)) {
+                                    ## Найдем недостающие страницы и добавим их в список
+                                    foreach ($page_sysnames as $psn) {
+                                        if (isset($pages_by_sysnames[$psn]))
+                                            $pages[$psn] = $pages_by_sysnames[$psn];
+                                    }
+                                }
+                            }
+                            unset($temp, $tmp);
+                        }
+                        #Helper::tad($pages_by_sysnames);
+                        #Helper::tad($pages);
 
-                $replaces = [];
-                ## Еще раз пройдемся по списку найденных паттернов и сгенерируем список для замены
-                foreach ($matches[1] as $page_sysname) {
-                    if (isset($pages[$page_sysname]) && NULL !== ($page = $pages[$page_sysname])) {
-                        $replaces['%' . $page->sysname . '>url%'] = $page->slug;
-                    }
-                }
-                #dd($replaces);
+                        $replaces = [];
+                        ## Еще раз пройдемся по списку найденных паттернов и сгенерируем список для замены
+                        foreach ($matches[1] as $page_sysname) {
+                            if (isset($pages[$page_sysname]) && NULL !== ($page = $pages[$page_sysname])) {
+                                $replaces['%' . $page->sysname . '>url%'] = $page->slug;
+                            }
+                        }
+                        #dd($replaces);
 
-                ## Производим замену паттернов
-                $element['active_regexp'] = strtr($element['active_regexp'], $replaces);
-                ## Если остались ненайденные паттерны - удалим их
-                $element['active_regexp'] = preg_replace('~\%([A-Za-z0-9\-\_]+)\>url\%~is', '', $element['active_regexp']);
+                        ## Производим замену паттернов
+                        $element['active_regexp'] = strtr($element['active_regexp'], $replaces);
+                        ## Если остались ненайденные паттерны - удалим их
+                        $element['active_regexp'] = preg_replace('~\%([A-Za-z0-9\-\_]+)\>url\%~is', '', $element['active_regexp']);
+                    }
+
+                    #Helper::dd(Request::path());
+                    #Helper::dd($element['active_regexp']);
+                    #Helper::dd(preg_match($element['active_regexp'], Request::path()));
+
+                    $is_active = @(bool)preg_match($element['active_regexp'], Request::path());
+                    #return $is_active;
+                }
+
+                if ($is_active)
+                    return true;
             }
-
-            #Helper::dd(Request::path());
-            #Helper::dd($element['active_regexp']);
-            #Helper::dd(preg_match($element['active_regexp'], Request::path()));
-            return @(bool)preg_match($element['active_regexp'], Request::path());
         }
 
         /**
@@ -632,9 +648,91 @@ class MenuConstructor {
                 #$return = $this->isRoute('page', ['url' => $page->slug]);
                 #$return = $this->isRoute('page', $page->slug);
 
-                $return = $this->isRoute($page->start_page ? 'mainpage' : 'page', ['url' => $page->slug]);
-                #Helper::tad($return);
-                return $return;
+                $is_active = $this->isRoute($page->start_page ? 'mainpage' : 'page', ['url' => $page->slug]);
+                #Helper::tad($is_active);
+
+                if ($is_active)
+                    return $is_active;
+
+                ## Если активна опция определения активности по дочерним страницам (из структуры страниц)
+                if (@$element['use_active_hierarchy']) {
+
+                    #Helper::ta($element);
+                    #Helper::ta($page);
+
+                    ## Получим структуру страниц из Storage
+                    $current_hierarchy = Storage::where('module', 'pages')->where('name', 'hierarchy')->pluck('value');
+                    $elements = json_decode($current_hierarchy, false);
+                    #Helper::d($elements);
+                    #Helper::d($elements[$page->id]);
+
+                    ## Сформируем id_left_right
+                    $id_left_right = [];
+                    if (count($elements)) {
+
+                        foreach($elements as $element_id => $element) {
+                            #dd($element);
+                            $id_left_right[$element_id] = array();
+                            $id_left_right[$element_id]['left'] = $element->left;
+                            $id_left_right[$element_id]['right'] = $element->right;
+                        }
+                    }
+                    #Helper::tad($id_left_right);
+
+                    ## Получим IDs страниц, для которых текущая страница (пункт меню) является родителем
+                    $pages_ids = (new NestedSetModel())->get_children_ids_by_id_from_id_left_right($id_left_right, $page->id);
+                    #Helper::ta('PAGES IDS:');
+                    #Helper::ta($pages_ids);
+
+                    ## Если у текущей страницы (пункта меню) в иерархии есть потомки
+                    if (isset($pages_ids) && is_array($pages_ids) && count($pages_ids)) {
+
+                        ## Получение страниц-потомков по их IDs
+                        ## Как будем искать страницы - в кеше или в БД?
+                        if (Config::get('pages.not_cached')) {
+
+                            #Helper::tad('PAGES CACHE DISABLED! MenuConstructor:709');
+                            ## Кеширование отключено (или не найдено ни одной страницы) - ищем в БД
+                            $pages = (new Page())
+                                ->where('publication', 1)
+                                ->where('version_of', NULL)
+                                ->whereIn('id', $pages_ids)
+                                ->get()
+                            ;
+
+                        } else {
+
+                            ## Если страницы есть в кеше
+                            if (count(Page::all_by_id())) {
+
+                                ## Ищем все нужные страницы в кеше по их IDs
+                                foreach ($pages_ids as $page_id) {
+
+                                    $pages[] = Page::by_id($page_id);
+                                }
+                            }
+                        }
+
+                        ## Если получены объекты страниц
+                        if (isset($pages) && count($pages)) {
+
+                            ## Перебираем их
+                            foreach ($pages as $page) {
+
+                                ## Проверка на активность
+                                $is_active = $this->isRoute($page->start_page ? 'mainpage' : 'page', ['url' => $page->slug]);
+                                if ($is_active)
+                                    return true;
+                            }
+                        }
+
+                    }
+
+                    $is_active = false;
+                }
+
+                return $is_active;
+
                 break;
 
             case 'link':

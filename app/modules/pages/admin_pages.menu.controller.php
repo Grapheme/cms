@@ -66,7 +66,7 @@ class AdminPagesMenuController extends BaseController {
         return array(
             array(
             	'title' => 'Страницы',
-                'link' => self::$group,
+                'link' => self::$group /*. (isset($_COOKIE['admin__pages__order_by']) ? '?order_by=' . $_COOKIE['admin__pages__order_by'] . (isset($_COOKIE['admin__pages__order_type']) ? '?order_type=' . $_COOKIE['admin__pages__order_type'] : '') : '')*/,
                 'class' => 'fa-list-alt', 
                 'permit' => 'view',
             ),

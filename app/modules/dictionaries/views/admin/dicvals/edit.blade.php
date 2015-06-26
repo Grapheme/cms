@@ -316,6 +316,7 @@
     @if(@$element->id)
     @else
         {{ Form::hidden('redirect', action(is_numeric($dic_id) ? 'dicval.index' : 'entity.index', array('dic_id' => $dic_id)) . (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
+        {{ Form::hidden('query_string', (Request::getQueryString() ? '?' . Request::getQueryString() : '')) }}
     @endif
 
     {{ Form::close() }}
@@ -387,6 +388,10 @@
 
     {{-- HTML::script('private/js/modules/gallery.js') --}}
     {{ HTML::script('private/js/plugin/select2/select2.min.js') }}
+
+    @if (@trim($dic_settings['scripts']))
+        {{ $dic_settings['scripts'] }}
+    @endif
 
     @if (@trim($dic_settings['javascript']))
         <script>

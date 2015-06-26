@@ -2,7 +2,7 @@
 
 return array(
 
-    #'seo' => 1,
+    'seo' => ['title', 'description', 'keywords'],
 
     'versions' => 0,
 
@@ -14,4 +14,15 @@ return array(
     'preload_pages_limit' => 0, ## NULL - never; 0 - always; 100 - if less than 100 (+one more sql request)
     'preload_cache_lifetime' => 60*24, ## время жизни кеша страниц, в минутах
 
+    /*
+    'fields' => function() {
+
+        return array(
+            'image' => array(
+                'title' => 'Картинка для шапки',
+                'type' => 'image',
+            ),
+        );
+    },
+    */
 );

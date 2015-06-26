@@ -19,9 +19,9 @@
     });
 
     // Center map
-    var map_lat = {{ $element->lat > 0 ? $element->lat : (isset($default_lat) ? $default_lat : '62.148051') }};
-    var map_lng = {{ $element->lng > 0 ? $element->lng : (isset($default_lng) ? $default_lng : '96.659506') }};
-    var map_zoom = {{ $element->lat > 0 && $element->lng > 0 ? 17 : (isset($default_zoom) ? $default_zoom : '3') }};
+    var map_lat = {{ $element->field('lat') > 0 ? $element->field('lat') : (isset($default_lat) ? $default_lat : '62.148051') }};
+    var map_lng = {{ $element->field('lng') > 0 ? $element->field('lng') : (isset($default_lng) ? $default_lng : '96.659506') }};
+    var map_zoom = {{ $element->field('lat') > 0 && $element->field('lng') > 0 ? 17 : (isset($default_zoom) ? $default_zoom : '3') }};
     var myLatlng = new google.maps.LatLng(map_lat, map_lng);
 
     // Init map
@@ -55,9 +55,8 @@
 
     // Set values of coordinates to inputs on the form
     function setCoordsVal(pos) {
-        var lat = pos.k.toFixed(6) || '';
-        //var lng = pos.B.toFixed(6) || '';
-        var lng = pos.D.toFixed(6) || '';
+        var lat = pos.lat().toFixed(6) || '';
+        var lng = pos.lng().toFixed(6) || '';
         $("input[name='fields[{{ isset($field_lat) ? $field_lat : 'lat' }}]']").val(lat);
         $("input[name='fields[{{ isset($field_lng) ? $field_lng : 'lng' }}]']").val(lng);
     }

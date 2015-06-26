@@ -825,14 +825,14 @@ body .redactor_toolbar li a.redactor_btn_button_redo	 	{ background-position: -9
 }
 
 .redactor_150, .redactor_redactor_150 {
-    height: 150px !important;
+    min-height: 150px !important;
 }
 .redactor_250, .redactor_redactor_250 {
-    height: 250px !important;
+    min-height: 250px !important;
 }
 .redactor_300, .redactor_redactor_300 {
-    height: 300px !important;
+    min-height: 300px !important;
 }
 .redactor_450, .redactor_redactor_450 {
-    height: 450px !important;
+    min-height: 450px !important;
 }
