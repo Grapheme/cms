@@ -5,55 +5,58 @@
 function write_level($hierarchy, $elements, $sortable, &$pages2, $first_level = false) {
 global $total_elements;
 global $pages2_output_marker;
+#dd($hierarchy);
 ?>
 @if($count = @count($elements))
     <ol class="dd-list">
-        @foreach($hierarchy as $h)
-            <?
-            #Helper::d($h); continue;
-            #if (!isset($h['id']))
-            #    continue;
-            if (!isset($elements[$h['id']]))
-                continue;
+        @if ($hierarchy !== null && $hierarchy !== false && @count($hierarchy))
+            @foreach($hierarchy as $h)
+                <?
+                #Helper::d($h); continue;
+                #if (!isset($h['id']))
+                #    continue;
+                if (!isset($elements[$h['id']]))
+                    continue;
 
-            $element = $elements[$h['id']];
+                $element = $elements[$h['id']];
 
-            unset($pages2[$h['id']]);
+                unset($pages2[$h['id']]);
 
-            $line = $element->name;
-            $line = preg_replace("~<br[/ ]*?".">~is", ' ', $line);
-            $line2 = $element->slug;
-            ?>
+                $line = $element->name;
+                $line = preg_replace("~<br[/ ]*?".">~is", ' ', $line);
+                $line2 = $element->slug;
+                ?>
 
-            <li class="dd-item dd3-item dd-item-fixed-height" data-id="{{ $element->id }}">
-                @if ($sortable > 0)
-                    <div class="dd-handle dd3-handle">
-                        Drag
+                <li class="dd-item dd3-item dd-item-fixed-height" data-id="{{ $element->id }}">
+                    @if ($sortable > 0)
+                        <div class="dd-handle dd3-handle">
+                            Drag
+                        </div>
+                    @endif
+                    <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
+
+                        <div class="dicval-lines">
+                            {{ $line }}
+                            <br/>
+                            <span class="note dicval_note">
+                                {{ $line2 }}
+                            </span>
+                        </div>
+
+
                     </div>
-                @endif
-                <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
-
-                    <div class="dicval-lines">
-                        {{ $line }}
-                        <br/>
-                        <span class="note dicval_note">
-                            {{ $line2 }}
-                        </span>
-                    </div>
-
-
-                </div>
-                @if (isset($h['children']) && is_array($h['children']) && count($h['children']))
-                    <?
-                    /**
-                     * Вывод дочерних элементов
-                     */
-                    write_level($h['children'], $elements, $sortable, $pages2);
-                    #Helper::dd($h['children']);
-                    ?>
-                @endif
-            </li>
-        @endforeach
+                    @if (isset($h['children']) && is_array($h['children']) && count($h['children']))
+                        <?
+                        /**
+                         * Вывод дочерних элементов
+                         */
+                        write_level($h['children'], $elements, $sortable, $pages2);
+                        #Helper::dd($h['children']);
+                        ?>
+                    @endif
+                </li>
+            @endforeach
+        @endif
 
         <?
         if ($first_level)
