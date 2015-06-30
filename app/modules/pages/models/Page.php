@@ -82,6 +82,18 @@ class Page extends BaseModel {
     }
     */
 
+
+    public function draw_blocks() {
+        $page = $this;
+        $result = [];
+        if (count($page->blocks)) {
+            foreach ($page->blocks as $block) {
+                $result[] = $page->block($block->slug);
+            }
+        }
+        return implode("\n", $result);
+    }
+
     public function block($slug = false, $field = 'content', $variables = array(), $force_compile = true) {
 
         if (
@@ -92,13 +104,21 @@ class Page extends BaseModel {
 
         #Helper::tad($this);
 
+        $block = null;
         $content_container = false;
-        if (isset($this->blocks[$slug]->metas[Config::get('app.locale')]))
+        if (isset($this->blocks[$slug]->metas[Config::get('app.locale')])) {
+
             $content_container = $this->blocks[$slug]->metas[Config::get('app.locale')];
-        elseif (isset($this->blocks[$slug]->content))
+            $block = $this->blocks[$slug];
+
+        } elseif (isset($this->blocks[$slug]->content)) {
+
             $content_container = $this->blocks[$slug];
-        elseif (isset($this->blocks[$slug]->meta) && !is_null($this->blocks[$slug]->meta))
+
+        } elseif (isset($this->blocks[$slug]->meta) && !is_null($this->blocks[$slug]->meta)) {
+
             $content_container = $this->blocks[$slug]->meta;
+        }
 
         if (!$content_container)
             return '';
@@ -116,8 +136,29 @@ class Page extends BaseModel {
         ## Without updated_at - COMPILE ONLY ONCE!
         #unset($this->blocks[$slug]->meta->updated_at);
 
-        ## Return compiled field of the model
-        return DbView::make($content_container)->field($field)->with($variables)->render();
+        #Helper::ta($content_container);
+        #Helper::ta($block);
+
+        if (isset($block) && is_object($block) && isset($block->template)) {
+
+            if ($block->template == '') {
+
+                ## Return compiled field of the model
+                return DbView::make($content_container)->field($field)->with($variables)->render();
+
+            } else if (View::exists(Helper::layout('blocks.' . $block->template))) {
+
+                $content = json_decode($content_container->content, true);
+                $content_container->content = $content;
+                #Helper::ta($content);
+                #dd(extract($content));
+
+                return View::make(Helper::layout('blocks.' . $block->template), $content);
+            }
+
+        }
+
+        return null;
     }
 
     public function extract($unset = false) {

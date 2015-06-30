@@ -692,7 +692,7 @@ margin-left: 0;
     background-color: #FFE9E9;
 }
 
-#blocks .block input[type=text] {
+#blocks .block input[type=text], #blocks .block select, #blocks .block .block_tpl {
     display: block;
     font-weight: normal;
     padding: 0;
@@ -704,7 +704,7 @@ margin-left: 0;
     color: #555;
 }
 
-#blocks .block input[type=text]:focus {
+#blocks .block input[type=text]:focus, #blocks .block select:focus {
     border: 1px solid #aaa;
     background-color: #fff;
     cursor: text;
@@ -724,6 +724,9 @@ margin-left: 0;
 }
 
 #blocks .block .block_desc {
+    font-size: 13px;
+}
+#blocks .block .block_tpl {
     font-size: 13px;
 }
 

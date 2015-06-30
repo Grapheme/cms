@@ -43,90 +43,94 @@ var dropzone_translate = {
     dictMaxFilesExceeded: "Достигнут лимит на кол-во загруженных файлов: {{maxFiles}}"
 };
 
-    $(document).ready(function(){
 
-    	Dropzone.autoDiscover = false;
+
+_global_activate_dropzone = function () {
+
+    $(document).ready(function () {
+
+        Dropzone.autoDiscover = false;
 
         /*************************************************************************/
 
-		var dz_selector = ".egg-dropzone";
-		
-        $(dz_selector).each(function(index, el) {
+        var dz_selector = ".egg-dropzone";
+
+        $(dz_selector).each(function (index, el) {
             //console.log( index + ": " + $( this ).text() );
 
-            var el_name       = $(el).data("name");
-			var gallery_id    = $('#' + el_name + '_gallery_id').val();
+            var el_name = $(el).data("name");
+            var gallery_id = $('#' + el_name + '_gallery_id').val();
             var max_file_size = $(el).data("maxfilesize");
-            var max_files     = $(el).data("maxfiles");
+            var max_files = $(el).data("maxfiles");
             var acceptedFiles = $(el).data("acceptedfiles");
 
             var dropzone_settings = {
                 url: base_url + "/admin/galleries/abstractupload",
-                addRemoveLinks : true,
+                addRemoveLinks: true,
                 maxFilesize: max_file_size || 2, // MB
                 maxFiles: max_files || 0,
                 acceptedFiles: acceptedFiles || 'image/*'
             };
             dropzone_settings = array_merge(dropzone_settings, dropzone_translate);
 
-			var myDropzone = new Dropzone(
-				el, dropzone_settings
-			);
+            var myDropzone = new Dropzone(
+                el, dropzone_settings
+            );
 
-	        myDropzone.on("totaluploadprogress", function(data) {
-	            //console.log(data);
-	        });
+            myDropzone.on("totaluploadprogress", function (data) {
+                //console.log(data);
+            });
 
-			myDropzone.on("success", function(file, response) {
-				//alert(response.image_id);
-				$(el).append("<input type='hidden' name='" + el_name + "[uploaded_images][]' value='" + response.image_id + "' id='uploaded_image_" + response.image_id + "' />");
-			});
+            myDropzone.on("success", function (file, response) {
+                //alert(response.image_id);
+                $(el).append("<input type='hidden' name='" + el_name + "[uploaded_images][]' value='" + response.image_id + "' id='uploaded_image_" + response.image_id + "' />");
+            });
 
-			myDropzone.on("sending", function(file, xhr, formData) {
-				//formData.append("filesize", file.size); // Will send the filesize along with the file as POST data.
-				//console.log(file);
-				//console.log(xhr);
-				//console.log(formData);
-				formData.append("gallery_id", gallery_id);
-			});
+            myDropzone.on("sending", function (file, xhr, formData) {
+                //formData.append("filesize", file.size); // Will send the filesize along with the file as POST data.
+                //console.log(file);
+                //console.log(xhr);
+                //console.log(formData);
+                formData.append("gallery_id", gallery_id);
+            });
 
-			myDropzone.on("removedfile", function(file) {
-				//console.log(file);
-				// Как-то так...
+            myDropzone.on("removedfile", function (file) {
+                //console.log(file);
+                // Как-то так...
                 if (typeof file.xhr != 'undefined' && typeof file.xhr.response != 'undefined') {
-    				var image_id = JSON.parse(file.xhr.response).image_id;
-    				deleteUploadedImage(image_id);
+                    var image_id = JSON.parse(file.xhr.response).image_id;
+                    deleteUploadedImage(image_id);
                 }
-				//return false;
-			});
-            
+                //return false;
+            });
+
         }); // jQuery.each
 
         /*************************************************************************/
 
-		var dz_selector = ".egg-dropzone-single";
-		
-        $(dz_selector).each(function(index, el) {
+        var dz_selector = ".egg-dropzone-single";
+
+        $(dz_selector).each(function (index, el) {
 
             var el_name = $(el).data("name");
             var gallery_id = 0; //$(el).data('gallery_id');
-			var preview = $(el).parent().find(".photo-preview");
+            var preview = $(el).parent().find(".photo-preview");
             var max_file_size = $(el).data("maxfilesize");
             var acceptedFiles = $(el).data("acceptedfiles");
 
             var dropzone_settings = {
                 url: base_url + "/admin/galleries/singleupload",
-                addRemoveLinks : true,
+                addRemoveLinks: true,
                 maxFilesize: max_file_size || 2, // MB
                 acceptedFiles: acceptedFiles || 'image/*',
                 uploadMultiple: false,
                 parallelUploads: 1,
                 maxFiles: 1,
                 dictMaxFilesExceeded: 'Можно загрузить только одно изображение.',
-                init: function() {
-                    this.on("addedfile", function() {
+                init: function () {
+                    this.on("addedfile", function () {
                         // Single image upload
-                        if (this.files[1] != null){
+                        if (this.files[1] != null) {
                             this.removeFile(this.files[0]);
                         }
                     });
@@ -135,52 +139,52 @@ var dropzone_translate = {
             dropzone_settings = array_merge(dropzone_settings, dropzone_translate);
 
             var myDropzone = new Dropzone(
-				el, dropzone_settings
-			);
+                el, dropzone_settings
+            );
 
-	        myDropzone.on("totaluploadprogress", function(data) {
-	            //console.log(data);
-	        });
+            myDropzone.on("totaluploadprogress", function (data) {
+                //console.log(data);
+            });
 
-			myDropzone.on("success", function(file, response) {
+            myDropzone.on("success", function (file, response) {
                 //console.log(file);
                 //console.log(response);
-				$(el).append("<input type='hidden' name='" + el_name + "' value='" + response.image_id + "' class='uploaded_image_" + response.image_id + "' />");
+                $(el).append("<input type='hidden' name='" + el_name + "' value='" + response.image_id + "' class='uploaded_image_" + response.image_id + "' />");
                 $(el).parent().parent().find(".uploaded_image_false").empty().remove();
-				$(el).hide();
+                $(el).hide();
                 //$(el).find(".dz-preview").empty().remove();
                 $(el).find(".dz-preview").hide();
-                $(preview).css("background-image", "url("+response['thumb']+")");
+                $(preview).css("background-image", "url(" + response['thumb'] + ")");
                 $(preview).find(".photo-full-link").attr("href", response['full']);
                 $(preview).find(".modal-dialog img").attr("src", response['full']);
                 $(preview).find(".photo-delete-single").attr("data-photo-id", response['image_id']);
                 $(preview).show();
                 $(preview).parents().find('.photo-preview-container').show();
-			});
+            });
 
-			myDropzone.on("sending", function(file, xhr, formData) {
-				//formData.append("filesize", file.size); // Will send the filesize along with the file as POST data.
-				//console.log(file);
-				//console.log(xhr);
-				//console.log(formData);
-				formData.append("gallery_id", gallery_id);
-			});
+            myDropzone.on("sending", function (file, xhr, formData) {
+                //formData.append("filesize", file.size); // Will send the filesize along with the file as POST data.
+                //console.log(file);
+                //console.log(xhr);
+                //console.log(formData);
+                formData.append("gallery_id", gallery_id);
+            });
 
-			myDropzone.on("removedfile", function(file) {
-				//console.log(file);
-				// Как-то так...
+            myDropzone.on("removedfile", function (file) {
+                //console.log(file);
+                // Как-то так...
                 if (typeof file.xhr != 'undefined' && typeof file.xhr.response != 'undefined') {
-    				var image_id = JSON.parse(file.xhr.response).image_id;
-    				deleteUploadedImage(image_id);
+                    var image_id = JSON.parse(file.xhr.response).image_id;
+                    deleteUploadedImage(image_id);
                 }
-				//return false;
-			});
-            
+                //return false;
+            });
+
         }); // jQuery.each
-        
+
         /*************************************************************************/
-        
-        $(document).on('click', '.photo-delete', function(event){
+
+        $(document).on('click', '.photo-delete', function (event) {
 
             var popover = $(this).parents('.image-data-popover').next('.popover');
             $(popover).remove();
@@ -188,81 +192,81 @@ var dropzone_translate = {
             event.preventDefault();
             var image_id = $(this).attr('data-photo-id');
             var $photoDiv = $(this).parent();
-    		$.SmartMessageBox({
-    			title : "Удалить изображение?",
-    			content : "",
-    			buttons : '[Нет][Да]'
-    		},function(ButtonPressed) {
-    			if(ButtonPressed == "Да") {
+            $.SmartMessageBox({
+                title: "Удалить изображение?",
+                content: "",
+                buttons: '[Нет][Да]'
+            }, function (ButtonPressed) {
+                if (ButtonPressed == "Да") {
                     $.ajax({
                         url: base_url + "/admin/galleries/photodelete",
-                        data: { id: image_id },
+                        data: {id: image_id},
                         type: 'post',
-                    }).done(function(){
+                    }).done(function () {
                         $photoDiv.fadeOut('fast');
-                    }).fail(function(data){
+                    }).fail(function (data) {
                         $photoDiv.fadeOut('fast');
                         console.log(data);
-                    });           
+                    });
                     return false;
-    			}
-    		});
-    		return false;
+                }
+            });
+            return false;
         });
 
-        $('.photo-delete-single').click(function(event){
+        $('.photo-delete-single').click(function (event) {
             event.preventDefault();
             var image_id = $(this).attr('data-photo-id');
             var el = $(this).parents('.input');
             var eldz = $(el).find('.egg-dropzone-single');
             var preview = $(el).find('.photo-preview');
-    		$.SmartMessageBox({
-    			title : "Удалить изображение?",
-    			content : "",
-    			buttons : '[Нет][Да]'
-    		},function(ButtonPressed) {
-    			if(ButtonPressed == "Да") {
+            $.SmartMessageBox({
+                title: "Удалить изображение?",
+                content: "",
+                buttons: '[Нет][Да]'
+            }, function (ButtonPressed) {
+                if (ButtonPressed == "Да") {
                     $.ajax({
                         url: base_url + "/admin/galleries/photodelete",
-                        data: { id: image_id },
+                        data: {id: image_id},
                         type: 'post',
-                    }).done(function(){
+                    }).done(function () {
                         console.log(el);
                         $(el).find(".uploaded_image_" + image_id).empty().remove();
-        				$(el).append("<input type='text' name='" + eldz.data("name") + "' class='uploaded_image_false uploaded_image_cap' />");
+                        $(el).append("<input type='text' name='" + eldz.data("name") + "' class='uploaded_image_false uploaded_image_cap' />");
 
                         $(eldz).removeClass('dz-started');
                         $(eldz).show();
                         $(preview).hide();
                         $(preview).parents('.photo-preview-container').hide();
-                    }).fail(function(data){
+                    }).fail(function (data) {
                         console.log(data);
-                    });           
+                    });
                     return false;
-    			}
-    		});
-    		return false;
+                }
+            });
+            return false;
         });
 
-		function deleteUploadedImage(image_id) {
+        function deleteUploadedImage(image_id) {
             $.ajax({
                 url: base_url + "/admin/galleries/photodelete",
-                data: { id: image_id },
+                data: {id: image_id},
                 type: 'post',
-            }).done(function(){
+            }).done(function () {
                 $(".uploaded_image_" + image_id).empty().remove();
                 //$photoDiv.fadeOut('fast');
-            }).fail(function(data){
+            }).fail(function (data) {
                 console.log(data);
             });
             return false;
-		}
+        }
 
 
-    	//$('.superbox').SuperBox();
+        //$('.superbox').SuperBox();
 
 
-        $(document).on('click', '.image-data-popover', function(event) {
+        $(document).on('click', '.image-data-popover', function (event) {
             //console.log($(this).next('.popover'));
 
             var popover = $(this).next('.popover');
@@ -270,12 +274,12 @@ var dropzone_translate = {
             $(popover).find('.image-data-field[data-name=title]').val(current_title);
         });
 
-        $(document).on('click', '.image-data-preview-link', function(e){
+        $(document).on('click', '.image-data-preview-link', function (e) {
             var popover = $(this).parents('.popover');
             $(popover).fadeOut();
         });
 
-        $(document).on('click', '.save-image-data', function(event){
+        $(document).on('click', '.save-image-data', function (event) {
             event.preventDefault();
             var image_id = $(this).attr('data-photo-id');
             var image_title = $(this).parents('.image-data').find('.image-data-field[data-name=title]').val();
@@ -291,23 +295,24 @@ var dropzone_translate = {
             $(this).addClass('loading').attr('disabled', 'disabled');
             $.ajax({
                 url: base_url + "/admin/galleries/photoupdate",
-                data: { id: image_id, title: image_title },
+                data: {id: image_id, title: image_title},
                 type: 'post'
-            }).done(function(){
+            }).done(function () {
                 return true;
-            }).fail(function(data){
+            }).fail(function (data) {
                 console.log(data);
                 $(popover_error).text('Ошибка при сохранении');
                 $this.removeClass('btn-primary').addClass('btn-danger');
                 return false;
-            }).always(function(){
+            }).always(function () {
                 $this.removeClass('loading').removeAttr('disabled');
             });
         });
 
-
-
-
     });
 
     init_sortable(base_url + '/admin/gallery/ajax-order-save', '.photo-previews');
+
+};
+
+_global_activate_dropzone();

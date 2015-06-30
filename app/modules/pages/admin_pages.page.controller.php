@@ -232,7 +232,10 @@ class AdminPagesPageController extends BaseController {
             $show_template_select = TRUE;
         }
 
-        return View::make($this->module['tpl'] . 'edit', compact('element', 'locales', 'templates', 'show_template_select'));
+        ## Шаблоны блока
+        $block_templates = $this->block_tpls();
+
+        return View::make($this->module['tpl'] . 'edit', compact('element', 'locales', 'templates', 'show_template_select', 'block_templates'));
     }
 
 
@@ -493,6 +496,36 @@ class AdminPagesPageController extends BaseController {
     }
 
 
+
+    private function block_tpls($slug = null) {
+
+        ## Шаблоны блока
+        $block_templates = Config::get('pages.block_templates');
+        if (is_callable($block_templates)) {
+
+            $block_templates = $block_templates();
+
+            if (is_array($block_templates) && count($block_templates)) {
+
+                $temp = [];
+                foreach ($block_templates as $block_name => $block_template) {
+
+                    $temp[$block_name] = (isset($block_template['title']) ? $block_template['title'] : $block_name);
+                }
+
+                $block_templates = $temp;
+            }
+        }
+        #Helper::tad($block_templates);
+
+        #if (isset($slug) && $slug && isset($block_templates[$slug]) && is_array($block_templates[$slug])) {
+        #    return $block_templates[$slug];
+        #}
+
+        return $block_templates;
+    }
+
+
     public function postAjaxPagesDeleteBlock() {
 
         if (!Request::ajax())
@@ -526,6 +559,8 @@ class AdminPagesPageController extends BaseController {
         if (!Request::ajax())
             App::abort(404);
 
+        $block_templates = $this->block_tpls();
+
         $id = Input::get('id');
         $blocks = PageBlock::where('page_id', $id)->with('metas')->orderBy('order')->get();
         #return $blocks->toJson();
@@ -533,7 +568,7 @@ class AdminPagesPageController extends BaseController {
         $return = '';
         if (count($blocks)) {
             foreach ($blocks as $block) {
-                $return .= View::make($this->module['tpl'] . '_block', compact('block'));
+                $return .= View::make($this->module['tpl'] . '_block', compact('block', 'block_templates'));
             }
         }
 
@@ -577,12 +612,14 @@ class AdminPagesPageController extends BaseController {
 
         #Helper::dd($this->templates(__DIR__, '/views/tpl_block'));
 
-        $templates = array();
-        foreach ($this->templates(__DIR__, '/views/tpl_block') as $template)
-            @$templates[$template] = $template;
+        $templates = [];
+        #foreach ($this->templates(__DIR__, '/views/tpl_block') as $template)
+        #    @$templates[$template] = $template;
 
+        $block_templates = $this->block_tpls();
+        #Helper::tad($block_template);
 
-        return View::make($this->module['tpl'] . '_block_edit', compact('element', 'locales', 'templates'));
+        return View::make($this->module['tpl'] . '_block_edit', compact('element', 'locales', 'templates', 'block_templates'));
 
     }
 
@@ -598,6 +635,8 @@ class AdminPagesPageController extends BaseController {
         else
             $block = new PageBlock;
         */
+
+        #Helper::tad(Input::all());
 
         $id = Input::get('id');
 
@@ -649,7 +688,14 @@ class AdminPagesPageController extends BaseController {
             ## BLOCK_META
             if (count($locales)) {
                 foreach ($locales as $locale_sign => $locale_settings) {
+
                     $locale_settings['template'] = @$locale_settings['template'] ? $locale_settings['template'] : NULL;
+
+                    #dd($locale_settings);
+                    if (isset($locale_settings['content']) && is_array($locale_settings['content'])) {
+                        $locale_settings['content'] = json_encode($locale_settings['content'], JSON_UNESCAPED_UNICODE);
+                    }
+
                     $block_meta = $this->pages_blocks_meta->where('block_id', $block->id)->where('language', $locale_sign)->first();
                     if (is_object($block_meta)) {
                         $block_meta->update($locale_settings);

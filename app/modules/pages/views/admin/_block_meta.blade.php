@@ -1,41 +1,47 @@
-<?
-if ( @count($element->metas) && isset($element->metas[$locale_sign]) )
+<?php
+if (isset($element) && is_object($element) && isset($element->metas) && count($element->metas) && isset($element->metas[$locale_sign])) {
+
     $block_meta = $element->metas[$locale_sign];
-else
-    $block_meta = false;
+
+} else {
+
+    $block_meta = null;
+}
 
 #Helper::ta($element);
+#Helper::ta($block_meta);
+
+$block_tpl = null;
+
+$block_tpl_file = $module['tpl'].'_block_tpl_default';
+/*
+if ($element->template && View::exists(Helper::layout('blocks.' . $element->template))) {
+    $block_tpl_file = Helper::layout('blocks.' . $element->template);
+}
+*/
+$block_templates_full = Config::get('pages.block_templates');
+if (is_callable($block_templates_full))
+    $block_templates_full = $block_templates_full();
+#Helper::ta($block_templates_full);
+if ($element->template && isset($block_templates_full[$element->template])) {
+    $block_tpl_file = $module['tpl'].'_block_tpl_custom';
+}
+#Helper::ta($block_tpl_file);
 ?>
 
-    <span class="pull-right" style='position:relative; top:8px; left:-2px; z-index:0'>
-        <button type="reset" class="btn btn-warning btn-sm pull-left2" id="reset_block_content">
-            <i class="fa fa-warning"></i> Отменить изменения
-        </button>
 
-        <a href="#" class='btn btn-default btn-sm pages_block_redactor_toggle'>
-            Редактор вкл./выкл.
-        </a>
-    </span>
+<?php ######################################################################################## ?>
+
+{{ View::make($block_tpl_file, compact('element', 'locale_sign', 'block_meta', 'block_templates', 'block_templates_full'))->render() }}
+
+<?php ######################################################################################## ?>
+
+
+@if (count($locales) > 1 && 0)
+
     <label class="control-label margin-top-10">
-        Содержимое блока
+        <small>Шаблон языковой версии блока (необязательно)</small>
     </label>
-    {{ Form::textarea('locales[' . $locale_sign . '][content]', ($block_meta ? ($block_meta->content) : false), array('class' => 'form-control redactor-no-filter  redactor_250 editor_block_content editor_locale_' . $locale_sign . '', 'placeholder' => 'Содержимое блока', 'style' => 'position:relative; z-index:0') ) }}
-    
-    <div id="default_block_content" style="display:none;">{{ $block_meta ? ($block_meta->content) : false }}</div>
+    {{ Form::select('locales[' . $locale_sign . '][template]', array('По умолчанию')+$templates, NULL, array('class' => 'form-control')) }}
 
-    @if (count($locales) > 1 && 0)
-
-        <label class="control-label margin-top-10">
-            <small>Шаблон языковой версии блока (необязательно)</small>
-        </label>
-        {{ Form::select('locales[' . $locale_sign . '][template]', array('По умолчанию')+$templates, null, array('class' => 'form-control')) }}
-
-    @endif
-
-    @if (@$element->settings['editor_state'])
-    <script>
-        //$('.pages_block_redactor_toggle').trigger('click');
-        var element = $('.editor_locale_{{ $locale_sign }}');
-        activate_block_editor(element)
-    </script>
-    @endif
+@endif

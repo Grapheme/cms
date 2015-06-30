@@ -24,5 +24,44 @@ return array(
             ),
         );
     },
-    */
+    #*/
+
+    #/*
+    'block_templates' => function() {
+
+        $block_tpls = [
+
+            'first' => [
+                'title' => 'Первый тип блока',
+                'file' => 'first.blade.tpl',
+                'fields' => [
+                    'text' => [
+                        'title' => 'Заголовок',
+                        'type' => 'text',
+                    ],
+                    'image' => [
+                        'title' => 'Картинка',
+                        'type' => 'image',
+                    ],
+                ],
+            ],
+            'second' => [
+                'title' => 'Второй тип блока',
+                'file' => 'second.blade.tpl',
+                'fields' => [
+                    'text' => [
+                        'title' => 'Заголовок',
+                        'type' => 'text',
+                    ],
+                    'content' => [
+                        'title' => 'Текст',
+                        'type' => 'textarea',
+                    ],
+                ],
+            ],
+        ];
+
+        return $block_tpls;
+    }
+    #*/
 );

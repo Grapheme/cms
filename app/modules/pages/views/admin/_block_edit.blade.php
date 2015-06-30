@@ -4,11 +4,8 @@
 #$create_title = "Изменить страницу:";
 #$edit_title   = "Новая страница:";
 
-#$url        = @$element->id ? URL::route($module['entity'].'.update', array('id' => $element->id)) : URL::route($module['entity'].'.store', array());
-$url        = action($module['class'].'@postAjaxPagesSaveBlock');
-#$method     = @$element->id ? 'PUT' : 'POST';
-$method     = 'POST';
-#$form_title = @$element->id ? $create_title : $edit_title;
+$url = action($module['class'] . '@postAjaxPagesSaveBlock');
+$method = 'POST';
 
 if (!is_array($element->settings) && $element->settings != '')
     $element->settings = json_decode($element->settings, 1);
@@ -20,8 +17,8 @@ if (!is_array($element->settings) && $element->settings != '')
 
 {{ Form::model($element, array('url' => $url, 'class' => 'smart-form2', 'id' => 'block-form', 'role' => 'form', 'method' => $method)) }}
 @if ($element->id)
-<input type="hidden" name="id" value="{{ $element->id }}" />
-{{ Form::hidden('settings[editor_state]') }}
+    {{ Form::hidden('id', $element->id) }}
+    {{ Form::hidden('settings[editor_state]') }}
 @endif
 <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -40,36 +37,28 @@ if (!is_array($element->settings) && $element->settings != '')
 
                     <fieldset class="row margin-bottom-10">
 
-                        <section class="col @if (Allow::action('pages', 'advanced', true, false)) col-lg-6 @else col-lg-12 @endif">
-                            <label class="control-label">
-                                Название
-                            </label>
-                            {{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => 'Название блока', 'required' => 'required')) }}
+                        <section class="col @if (Allow::action('pages', 'advanced', TRUE, FALSE)) col-lg-6 @else col-lg-12 @endif">
+                            <label class="control-label"> Название </label>
+                            {{ Form::text('name', NULL, array('class' => 'form-control', 'placeholder' => 'Название блока', 'required' => 'required')) }}
                         </section>
 
-                        @if (Allow::action('pages', 'advanced', true, false))
+                        @if (Allow::action('pages', 'advanced', TRUE, FALSE))
                             <section class="col col-lg-6">
-                                <label class="control-label">
-                                    Системное имя
-                                </label>
-                                {{ Form::text('slug', null, array('class' => 'form-control')) }}
+                                <label class="control-label"> Системное имя </label>
+                                {{ Form::text('slug', NULL, array('class' => 'form-control')) }}
                             </section>
 
                             <section class="col col-lg-6">
                                 <label class="checkbox">
-                                    {{ Form::checkbox('settings[system_block]', 1, (@$element->settings['system_block'] == 0 ? null : true)) }}
-                                    <i></i>
-                                    Запрет на удаление
-                                </label>
+                                    {{ Form::checkbox('settings[system_block]', 1, (@$element->settings['system_block'] == 0 ? NULL : TRUE)) }}
+                                    <i></i> Запрет на удаление </label>
                             </section>
                         @endif
 
                         @if (0)
                             <section class="col col-lg-6">
-                                <label class="control-label">
-                                    Шаблон блока
-                                </label>
-                                {{ Form::select('template', array('Выберите...')+$templates, null, array('class' => 'form-control')) }}
+                                <label class="control-label"> Шаблон блока </label>
+                                {{ Form::select('template', array('Выберите...')+$templates, NULL, array('class' => 'form-control')) }}
                             </section>
                         @endif
 
@@ -84,21 +73,21 @@ if (!is_array($element->settings) && $element->settings != '')
                     <ul id="myTab2" class="nav nav-tabs bordered" role="tablist">
                         <? $i = 0; ?>
                         @foreach ($locales as $locale_sign => $locale_name)
-                        <li class="{{ !$i++ ? 'active' : '' }}">
-                            <a href="#block_meta_{{ $locale_sign }}" class="modaltablink" data-toggle="tab">
-                                {{ $locale_name }}
-                            </a>
-                        </li>
+                            <li class="{{ !$i++ ? 'active' : '' }}">
+                                <a href="#block_meta_{{ $locale_sign }}" class="modaltablink" data-toggle="tab">
+                                    {{ $locale_name }}
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
                     <div id="myTabContent2" class="tab-content padding-10">
                         <? $i = 0; ?>
                         @foreach ($locales as $locale_sign => $locale_name)
-                        <div class="tab-pane fade{{ !$i++ ? ' active in' : '' }}" id="block_meta_{{ $locale_sign }}">
+                            <div class="tab-pane fade{{ !$i++ ? ' active in' : '' }}" id="block_meta_{{ $locale_sign }}">
 
-                            @include($module['tpl'].'_block_meta', compact('locale_sign', 'locale_name', 'templates', 'element'))
+                                @include($module['tpl'].'_block_meta', compact('locale_sign', 'locale_name', 'templates', 'element'))
 
-                        </div>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -106,7 +95,7 @@ if (!is_array($element->settings) && $element->settings != '')
             @else
 
                 @foreach ($locales as $locale_sign => $locale_name)
-                    @include($module['tpl'].'_block_meta', compact('locale_sign', 'locale_name', 'templates', 'element'))
+                    @include($module['tpl'].'_block_meta', compact('locale_sign', 'locale_name', 'templates', 'element', 'block_templates'))
                 @endforeach
 
             @endif
@@ -120,6 +109,7 @@ if (!is_array($element->settings) && $element->settings != '')
                 Сохранить
             </button>
         </div>
-    </div><!-- /.modal-content -->
+    </div>
+    <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 {{ Form::close() }}
