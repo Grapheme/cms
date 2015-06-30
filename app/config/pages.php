@@ -33,7 +33,6 @@ return array(
 
             'first' => [
                 'title' => 'Первый тип блока',
-                'file' => 'first.blade.tpl',
                 'fields' => [
                     'text' => [
                         'title' => 'Заголовок',
@@ -47,7 +46,6 @@ return array(
             ],
             'second' => [
                 'title' => 'Второй тип блока',
-                'file' => 'second.blade.tpl',
                 'fields' => [
                     'text' => [
                         'title' => 'Заголовок',
