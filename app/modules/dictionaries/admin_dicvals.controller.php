@@ -326,7 +326,7 @@ class AdminDicvalsController extends BaseController {
 
         $total_elements = DicVal::where('dic_id', $dic->id)->where('version_of', '=', NULL)->count();
 
-        $element = new Dictionary;
+        $element = new DicVal();
 
         return View::make($this->module['tpl'].'edit', compact('element', 'dic', 'dic_id', 'locales', 'dic_settings', 'total_elements'));
 	}

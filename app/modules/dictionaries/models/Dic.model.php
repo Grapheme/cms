@@ -750,6 +750,8 @@ class Dic extends BaseModel {
 
 
     public static function all_by_slug() {
+
+        Dic::preload();
         $cache_key = self::$cache_key;
         $dics = Config::get($cache_key);
         $dics = @$dics['by_slug'];
@@ -757,6 +759,8 @@ class Dic extends BaseModel {
     }
 
     public static function all_by_id() {
+
+        Dic::preload();
         $cache_key = self::$cache_key;
         $dics = Config::get($cache_key);
         $dics = @$dics['by_id'];
@@ -765,6 +769,8 @@ class Dic extends BaseModel {
 
 
     public static function by_slug($slug) {
+
+        Dic::preload();
         $cache_key = self::$cache_key;
         $dics = Config::get($cache_key);
         $dic = @$dics['by_slug'][$slug];
@@ -772,6 +778,8 @@ class Dic extends BaseModel {
     }
 
     public static function by_id($id) {
+
+        Dic::preload();
         $cache_key = self::$cache_key;
         $dics = Config::get($cache_key);
         $dic = @$dics['by_id'][$id];

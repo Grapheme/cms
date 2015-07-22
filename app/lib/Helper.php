@@ -445,7 +445,7 @@ HTML;
 
     }
 
-    public static function buildExcerpts($docs = false, $index = '*', $words = false, $opts = false) {
+    public static function buildExcerpts(array $docs, $index = '*', $words = false, $opts = false) {
 
         if (!$docs || !$words)
             return false;
@@ -474,16 +474,39 @@ HTML;
          */
         $sphinx = new \Sphinx\SphinxClient;
         $sphinx->setServer($host, $port);
-        $results = $sphinx->buildExcerpts($docs, $index, $words, $opts);
-        ##Helper::d($results);
-        
-        /**
-         * Костыль-с...
-         */
-        $n = 0;
-        $temp = array();
-        foreach ($docs as $d => $doc)
-            $temp[$d] = $results[$n++];
+
+        if ($index !== null) {
+
+            $results = $sphinx->buildExcerpts($docs, $index, $words, $opts);
+            ##Helper::d($results);
+
+            /**
+             * Костыль-с...
+             */
+            $n = 0;
+            $temp = array();
+            foreach ($docs as $d => $doc)
+                $temp[$d] = $results[$n++];
+
+        } else {
+
+            $temp = [];
+            foreach ($docs as $index_name => $docss) {
+
+                $results = $sphinx->buildExcerpts($docss, $index_name, $words, $opts);
+                #$temp = array_merge($temp, $results);
+
+                /**
+                 * Костыль-с...
+                 */
+                $n = 0;
+                $temp = array();
+                foreach ($docss as $d => $doc)
+                    $temp[$d] = $results[$n++];
+
+            }
+        }
+
         unset($sphinx);
         return $temp;
     }

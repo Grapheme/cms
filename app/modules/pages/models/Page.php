@@ -389,18 +389,19 @@ class Page extends BaseModel {
     }
 
 
-    public function h1_or_name() {
+    public function h1_or_name($before = '<h1>', $after = '</h1>') {
         $locale = Config::get('app.locale');
-        return (
-            isset($this->seos)
-            && isset($this->seos[$locale]) && is_object($this->seos[$locale])
-            && isset($this->seos[$locale]->h1) && $this->seos[$locale]->h1
-        )
+        return $before .
+           (
+               (
+                    isset($this->seos)
+                    && isset($this->seos[$locale]) && is_object($this->seos[$locale])
+                    && isset($this->seos[$locale]->h1) && $this->seos[$locale]->h1
+                )
             ? $this->seos[$locale]->h1
             : $this->name
-            ;
+           ) . $after;
     }
-
 
     public function field($name = '') {
 

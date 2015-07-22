@@ -198,6 +198,9 @@ if (len > 0) {
                 'default' => Input::get('filter.fields.product_type') ?: null,
             ),
 
+            /**
+             * !!! Привести к виду, аналогичному checkboxes !!!
+             */
             'scope_id' => array(
                 'title' => 'Выпадающий список со множественным выбором',
                 'type' => 'select-multiple',
@@ -231,23 +234,35 @@ if (len > 0) {
                 'label_class' => 'normal_checkbox',
             ),
 
-            'scope_ids' => array(
+            'type_ids' => array(
                 'title' => 'Группа чекбоксов',
                 'type' => 'checkboxes',
                 'columns' => 2, ## Количество колонок
-                'values' => $lists['scope'],
-                'handler' => function ($value, $element) {
-                    $value = DicLib::formatDicValRel($value, 'scope_id', $element->dic_id, $lists_ids['scope']);
-                    $element->related_dicvals()->sync($value);
+                'values' => $lists['ontrade_types'],
+                'handler' => function ($value, $element, $field_name = 'type_ids') use ($lists_ids) {
+                    $value = DicLib::formatDicValRel($value, $field_name, $element->dic_id, $lists_ids['ontrade_types']);
+                    #$element->related_dicvals($field_name)->sync($value);
+
+                    DicValRel
+                        ::where('dicval_parent_id', $element->id)
+                        ->where('dicval_parent_field', $field_name)
+                        ->delete()
+                    ;
+
+                    if (count($value))
+                        foreach ($value as $v => $val)
+                            $element->related_dicvals($field_name)->attach($v, $val);
+
                     return @count($value);
                 },
-                'value_modifier' => function ($value, $element) {
+                'value_modifier' => function ($value, $element, $field_name = 'type_ids') {
                     $return = (is_object($element) && $element->id)
-                        ? $element->related_dicvals()->get()->lists('name', 'id')
+                        ? $element->related_dicvals($field_name)->get()->lists('name', 'id')
                         : $return = array();
                     return $return;
                 },
             ),
+
             'promise_id' => array(
                 'title' => 'Обещание',
                 'type' => 'textline',

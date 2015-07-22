@@ -61,12 +61,18 @@ class DicVal extends BaseModel {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function related_dicvals() {
+    public function related_dicvals($dicval_parent_field = null) {
 
-        return $this
+        $return = $this
             ->belongsToMany('DicVal', 'dictionary_values_rel', 'dicval_parent_id', 'dicval_child_id')
             ->withPivot('dicval_parent_dic_id', 'dicval_child_dic_id', 'dicval_parent_field')
             ;
+
+        if ($dicval_parent_field !== null) {
+            $return = $return->where('dicval_parent_field', $dicval_parent_field);
+        }
+
+        return $return;
     }
 
 
@@ -838,6 +844,15 @@ class DicVal extends BaseModel {
                     'name' => 'ololo',
                 ),
             ),
+            'related_dicvals' => array(
+                [
+                    #'dicval_parent_id' => 1,
+                    'dicval_child_id' => 2,
+                    'dicval_parent_dic_id' => 3,
+                    'dicval_child_dic_id' => 4,
+                    'dicval_parent_field' => 'cuisine_ids',
+                ],
+            ),
         ));
      */
     /**
@@ -989,11 +1004,49 @@ class DicVal extends BaseModel {
             $dicval->relations['metas'] = $metas;
         }
 
+        ## CREATE RELATED DICVALS
+        if (isset($array['related_dicvals']) && is_array($array['related_dicvals']) && count($array['related_dicvals'])) {
+
+            $temp = new Collection();
+
+            foreach ($array['related_dicvals'] as $dicval_parent_filed => $related_dicvals) {
+
+                if (!@is_array($related_dicvals) || !@count($related_dicvals))
+                    continue;
+
+                #Helper::d($related_dicvals);
+
+                foreach ($related_dicvals as $related_dicval) {
+
+                    $dicval_rel = new DicValRel();
+                    $dicval_rel->dicval_parent_id     = $dicval->id;
+                    $dicval_rel->dicval_child_id      = @$related_dicval['dicval_child_id'];
+                    $dicval_rel->dicval_parent_dic_id = @$related_dicval['dicval_parent_dic_id'];
+                    $dicval_rel->dicval_child_dic_id  = @$related_dicval['dicval_child_dic_id'];
+                    $dicval_rel->dicval_parent_field  = $dicval_parent_filed;
+                    $dicval_rel->save();
+
+                    $temp[] = $dicval_rel;
+                }
+            }
+
+            $dicval->relations['related_dicvals'] = $temp;
+        }
+
         ## RETURN EXTRACTED DICVAL
         return $dicval;
     }
 
 
+    /**
+     * !!! NEED TO ADD RELATED_DICVALS SUPPORT !!!
+     *
+     * @param $dic_slug
+     * @param $dicval_id
+     * @param $array
+     *
+     * @return bool|\Illuminate\Support\Collection|null|static
+     */
     public static function refresh($dic_slug, $dicval_id, $array) {
 
         #Helper::d($dic_slug);

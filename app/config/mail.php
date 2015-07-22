@@ -3,7 +3,7 @@
 return array(
 
     'feedback' => array(
-        'address' => 'support@grapheme.ru',
+        'address' => 'feedback@grapheme.ru',
         #'address' => 'az@grapheme.ru',
         #'address' => 'reserved@mail.ru',
         #'subject' => 'ВидеоГид, обратная связь',

@@ -320,6 +320,10 @@ class MenuConstructor {
 
             return NULL;
 
+        } else if (@$data['type'] == 'page' && !isset($this->pages[$data['page_id']])) {
+
+            return null;
+
         } else {
 
             return $this->get_element($element_id);
@@ -343,7 +347,7 @@ class MenuConstructor {
          * Получаем данные об элементе меню
          */
         $data = $this->items[$element_id];
-        #Helper::dd($data);
+        #Helper::d($data);
 
         if (@$data['hidden'])
             return false;
@@ -716,8 +720,15 @@ class MenuConstructor {
                         ## Если получены объекты страниц
                         if (isset($pages) && count($pages)) {
 
+                            #Helper::dd($pages);
+
                             ## Перебираем их
                             foreach ($pages as $page) {
+
+                                if (!is_object($page)) {
+                                    #dd($page);
+                                    continue;
+                                }
 
                                 ## Проверка на активность
                                 $is_active = $this->isRoute($page->start_page ? 'mainpage' : 'page', ['url' => $page->slug]);

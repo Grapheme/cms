@@ -487,6 +487,7 @@ class AdminDicsController extends BaseController {
         $selects = array(
             "dicval.id AS id",
             $dic->id . " AS dic_id",
+            $dic->id . " AS source_id",
             "'" . $dic->name . "' AS dic_name",
             "'" . $dic->slug . "' AS dic_slug",
             "dicval.name AS name"
@@ -526,7 +527,7 @@ class AdminDicsController extends BaseController {
                 ++$j;
                 $tbl =  "tbl" . $j;
                 ##$selects[] = $tbl . '.language AS language';
-                $selects[] = $tbl . '.value AS ' . $field_key;
+                $selects[] = $tbl . '.value AS `' . $field_key . '`';
                 $sql[] = "LEFT JOIN " . $tbl_field . " AS " . $tbl . " ON " . $tbl . ".dicval_id = dicval.id AND " . $tbl . ".key = '" . $field_key . "' AND " . $tbl . ".language IS NOT NULL";
             }
         }
@@ -545,7 +546,7 @@ class AdminDicsController extends BaseController {
             "<pre>
     sql_query     = \\\n        " . (implode(' \\'."\n        ", $sql)) . "
 
-    sql_attr_uint = id
+    sql_attr_uint = source_id
 </pre>"
             ;
     }
