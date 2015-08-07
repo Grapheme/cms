@@ -630,10 +630,16 @@ class DicVal extends BaseModel {
 
         if (isset($this->fields) && is_object($this->fields)) {
 
+            #Helper::tad($this->fields);
+
             ## Extract fields (with NULL language or language = default locale)
             if (count($this->fields))
                 foreach ($this->fields as $field) {
-                    $this->{$field->key} = $field->value;
+                    try {
+                        $this->{$field->key} = $field->value;
+                    } catch(ErrorException $e) {
+                        ##
+                    }
                 }
             if ($unset)
                 unset($this->fields);

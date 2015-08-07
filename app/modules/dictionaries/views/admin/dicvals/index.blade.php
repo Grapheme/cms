@@ -103,34 +103,45 @@ function write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $modul
     @include($module['tpl'].'/menu')
 
 
-	@if($count = @count($elements))
+    @if (!$listing)
 
-        <div class="dd dicval-list" data-output="#nestable-output">
-            <?
-            write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $module, $sortable);
-            ?>
-        </div>
+        <p>
+            {{ $dic_settings['disable_listing_without_filter']['message'] }}
+        </p>
 
-        <div class="clear"></div>
+    @else
 
-        @if ($dic->pagination > 0)
-            {{ $elements_pagination->appends(Input::all())->links() }}
-        @endif
+        @if($count = @count($elements))
 
-	@else
+            <div class="dd dicval-list" data-output="#nestable-output">
+                <?
+                write_level($hierarchy, $elements, $dic_id, $dic, $dic_settings, $module, $sortable);
+                ?>
+            </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="ajax-notifications custom">
-                    <div class="alert alert-transparent">
-                        <h4>Список пуст</h4>
-                        <p><br><i class="regular-color-light fa fa-th-list fa-3x"></i></p>
+            <div class="clear"></div>
+
+            @if ($dic->pagination > 0)
+                {{ $elements_pagination->appends(Input::all())->links() }}
+            @endif
+
+        @else
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="ajax-notifications custom">
+                        <div class="alert alert-transparent">
+                            <h4>Список пуст</h4>
+                            <p><br><i class="regular-color-light fa fa-th-list fa-3x"></i></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-	@endif
+        @endif
+
+    @endif
+
 
     <div class="clear"></div>
 

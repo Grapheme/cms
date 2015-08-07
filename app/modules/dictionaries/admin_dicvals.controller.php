@@ -247,6 +247,21 @@ class AdminDicvalsController extends BaseController {
             }
         }
 
+        ## Disable listing without needable filter options
+        $listing = true;
+        if (isset($dic_settings['disable_listing_without_filter']) && $dic_settings['disable_listing_without_filter']) {
+            $dic_settings['disable_listing_without_filter']['fields'] = (array)$dic_settings['disable_listing_without_filter']['fields'];
+            #Helper::ta($dic_settings['disable_listing_without_filter']['fields']);
+            if (count($dic_settings['disable_listing_without_filter']['fields'])) {
+                foreach ($dic_settings['disable_listing_without_filter']['fields'] as $condition) {
+                    if (!Input::get('filter.fields.' . $condition)) {
+                        $listing = false;
+                        break;
+                    }
+                }
+            }
+        }
+
         if (isset($dic_settings['sortable']) && is_callable($dic_settings['sortable']))
             $sortable = $dic_settings['sortable']($dic, $elements);
 
@@ -287,10 +302,12 @@ class AdminDicvalsController extends BaseController {
 
 
         $id_left_right = array();
-        foreach($elements as $element) {
-            $id_left_right[$element->id] = array();
-            $id_left_right[$element->id]['left'] = $element->lft;
-            $id_left_right[$element->id]['right'] = $element->rgt;
+        if (count($elements)) {
+            foreach($elements as $element) {
+                $id_left_right[$element->id] = array();
+                $id_left_right[$element->id]['left'] = $element->lft;
+                $id_left_right[$element->id]['right'] = $element->rgt;
+            }
         }
         $hierarchy = (new NestedSetModel())->get_hierarchy_from_id_left_right($id_left_right);
 
@@ -301,7 +318,7 @@ class AdminDicvalsController extends BaseController {
 
         #return View::make(Helper::acclayout());
         #return View::make($this->module['tpl'].'index_old', compact('elements', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection'));
-        return View::make($this->module['tpl'].'index', compact('elements', 'elements_pagination', 'hierarchy', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection', 'search_query'));
+        return View::make($this->module['tpl'].'index', compact('elements', 'elements_pagination', 'hierarchy', 'dic', 'dic_id', 'sortable', 'dic_settings', 'actions_column', 'total_elements', 'total_elements_current_selection', 'search_query', 'listing'));
 	}
 
     /************************************************************************************/
@@ -354,8 +371,10 @@ class AdminDicvalsController extends BaseController {
 
         $element = $element->first();
 
+        $null = null;
+
         $this->callHook('before_all', $dic);
-        $this->callHook('before_index_view_create_edit', $dic, null, $element);
+        $this->callHook('before_index_view_create_edit', $dic, $null, $element);
         $this->callHook('before_create_edit', $dic, $element);
         $this->callHook('before_create', $dic, $element);
 
@@ -417,9 +436,12 @@ class AdminDicvalsController extends BaseController {
         $versions = Config::get('dic/' . $dic->slug . '.versions');
 
         $input = Input::all();
+        #dd($input);
         $locales = Input::get('locales');
         $fields = Helper::withdraw($input, 'fields'); #Input::get('fields');
-        $fields_i18n = Input::get('fields_i18n');
+        #$fields_i18n = Input::get('fields_i18n');
+        $fields_i18n = @$input['fields_i18n'];
+        #dd($fields_i18n);
         $seo = Input::get('seo');
 
         /*
@@ -482,6 +504,7 @@ class AdminDicvalsController extends BaseController {
         #return Response::json($json_request,200);
         #dd(Input::all());
         #Helper::dd(Input::all());
+        #Helper::dd($input);
 
         $json_request = array('status' => FALSE, 'responseText' => '', 'responseErrorText' => '', 'redirect' => FALSE);
 		$validator = Validator::make($input, array());
@@ -623,6 +646,8 @@ class AdminDicvalsController extends BaseController {
                      */
                     foreach ($fields_i18n as $locale_sign => $values) {
 
+                        #dd($values);
+
                         #Helper::d($field_name . ' => ' . @$values[$field_name]);
                         #var_dump(@$values[$field_name]);
 
@@ -631,6 +656,9 @@ class AdminDicvalsController extends BaseController {
 
                         $value = @$values[$field_name];
                         #Helper::d($field_name . ' => ' . $value);
+
+                        #Helper::d($field_name);
+                        #Helper::d($value);
 
                         ## If handler of field is defined
                         if (is_callable($handler = @$element_fields_i18n[$field_name]['handler'])) {
@@ -1260,7 +1288,7 @@ class AdminDicvalsController extends BaseController {
             return false;
         $hook = Config::get('dic/' . $dic->slug . '.hooks.' . $hook_name);
         if (@$hook && @is_callable($hook))
-            $hook($dic, $dicval);
+            $dicval = $hook($dic, $dicval);
 
     }
 

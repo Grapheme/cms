@@ -81,8 +81,9 @@ return array(
         $dics = Dic::modifyKeys($dics, 'slug');
         #Helper::tad($dics);
         $lists = Dic::makeLists($dics, 'values', 'name', 'id');
-        $lists_ids = Dic::makeLists($dics, null, 'id', 'slug');
         #Helper::dd($lists);
+        $lists_ids = Dic::makeLists($dics, null, 'id', 'slug');
+        #Helper::dd($lists_ids);
 
         /**
          * Возвращаем набор полей
@@ -288,7 +289,8 @@ if (len > 0) {
                     #'field_lng' => 'lng',
                     #'keyup_timer' => 1200,
 
-                    'geo_prefix' => 'Россия, Ростов-на-Дону, ',
+                    'geo_prefix' => '"Россия, Ростов-на-Дону, "',
+                    #'geo_prefix' => '"Россия, " + $("input[name=name]").val() + ", "',
                     'default_lat' => '47.25221300',
                     'default_lng' => '39.69359700',
                     'default_zoom' => '11',
@@ -648,5 +650,15 @@ HTML
      * Можно указывать список - массивом: ['city', 'category']
      */
     'disable_ordering_without_filter' => 'brand_type',
+
+    /**
+     * Запретить отображение списка записей, если не выбраны элементы для фильтрации
+     * Список указывается массивом: ['city', 'category']
+     */
+    'disable_listing_without_filter' => [
+        'fields' => ['course_id'],
+        'message' => 'Сначала выберите курс.',
+    ],
+
 
 );

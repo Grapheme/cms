@@ -4,7 +4,7 @@
     <script>
 
         var geocoder_timer;
-        var geo_prefix = "{{ isset($geo_prefix) ? $geo_prefix : '' }}";
+        var geo_prefix = {{ isset($geo_prefix) ? $geo_prefix : '' }};
 
         // Run geocoder
         jQuery(function ($) {

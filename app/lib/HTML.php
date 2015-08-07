@@ -30,7 +30,16 @@ class HTML extends BaseHTML {
 
 		$attributes = $attributes + $defaults;
 
-        $filemtime = @filemtime(@dirname(@$_SERVER['SCRIPT_FILENAME'])."/".$url);
+		$info = parse_url($url);
+
+		#\Helper::d($info);
+		#\Helper::d($url);
+		#\Helper::d($_SERVER['SCRIPT_FILENAME']);
+		#\Helper::d(dirname($_SERVER['SCRIPT_FILENAME']) . $info['path']);
+		#\Helper::dd($_SERVER);
+
+        #$filemtime = @filemtime(@dirname(@$_SERVER['SCRIPT_FILENAME'])."/".$url);
+        $filemtime = @filemtime(@dirname($_SERVER['SCRIPT_FILENAME']) . @$info['path']) ?: null;
 
 		$attributes['href'] = asset($url, $secure) . ($filemtime > 0 ? "?".$filemtime : "");
 
@@ -54,7 +63,10 @@ class HTML extends BaseHTML {
 	{
         $HtmlBuilder = new HtmlBuilder;
 
-        $filemtime = @filemtime(@dirname(@$_SERVER['SCRIPT_FILENAME'])."/".$url);
+		$info = parse_url($url);
+
+		#$filemtime = @filemtime(@dirname(@$_SERVER['SCRIPT_FILENAME'])."/".$url);
+		$filemtime = @filemtime(@dirname($_SERVER['SCRIPT_FILENAME']) . @$info['path']) ?: null;
 
 		$attributes['src'] = asset($url, $secure) . ($filemtime > 0 ? "?".$filemtime : "");
 

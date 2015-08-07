@@ -107,7 +107,7 @@ class DicLib extends BaseController {
      * @param $collection
      * @param string $key
      * @param string/null $field
-     * @return bool
+     * @return Collection
      */
     public static function loadImages($collection, $key = 'image_id', $field = null){
 
