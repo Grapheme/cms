@@ -354,14 +354,28 @@ class DicVal extends BaseModel {
 
         $query->join($tbl_dic_field_val . ' AS ' . $rand_tbl_alias, $rand_tbl_alias . '.dicval_id', '=', $tbl_dicval . '.id')
             ->where($rand_tbl_alias . '.key', '=', $key)
-            ->where($rand_tbl_alias . '.value', $condition, $value)
+            #->where($rand_tbl_alias . '.value', $condition, $value)
         ;
+
+        if (is_array($value) && count($value)) {
+
+            if ($condition == '=' || $condition == 'IN')
+                $query->whereIn($rand_tbl_alias . '.value', $value);
+            elseif ($condition == '!=' || $condition == '<>')
+                $query->whereNotIn($rand_tbl_alias . '.value', $value);
+
+        } else {
+
+            $query->where($rand_tbl_alias . '.value', $condition, $value);
+        }
+
+        $query->addSelect(DB::raw('`' . $rand_tbl_alias . '`.`value` AS ' . $key));
+
             /*
             ## Multilanguage
             ->where($rand_tbl_alias . '.language', '=', Config::get('app.locale'))
             ->orWhere($rand_tbl_alias . '.language', '=', NULL)
             */
-
         if ($multilingual) {
             $query
                 ->where(function ($query) use ($rand_tbl_alias) {
@@ -615,19 +629,34 @@ class DicVal extends BaseModel {
             if (count($this->allfields)) {
                 $temp = [];
                 foreach ($this->allfields as $field) {
+                    ##
+                    ## RIGHT BEHAVIOR!!
+                    ## Check specified language: i18n or normal field
+                    ##
+                    if ($field->language) {
+                        if (!isset($temp[$field->language])) {
+                            $temp[$field->language] = [];
+                        }
+                        $temp[$field->language][$field->key] = $field->value;
+                    } else {
+                        $this->{$field->key} = $field->value;
+                    }
+
+                    /*
                     $lang = $field->language ? $field->language : Config::get('app.locale');
                     if (!isset($temp[$lang])) {
                         $temp[$lang] = [];
                     }
                     $temp[$lang][$field->key] = $field->value;
+                    */
                 }
                 unset($this->allfields);
                 $this->allfields = $temp;
             }
         }
-
         #Helper::tad($this);
 
+        ## Extract fields
         if (isset($this->fields) && is_object($this->fields)) {
 
             #Helper::tad($this->fields);
@@ -645,7 +674,6 @@ class DicVal extends BaseModel {
                 unset($this->fields);
 
         }
-
         #Helper::tad($this);
 
         ## Extract all text fields (without language & all i18n)
@@ -654,19 +682,34 @@ class DicVal extends BaseModel {
             if (count($this->alltextfields)) {
                 $temp = [];
                 foreach ($this->alltextfields as $field) {
+                    ##
+                    ## RIGHT BEHAVIOR!!
+                    ## Check specified language: i18n or normal field
+                    ##
+                    if ($field->language) {
+                        if (!isset($temp[$field->language])) {
+                            $temp[$field->language] = [];
+                        }
+                        $temp[$field->language][$field->key] = $field->value;
+                    } else {
+                        $this->{$field->key} = $field->value;
+                    }
+
+                    /*
                     $lang = $field->language ? $field->language : Config::get('app.locale');
                     if (!isset($temp[$lang])) {
                         $temp[$lang] = [];
                     }
                     $temp[$lang][$field->key] = $field->value;
+                    */
                 }
                 unset($this->alltextfields);
                 $this->alltextfields = $temp;
             }
         }
-
         #Helper::ta($this);
 
+        ## Extract text fields
         if (isset($this->textfields) && @is_object($this->textfields)) {
 
             ## Extract text fields (with NULL language or language = default locale)
@@ -1246,6 +1289,24 @@ class DicVal extends BaseModel {
             return false;
 
         $dicval = DicFieldVal::firstOrNew(array(
+            'dicval_id' => $this->id,
+            'language' => $lang,
+            'key' => $key,
+        ));
+        $dicval->value = $value;
+        $dicval->save();
+
+        $this->$key = $value;
+
+        return $dicval;
+    }
+
+    public function update_textfield($key, $value, $lang = NULL) {
+
+        if (!$this->id)
+            return false;
+
+        $dicval = DicTextFieldVal::firstOrNew(array(
             'dicval_id' => $this->id,
             'language' => $lang,
             'key' => $key,

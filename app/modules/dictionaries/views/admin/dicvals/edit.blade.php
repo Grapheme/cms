@@ -106,7 +106,9 @@
                     ?>
                     <fieldset class="padding-top-10 clearfix">
                         <?
-                        $absolute_all_fields = array_merge_recursive((array)$element->allfields, (array)$element->alltextfields);
+                        #Helper::ta($element);
+                        #$absolute_all_fields = array_merge_recursive((array)$element->allfields, (array)$element->alltextfields);
+                        #Helper::ta($absolute_all_fields);
                         ?>
                         @foreach ($fields_general as $field_name => $field)
                             <?
@@ -117,7 +119,8 @@
                                 $dicval_edit_scripts[] = $field['scripts'];
 
                             #$value = isset($element->allfields) && isset($element->allfields[Config::get('app.locale')]) && isset($element->allfields[Config::get('app.locale')][$field_name]) ? $element->allfields[Config::get('app.locale')][$field_name] : NULL;
-                            $value = isset($absolute_all_fields[Config::get('app.locale')][$field_name]) ? $absolute_all_fields[Config::get('app.locale')][$field_name] : NULL;
+                            #$value = isset($absolute_all_fields[Config::get('app.locale')][$field_name]) ? $absolute_all_fields[Config::get('app.locale')][$field_name] : NULL;
+                            $value = $element->$field_name;
                             #Helper::ta($value);
                             ?>
                             <section>

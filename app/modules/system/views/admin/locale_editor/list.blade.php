@@ -359,6 +359,7 @@ foreach ($files as $dir => $dir_files) {
 
         options.beforeSubmit = function(formData, jqForm, options){
             $(form).find('button.submit').addClass('loading');
+            $(form).find('button.submit').attr('disabled', 'disabled');
             //$('.error').text('').hide();
         }
 
@@ -395,6 +396,7 @@ foreach ($files as $dir => $dir_files) {
 
         options.complete = function(data, textStatus, jqXHR){
             $(form).find('button.submit').removeClass('loading');
+            $(form).find('button.submit').attr('disabled', null);
         }
 
         $(form).ajaxSubmit(options);

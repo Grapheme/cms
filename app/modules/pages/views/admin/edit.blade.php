@@ -67,7 +67,7 @@ $element->settings = json_decode($element->settings, 1);
 
                 <fieldset></fieldset>
 
-                <div class="col-sm-12 col-md-12 col-lg-12 clearfix">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 clearfix">
 
                     <section class="col col-sm-12 @if (Allow::action('pages', 'advanced', true, false)) col-lg-6 @else col-lg-12 @endif">
                         <label class="label">Название</label>
@@ -76,6 +76,7 @@ $element->settings = json_decode($element->settings, 1);
                         </label>
                     </section>
 
+
                     @if (Allow::action('pages', 'advanced', true, false))
                         <section class="col col-lg-6 col-sm-12">
                             <label class="label">Системное имя</label>
@@ -83,53 +84,51 @@ $element->settings = json_decode($element->settings, 1);
                                 {{ Form::text('sysname') }}
                             </label>
                         </section>
+                    @else
+                        {{ Form::hidden('sysname') }}
+                    @endif
+
+
+                    <section class="col col-sm-12 @if($show_template_select) col-lg-6 @else col-lg-12 @endif">
+                        <label class="label">URL страницы</label>
+                        <label class="input">
+                            {{ Form::text('slug', NULL, array('placeholder' => '')) }}
+                        </label>
+                        <label class="note">
+                            Только символы английского алфавита без пробелов, цифры, знаки _ и -
+                        </label>
+                    </section>
+
+
+                    @if ($show_template_select)
+                        <section class="col col-lg-6 col-sm-12">
+                            <label class="label">Шаблон</label>
+                            <label class="input select input-select2">
+                                {{-- Form::select('template', array('Выберите...')+$templates) --}}
+                                {{ Form::select('template', $templates) }}
+                            </label>
+                            <label class="note">
+                                При добавлении новой страницы выбирайте шаблон "Простая страница"
+                            </label>
+                        </section>
+                    @else
+                        {{ Form::hidden('template') }}
+                    @endif
+
+
+                    @if (Allow::action('pages', 'types', true, false) && null !==($types = Config::get('pages.types')) && is_array($types) && count($types))
+                        <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label">Тип страницы</label>
+                            <label class="input select input-select2">
+                                {{ Form::select('type_id', $types) }}
+                            </label>
+                        </section>
+                    @else
+                        {{ Form::hidden('type_id') }}
                     @endif
 
                 </div>
 
-
-                <div class="clearfix">
-
-
-                <section class="col col-sm-12 @if($show_template_select) col-lg-6 @else col-lg-12 @endif">
-                    <label class="label">URL страницы</label>
-                    <label class="input">
-                        {{ Form::text('slug', NULL, array('placeholder' => '')) }}
-                    </label>
-                    <label class="note">
-                        Только символы английского алфавита без пробелов, цифры, знаки _ и -
-                    </label>
-                </section>
-
-                @if ($show_template_select)
-                    <section class="col col-lg-6 col-sm-12">
-                        <label class="label">Шаблон</label>
-                        <label class="input select input-select2">
-                            {{-- Form::select('template', array('Выберите...')+$templates) --}}
-                            {{ Form::select('template', $templates) }}
-                        </label>
-                        <label class="note">
-                            При добавлении новой страницы выбирайте шаблон "Простая страница"
-                        </label>
-                    </section>
-                @else
-                    {{ Form::hidden('template') }}
-                @endif
-
-                </div>
-
-                @if (NULL && $_types->count())
-                <div class="col col-sm-12 col-md-12 col-lg-12 clearfix">
-
-                    <section class="">
-                        <label class="label">Тип страницы</label>
-                        <label class="input select input-select2">
-                            {{ Form::select('type_id', array('Выберите...')+$_types->lists('name', 'id')) }}
-                        </label>
-                    </section>
-
-                </div>
-                @endif
 
                 @if (Allow::action('pages', 'advanced', true, false))
                 <fieldset class="clearfix">
@@ -457,7 +456,7 @@ $element->settings = json_decode($element->settings, 1);
                     //console.log($('#blockEditModal').redactor('getEditor'));
                     return false;
                 }).fail(function(data){
-                    console.log(data);Z
+                    console.log(data);
                     return false;
                 });
             }

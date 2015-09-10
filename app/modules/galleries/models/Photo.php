@@ -24,12 +24,14 @@ class Photo extends Eloquent {
 
     public function thumbpath() {
         #return link::to(Config::get('site.galleries_photo_dir')) . "/" . $this->name;
-        return str_replace('//', '/', public_path(Config::get('site.galleries_thumb_public_dir') . "/" . $this->name));
+        #return str_replace('//', '/', public_path(Config::get('site.galleries_thumb_public_dir') . "/" . $this->name));
+        return str_replace('//', '/', Config::get('site.galleries_thumb_dir') . "/" . $this->name);
     }
 
     public function fullpath() {
         #return link::to(Config::get('site.galleries_photo_dir')) . "/" . $this->name;
-        return str_replace('//', '/', public_path(Config::get('site.galleries_photo_public_dir') . "/" . $this->name));
+        #return str_replace('//', '/', public_path(Config::get('site.galleries_photo_public_dir') . "/" . $this->name));
+        return str_replace('//', '/', Config::get('site.galleries_photo_dir') . "/" . $this->name);
     }
 
     public function is_correct() {
@@ -181,4 +183,94 @@ class Photo extends Eloquent {
         return true;
     }
 
+
+    /**
+     * Всем костылям костыль, но по-другому сделать не получается :(
+     */
+    public static function preload(
+        &$a1=null, &$a2=null, &$a3=null, &$a4=null, &$a5=null, &$a6=null, &$a7=null, &$a8=null, &$a9=null, &$a10=null,
+        &$a11=null, &$a12=null, &$a13=null, &$a14=null, &$a15=null, &$a16=null, &$a17=null, &$a18=null, &$a19=null, &$a20=null,
+        &$a21=null, &$a22=null, &$a23=null, &$a24=null, &$a25=null, &$a26=null, &$a27=null, &$a28=null, &$a29=null, &$a30=null
+    ) {
+
+        #$trace = debug_backtrace();
+        #var_dump($trace); #die;
+
+        #$ids = func_get_args();
+
+        /*
+        $trace = debug_backtrace();
+        #dd($trace);
+        $ids = [];
+        if (isset($trace[0]["args"]))
+            for($i=0; $i < count($trace[0]["args"]); $i++) {
+                $ids[$i] = &$trace[0]["args"][$i];
+            }
+        #call_user_func_array(array(&$this, 'bar'), $args);
+        #var_dump($ids); #die;
+        */
+
+        #$trace = debug_backtrace();
+        #var_dump($trace); #die;
+
+        #var_dump(func_get_args()); #die;
+
+        #$ids = func_get_args_byref();
+        #var_dump($ids); #die;
+
+        #$ids[0] = 111;
+        #var_dump($ids); #die;
+        #return;
+
+        $backtrace = debug_backtrace();
+
+        $ids = [];
+
+        foreach ($backtrace[0]['args'] as &$arg) {
+            $ids[] = &$arg;
+        }
+
+        if (!count($ids))
+            return null;
+
+        #var_dump($ids); die;
+
+        $ids_2 = array_flip($ids);
+        #var_dump($ids_2); #die;
+
+        $photos = self::whereIn('id', $ids)->get();
+        #Helper::ta($photos);
+        if (isset($photos) && is_object($photos) && $photos->count()) {
+            foreach ($photos as $p => $photo) {
+
+                $i = @$ids_2[$photo->id];
+                if (!is_null($i)) {
+
+                    $ids[$i] = $photo;
+
+                }
+            }
+        }
+
+        /*
+        foreach($backtrace[0]['args'] as $a => &$arg) {
+
+            #var_dump($arg);
+            $arg .= 'baz';
+            #var_dump($arg);
+        }
+        */
+
+        #var_dump($ids); #die;
+
+        return $ids;
+        #Helper::tad($return);
+    }
+
+}
+
+function func_get_args_byref() {
+    $trace = debug_backtrace();
+    #Helper::tad($trace[1]); die;
+    return $trace[1]['args'];
 }

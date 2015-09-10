@@ -1385,7 +1385,9 @@ HTML;
             return true;
     }
 
-
+    public static function error404() {
+        header("HTTP/1.1 404 Not Found");
+    }
 }
 
 if (!function_exists('is_collection')) {
@@ -1399,5 +1401,14 @@ if (!function_exists('is_json')) {
         $temp = json_decode($string, true);
         #dd($temp);
         return (json_last_error() == JSON_ERROR_NONE) ? $temp : false;
+    }
+}
+
+if (!function_exists('count_')) {
+    function count_($obj) {
+        return (
+            (is_object($obj) && method_exists($obj, 'count') && $obj->count())
+            || (is_array($obj) && count($obj))
+        );
     }
 }

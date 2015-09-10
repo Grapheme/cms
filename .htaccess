@@ -28,5 +28,20 @@ php_value upload_max_filesize 10M
 ## Disable Apache server authorisation for subdirectory
 ## http://www.shkodenko.kiev.ua/index.php?lang_id=1&content_id=223
 ##
-#Satisfy Any
-#Allow from all
+<If "%{HTTP_HOST} =~ /\.dev\.grapheme\.ru$/">
+    ## Rules for DEV domain
+</If>
+<Else>
+    ## Rules for PRODUCTION domain
+    #Satisfy Any
+    #Allow from all
+</Else>
+
+##
+## Redirect finished projects: from DEV domain to PRODUCTION domain
+## project.dev.grapheme.ru -> project.ru
+## http://httpd.apache.org/docs/2.4/mod/core.html#if
+##
+#<If "%{HTTP_HOST} =~ /\.dev\.grapheme\.ru$/">
+#    Redirect 301 / http://project.ru/
+#</If>

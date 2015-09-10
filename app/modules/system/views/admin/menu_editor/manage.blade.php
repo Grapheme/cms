@@ -27,8 +27,7 @@
     #$edit_title   = "Добавить меню:";
 
     $url = action($module['name'] . '.update', array('id' => $element->id));
-    $method     = @$element->id ? 'PUT' : 'POST';
-    #$form_title = @$element->id ? $create_title : $edit_title;
+    $method     = isset($element->id) && $element->id ? 'PUT' : 'POST';
     $form_title = 'Пункты меню';
     ?>
 
@@ -150,6 +149,21 @@
                                             ?>
                                             {{ Form::select('page_id', $pages_for_select) }}
                                         </label>
+
+                                        {{-- Start params --}}
+                                        <label class="label margin-top-10">
+                                            Параметры (необязательно)
+                                        </label>
+                                        <label class="textarea">
+                                            {{ Form::textarea('page_params', '', ['placeholder' => 'Параметры, каждый с новой строки', 'rows' => 3]) }}
+                                        </label>
+                                        <label class="note">
+                                            Для передачи именованных параметров используйте знак "равно", например:<br/>
+                                            newslist<br/>sort_by=title<br/>sort_type=asc
+                                        </label>
+                                        {{-- End params --}}
+
+                                        <div class="clearfix"></div>
 
                                         <label class="margin-top-10">
                                             <a href="#" class="btn btn-default add_to_menu add_to_menu_page">
@@ -414,6 +428,13 @@
                 <input type="checkbox" name="items[%N%][use_active_hierarchy]" value="1" class="use_active_hierarchy click_hidded_option" %use_active_hierarchy% />
                 <i></i>
                 Активность согласно иерархии страниц
+            </label>
+
+            <label class="label margin-top-10">
+                Параметры
+            </label>
+            <label class="textarea">
+                {{ Form::textarea('items[%N%][page_params]', '%page_params%', ['placeholder' => '', 'rows' => 3]) }}
             </label>
 
             {{ Form::hidden('items[%N%][type]', 'page') }}

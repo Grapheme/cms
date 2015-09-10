@@ -47,4 +47,10 @@ if (is_object($meta))
 <script>
     // Activate dropzone
     _global_activate_dropzone();
+
+    // Activate imperavi redactors
+    $('#blockEditModal textarea.redactor').each(function(){
+        var element = $(this);
+        activate_block_editor(element);
+    });
 </script>

@@ -40,11 +40,12 @@ class CustomUrlGenerator extends UrlGenerator {
             $defaults = (array)$route->getDefaults();
         }
 
-        #if ($name == 'mainpage') {
-        #    var_dump($route);
-        #}
+        if ($name == 'mainpage') {
+            #var_dump($route);
+            #die;
+        }
 
-        if ($name == 'page' && 0) {
+        if ($name == 'mainpage' && 0) {
             var_dump($route);
             var_dump((array)$route->parameterNames());
             var_dump($parameters);
@@ -89,6 +90,20 @@ class CustomUrlGenerator extends UrlGenerator {
                     && isset($defaults[$value])
                     && count(\Config::get('app.locales')) > 1
                     && $defaults[$value] == \Config::get('app.locale')
+                ) {
+
+                    #\Helper::tad(123);
+                    #die();
+                }
+
+
+                if (
+                    $route->getName() == 'mainpage'
+                    && $value == 'lang'
+                    && isset($defaults[$value])
+                    && count(\Config::get('app.locales')) > 1
+                    && $defaults[$value] == \Config::get('app.locale')
+                    && \Config::get('app.locale') == \Config::get('app.default_locale')
                 )
                     continue;
 
@@ -107,7 +122,12 @@ class CustomUrlGenerator extends UrlGenerator {
             }
         }
         #print_r($parameters);
+        #die;
 
+        if ($name == 'mainpage' && 1) {
+            #print_r($parameters);
+            #die;
+        }
 
         ##
         ## Call original URL::route() with 100% right $parameters

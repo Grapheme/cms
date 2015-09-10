@@ -44,6 +44,11 @@ var dropzone_translate = {
 };
 
 
+$(document).ready(function () {
+
+    Dropzone.autoDiscover = false;
+});
+
 
 _global_activate_dropzone = function () {
 
@@ -72,6 +77,10 @@ _global_activate_dropzone = function () {
                 acceptedFiles: acceptedFiles || 'image/*'
             };
             dropzone_settings = array_merge(dropzone_settings, dropzone_translate);
+
+            if (typeof el.disable === "function") {
+                el.disable();
+            }
 
             var myDropzone = new Dropzone(
                 el, dropzone_settings
@@ -138,9 +147,25 @@ _global_activate_dropzone = function () {
             }
             dropzone_settings = array_merge(dropzone_settings, dropzone_translate);
 
-            var myDropzone = new Dropzone(
-                el, dropzone_settings
-            );
+            /*
+            if (typeof el.disable !== "function") {
+                //el.disable();
+                console.log(el);
+            }
+            */
+
+            try {
+                var myDropzone = new Dropzone(
+                    el, dropzone_settings
+                );
+            } catch(err) {
+                // Handle error(s) here
+                console.log(el);
+                //console.log(err);
+            }
+
+            if (typeof myDropzone === 'undefined')
+                return;
 
             myDropzone.on("totaluploadprogress", function (data) {
                 //console.log(data);

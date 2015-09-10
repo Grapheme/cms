@@ -19,6 +19,7 @@ global $pages2_output_marker;
                     continue;
 
                 $element = $elements[$h['id']];
+                $page = $element;
 
                 unset($pages2[$h['id']]);
 
@@ -34,6 +35,26 @@ global $pages2_output_marker;
                         </div>
                     @endif
                     <div class="dd3-content{{ $sortable > 0 ? '' : ' padding-left-15 padding-top-10' }} clearfix">
+
+                        <div class="pull-right dicval-actions dicval-main-actions dicval-actions-margin-left">
+                            @if(Allow::action('pages','edit'))
+                                <a class="btn btn-warning margin-right-5" href="{{ pageurl($page->sysname) }}" target="_blank" title="Просмотр страницы">
+                                    <i class="fa fa-external-link"></i>
+                                </a>
+                            @endif
+                            @if(Allow::action('pages','edit'))
+                                <a class="btn btn-success margin-right-5" href="{{ URL::route('page.edit', array('page_id' => $page->id)) }}" title="Изменить">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            @endif
+                            @if(Allow::action('pages','delete'))
+                                <form method="POST" action="{{ URL::route('page.destroy', array('page_id' => $page->id)) }}" style="display:inline-block" title="Удалить">
+                                    <button type="button" class="btn btn-danger remove-page">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
 
                         <div class="dicval-lines">
                             {{ $line }}

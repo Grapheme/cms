@@ -15,6 +15,7 @@ return array(
     'preload_cache_lifetime' => 60*24, ## время жизни кеша страниц, в минутах
 
     /*
+    ## Доп. поля
     'fields' => function() {
 
         return array(
@@ -26,7 +27,17 @@ return array(
     },
     #*/
 
+    /*
+    ## Типы страниц
+    'types' => [
+        0 => 'Страница',
+        1 => 'Проект',
+    ],
+    #*/
+
+
     #/*
+    ## Шаблоны блоков
     'block_templates' => function() {
 
         $block_tpls = [

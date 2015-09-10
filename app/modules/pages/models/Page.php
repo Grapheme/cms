@@ -144,19 +144,22 @@ class Page extends BaseModel {
 
             if ($block->template == '') {
 
-                ## Return compiled field of the model
-                return DbView::make($content_container)->field($field)->with($variables)->render();
+                $content = DbView::make($content_container)->field($field)->with($variables)->render();
 
-            } else if (View::exists(Helper::layout('blocks.' . $block->template))) {
+                return View::exists(Helper::layout('blocks.default'))
+                    ? View::make(Helper::layout('blocks.default'), compact('content'))->render()
+                    : $content
+                ;
+
+            } elseif (View::exists(Helper::layout('blocks.' . $block->template))) {
 
                 $content = json_decode($content_container->content, true);
                 $content_container->content = $content;
                 #Helper::ta($content);
                 #dd(extract($content));
 
-                return View::make(Helper::layout('blocks.' . $block->template), $content);
+                return View::make(Helper::layout('blocks.' . $block->template), $content)->render();
             }
-
         }
 
         return null;
@@ -409,6 +412,16 @@ class Page extends BaseModel {
         return @$this->page_meta_settings['fields'][$name] ?: null;
     }
 
+
+    public function url($params = []) {
+
+        #Helper::tad($this);
+
+        $route_name = 'page' . ($this->parametrized ? '.' . $this->sysname : '');
+        $temp = (array)($this->slug) + $params;
+
+        return URL::route($route_name, $temp);
+    }
 }
 
 if (!function_exists('pageslug')) {

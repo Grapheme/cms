@@ -114,10 +114,14 @@ class MenuConstructor {
          */
         $menu = $this->get_level($this->order);
 
+        #$menu = str_replace('/7D/', '/{{ $current_city->slug }}/', $menu);
         #echo $menu; die;
 
         if (is_string($menu) && $menu != '')
             $menu = StringView::force($menu);
+
+        #Helper::dd($current_city);
+        #Helper::dd($menu);
 
         return $menu;
     }
@@ -439,9 +443,39 @@ class MenuConstructor {
         switch(@$element['type']) {
 
             case 'page':
-                if (isset($this->pages[$element['page_id']]) && is_object($this->pages[$element['page_id']]))
-                    return URL::route('page', ['slug' => $this->pages[$element['page_id']]->slug]);
-                return false;
+                if (!isset($this->pages[$element['page_id']]) || !is_object($this->pages[$element['page_id']]))
+                    return false;
+
+                $route_params = array();
+                if ('' != ($element['page_params'] = trim($element['page_params']))) {
+                    $temp = explode("\n", $element['page_params']);
+                    if (@count($temp)) {
+                        foreach ($temp as $tmp) {
+                            $tmp = trim($tmp);
+                            if (!$tmp)
+                                continue;
+                            $tmp = StringView::force($tmp);
+                            if (strpos($tmp, '=')) {
+                                $tmp_params = explode('=', $tmp, 2);
+                                $route_params[trim($tmp_params[0])] = trim($tmp_params[1]);
+                            } else {
+                                $route_params[] = $tmp;
+                            }
+                        }
+                    }
+                }
+
+                $page = $this->pages[$element['page_id']];
+                $route_name = $page->parametrized ? 'page.' . $page->sysname : 'page';
+                if (!$page->parametrized)
+                    $route_params = ['slug' => $page->slug] + $route_params;
+
+                #Helper::ta($page);
+                #Helper::d($route_name);
+                #Helper::d($route_params);
+                $return = URL::route($route_name, $route_params);
+                #Helper::d($return);
+                return $return;
                 break;
 
             case 'link':

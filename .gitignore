@@ -14,7 +14,7 @@ less
 .idea
 *.clpprj
 Thumbs.db
-composer.lock
+#composer.lock
 _ide_helper.php
 
 /app/config/database.php

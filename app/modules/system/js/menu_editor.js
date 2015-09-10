@@ -103,6 +103,7 @@ var menu_editor = {
             case 'page':
                 var title = params.text;
                 var mark = 'Страница';
+                block = str_replace('%page_params%', params.page_params || '', block);
                 block = str_replace('%page_id%', params.page_id, block);
                 block = str_replace('++page_id++', params.page_id, block);
                 block = str_replace('%text%', params.text, block);

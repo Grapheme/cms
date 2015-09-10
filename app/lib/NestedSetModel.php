@@ -378,5 +378,83 @@ class NestedSetModel {
     }
 
 
+    /**
+     * Get all root nodes of the tree
+     *
+     * @param string|object $elements
+     *
+     * @return array
+     */
+    public static function get_root_nodes($elements) {
+
+        if (is_string($elements)) {
+            $elements = json_decode($elements, false);
+        }
+
+        ## Находим все корневые элементы
+        $left = $right = 0;
+        $roots = [];
+        #$root_id = null;
+        #$current_page_element = isset($elements->{$page->id}) ? $elements->{$page->id} : null;
+        if (isset($elements) && count($elements)) {
+
+            foreach ($elements as $eid => $el) {
+
+                if ($el->left > $left && $el->right > $right) {
+                    $roots[$eid] = $el;
+                    #if ($el->left < $current_page_element->left && $el->right > $current_page_element->right)
+                    #    $root_id = $eid;
+                }
+
+                if ($el->left > $left)
+                    $left = $el->left;
+                if ($el->right > $right)
+                    $right = $el->right;
+            }
+        }
+
+        return $roots;
+    }
+
+
+    /**
+     * Get root node for the current element by him left & right
+     *
+     * @param string|object $elements
+     * @param int $current_element_left
+     * @param int $current_element_right
+     *
+     * @return int|null
+     */
+    public static function get_parent_root($elements, $current_element_left, $current_element_right) {
+
+        if (is_string($elements)) {
+            $elements = json_decode($elements, false);
+        }
+
+        ## Находим корневой элемент для переданного id
+        $left = $right = 0;
+        $root_id = null;
+        if (isset($elements) && count($elements)) {
+
+            foreach ($elements as $eid => $el) {
+
+                if ($el->left > $left && $el->right > $right) {
+                    if ($el->left <= $current_element_left && $el->right >= $current_element_right) {
+
+                        $root_id = (int)$eid;
+                        break;
+                    }
+                }
+
+                if ($el->left > $left)
+                    $left = $el->left;
+                if ($el->right > $right)
+                    $right = $el->right;
+            }
+        }
+
+        return $root_id;
+    }
 
 }

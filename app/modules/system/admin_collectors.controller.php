@@ -60,6 +60,8 @@ class AdminCollectorsController extends BaseController {
 
         $need_reload = false;
         foreach ($files as $file) {
+            if (strpos(basename($file), '~'))
+                continue;
             #Helper::dd($file);
             $mtime = @filemtime($file);
             #Helper::d($file . " - " . $mtime . " - " . $mod[$file]);

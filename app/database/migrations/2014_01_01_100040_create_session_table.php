@@ -11,7 +11,7 @@ class CreateSessionTable extends Migration {
         if (!Schema::hasTable($this->table)) {
         	Schema::create($this->table, function(Blueprint $table) {			
     			$table->string('id')->unique();
-    			$table->text('payload');
+    			$table->longText('payload');
     			$table->integer('last_activity');
     		});
             echo(' + ' . $this->table . PHP_EOL);

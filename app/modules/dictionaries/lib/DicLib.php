@@ -154,6 +154,7 @@ class DicLib extends BaseController {
         if (!count($collection) || !count($key))
             return $collection;
 
+        $images_ids_attr = array();
         $images_ids = array();
         /**
          * Перебираем все объекты в коллекции
@@ -167,6 +168,11 @@ class DicLib extends BaseController {
 
             #dd($work_obj->$key[0]);
             #dd($work_obj);
+            #Helper::tad($work_obj);
+
+            if (!is_object($work_obj)) {
+                dd($work_obj);
+            }
 
             /**
              * Перебираем все переданные ключи с ID изображений
@@ -175,23 +181,48 @@ class DicLib extends BaseController {
 
                 #Helper::ta($attr . ' - ' . is_numeric($work_obj->$attr));
 
-                if (!is_object($work_obj)) {
-                    dd($work_obj);
-                }
-
+                /**
+                 * Собираем ID изображений - в общий список и в список с разбиением по ключу
+                 */
                 if (is_numeric($work_obj->$attr)) {
 
                     /**
-                     * Собираем ID изображений - в общий список и в список с разбиением по ключу
+                     * Собираем ID изображений из обычных полей
                      */
                     $images_ids_attr[$attr][] = $work_obj->$attr;
                     $images_ids[] = $work_obj->$attr;
+
+                } elseif (isset($work_obj->allfields) && count($work_obj->allfields)) {
+
+                    /**
+                     * Собираем ID изображений из i18n полей
+                     */
+                    #Helper::tad($work_obj->allfields);
+                    foreach ($work_obj->allfields as $locale_sign => $locale_fields) {
+
+                        foreach ($locale_fields as $locale_key => $locale_value) {
+
+                            if ($locale_key == $attr) {
+
+                                #Helper::tad($locale_key . ' == ' . $attr);
+
+                                /**
+                                 * Work good
+                                 */
+                                $images_ids[] = $locale_value;
+                            }
+                            #Helper::tad($locale_key);
+                        }
+                    }
                 }
             }
 
         }
         #Helper::dd($images_ids);
         #Helper::d($images_ids_attr);
+
+        #Helper::ta($images_locale_ids_attr);
+        #Helper::tad($images_locale_ids);
 
 
         $images = [];
@@ -227,14 +258,44 @@ class DicLib extends BaseController {
                  */
                 foreach ($key as $attr) {
 
-                    if (is_object($work_obj) && is_numeric($work_obj->$attr)) {
+                    if (is_object($work_obj)) {
 
-                        if (@$images[$work_obj->$attr]) {
+                        #Helper::tad($work_obj);
 
-                            $tmp = $work_obj->$attr;
-                            $image = $images[$tmp];
+                        if (isset($work_obj->$attr) && is_numeric($work_obj->$attr)) {
 
-                            $work_obj->setAttribute($attr, $image);
+                            /**
+                             * Заменяем ID изображений на объекты в обычных полях
+                             */
+                            if (@$images[$work_obj->$attr]) {
+
+                                $tmp = $work_obj->$attr;
+                                $image = $images[$tmp];
+
+                                $work_obj->setAttribute($attr, $image);
+                            }
+
+                        } elseif (isset($work_obj->allfields) && count($work_obj->allfields)) {
+
+                            /**
+                             * Заменяем ID изображений на объекты в i18n полях
+                             */
+                            #Helper::tad($work_obj->allfields);
+                            $temp = $work_obj->allfields;
+                            foreach ($work_obj->allfields as $locale_sign => $locale_fields) {
+
+                                foreach ($locale_fields as $locale_key => $locale_value) {
+
+                                    if ($locale_key == $attr) {
+
+                                        #Helper::tad($locale_key . ' == ' . $attr);
+                                        if (@$images[$temp[$locale_sign][$locale_key]])
+                                            $temp[$locale_sign][$locale_key] = $images[$temp[$locale_sign][$locale_key]];
+                                    }
+                                    #Helper::tad($locale_key);
+                                }
+                            }
+                            $work_obj->allfields = $temp;
                         }
                     }
                 }
